@@ -1,276 +1,139 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-<title>Meadow Drift | Arnaw Studios</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;700;800&family=Playfair+Display:ital,wght@1,600&display=swap" rel="stylesheet">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Meadow Drift — Island Life</title>
 <style>
-  :root {
-    --ink: #16352e;
-    --glass: rgba(12, 35, 31, 0.78);
-    --cream: #fff8e8;
-    --mint: #bff0c9;
-    --gold: #ffe49a;
-  }
-  * { box-sizing: border-box; }
-  html, body {
-    margin: 0;
-    width: 100%;
-    height: 100%;
-    overflow: hidden;
-    background: #65b8c5;
-    font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
-    color: var(--cream);
-    touch-action: none;
-    user-select: none;
-  }
-  #game { display: block; width: 100vw; height: 100vh; }
-  .hud {
-    position: fixed;
-    z-index: 4;
-    pointer-events: none;
-    inset: 0;
-    padding: 14px;
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
-  }
-  .panel {
-    background: var(--glass);
-    border: 1px solid rgba(255, 255, 255, 0.24);
-    box-shadow: 0 8px 24px rgba(16, 43, 40, 0.35);
-    backdrop-filter: blur(12px);
-    border-radius: 16px;
-    padding: 10px 14px;
-    pointer-events: auto;
-  }
-  #brand {
-    font-weight: 800;
-    letter-spacing: .08em;
-    font-size: 15px;
-    color: #d9ffd9;
-  }
-  #brand small {
-    display: block;
-    font-size: 10px;
-    letter-spacing: .18em;
-    color: #f7e6ac;
-    font-weight: 700;
-    margin-top: 2px;
-  }
-  #stats {
-    display: flex;
-    gap: 8px;
-    align-items: center;
-    flex-wrap: wrap;
-    justify-content: flex-end;
-    font-size: 12px;
-  }
-  .pill {
-    padding: 7px 12px;
-    border-radius: 999px;
-    background: rgba(255, 255, 255, 0.12);
-    border: 1px solid rgba(255, 255, 255, 0.22);
-    white-space: nowrap;
-    font-weight: 600;
-  }
-  #help {
-    position: fixed;
-    z-index: 4;
-    bottom: 14px;
-    left: 50%;
-    transform: translateX(-50%);
-    font-size: 12px;
-    white-space: nowrap;
-    max-width: calc(100vw - 24px);
-    overflow: hidden;
-    text-overflow: ellipsis;
-  }
-  #toast {
-    position: fixed;
-    z-index: 10;
-    left: 50%;
-    top: 18%;
-    transform: translate(-50%, -12px);
-    opacity: 0;
-    transition: .25s ease-out;
-    background: #123c33ed;
-    border: 1px solid rgba(216, 247, 202, 0.5);
-    padding: 12px 22px;
-    border-radius: 20px;
-    font-weight: 700;
-    text-align: center;
-    max-width: min(90vw, 520px);
-    box-shadow: 0 12px 40px rgba(19, 45, 44, 0.4);
-    pointer-events: none;
-    letter-spacing: 0.5px;
-  }
-  #toast.show { opacity: 1; transform: translate(-50%, 0); }
-  #dialog {
-    position: fixed;
-    z-index: 8;
-    left: 50%;
-    bottom: 70px;
-    transform: translateX(-50%);
-    width: min(520px, calc(100vw - 28px));
-    display: none;
-    background: #fffbf2;
-    color: #23443b;
-    border-radius: 20px;
-    padding: 18px 22px;
-    box-shadow: 0 15px 50px rgba(16, 43, 40, 0.4);
-    border: 2px solid #d4eacb;
-  }
-  #dialog h3 { margin: 0 0 6px; font-size: 18px; font-weight: 800; }
-  #dialog p { margin: 0 0 14px; line-height: 1.5; font-size: 14px; color: #3a5c53; }
-  #dialog button {
-    border: 0;
-    border-radius: 12px;
-    background: #236a4c;
-    color: white;
-    padding: 10px 18px;
-    font-weight: 800;
-    cursor: pointer;
-    font-size: 13px;
-    box-shadow: 0 4px 12px rgba(35, 106, 76, 0.3);
-  }
-  #mobile {
-    position: fixed;
-    z-index: 5;
-    bottom: 22px;
-    left: 18px;
-    display: none;
-    gap: 8px;
-    align-items: flex-end;
-    pointer-events: auto;
-  }
-  .pad {
-    display: grid;
-    grid-template-columns: 46px 46px 46px;
-    grid-template-rows: 46px 46px 46px;
-    gap: 4px;
-  }
-  .btn {
-    border: 1px solid rgba(255, 255, 255, 0.3);
-    background: rgba(22, 63, 57, 0.85);
-    color: #fff;
-    border-radius: 14px;
-    font-size: 18px;
-    font-weight: 900;
-    touch-action: none;
-  }
-  .pad .up { grid-column: 2; }
-  .pad .left { grid-column: 1; grid-row: 2; }
-  .pad .down { grid-column: 2; grid-row: 2; }
-  .pad .right { grid-column: 3; grid-row: 2; }
-  .actions {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-    margin-left: 10px;
-  }
-  .actions .btn { width: 62px; height: 50px; font-size: 12px; }
-  #nameEntry {
-    position: fixed;
-    inset: 0;
-    z-index: 20;
-    background: linear-gradient(135deg, rgba(22, 61, 53, 0.9), rgba(36, 78, 71, 0.95));
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 20px;
-  }
-  #nameCard {
-    width: min(420px, 100%);
-    background: #fffaf0;
-    color: #23443b;
-    border-radius: 26px;
-    padding: 28px;
-    box-shadow: 0 20px 70px rgba(11, 40, 40, 0.4);
-    text-align: center;
-  }
-  #nameCard h1 { margin: 0; font-size: 32px; color: #216548; letter-spacing: -0.03em; }
-  #nameCard p { line-height: 1.5; color: #436359; font-size: 14px; }
-  #nameCard input {
-    width: 100%;
-    padding: 13px;
-    border: 2px solid #c4dfc1;
-    border-radius: 14px;
-    font-size: 16px;
-    margin: 8px 0 14px;
-    outline: none;
-    font-family: inherit;
-    text-align: center;
-  }
-  #nameCard button {
-    width: 100%;
-    padding: 14px;
-    border: 0;
-    border-radius: 14px;
-    background: linear-gradient(135deg, #216548, #2e8b64);
-    color: #fff;
-    font-weight: 800;
-    font-size: 16px;
-    cursor: pointer;
-    box-shadow: 0 6px 20px rgba(33, 101, 72, 0.35);
-  }
-  @media(max-width:700px){
-    .hud { padding: 8px; }
-    #stats { gap: 4px; }
-    .panel { padding: 8px 10px; }
-    .pill { padding: 5px 8px; font-size: 10px; }
-    #brand { font-size: 12px; }
-    #mobile { display: flex; }
-    #help { bottom: 8px; font-size: 10px; left: auto; right: 8px; transform: none; max-width: 45vw; text-align: right; }
-    #dialog { bottom: 150px; }
-  }
+:root{--ink:#203c34;--deep:#193b32;--panel:#285648;--panel2:#326b57;--mint:#c9f1cc;--cream:#fff8e9;--gold:#f5d78a;--line:#ffffff24;--muted:#d5e8d8}
+*{box-sizing:border-box}
+body{margin:0;background:radial-gradient(circle at 15% 0%,#315f4e,#142e29 62%);color:var(--cream);font-family:Inter,ui-rounded,"Trebuchet MS",Arial,sans-serif;min-height:100vh}
+button,input{font:inherit}
+button{border:0;cursor:pointer;touch-action:manipulation}
+button:focus-visible,input:focus-visible{outline:3px solid #ffe08b;outline-offset:2px}
+.topbar{display:flex;align-items:center;justify-content:space-between;gap:14px;padding:14px clamp(12px,3vw,30px);background:#15382f;border-bottom:1px solid #ffffff20;box-shadow:0 5px 22px #0002;flex-wrap:wrap}
+.brand{display:flex;align-items:center;gap:11px}.brand-mark{width:43px;height:43px;border-radius:15px;background:linear-gradient(145deg,#b8ebac,#f4d78b);display:grid;place-items:center;font-size:25px;box-shadow:inset 0 2px 5px #fff8}.brand h1{font-size:clamp(19px,3vw,27px);margin:0;letter-spacing:.5px}.brand small{display:block;color:#b8d7c3;font-size:11px;letter-spacing:2px;margin-top:2px}
+.hud{display:flex;gap:8px;flex-wrap:wrap;align-items:center}.stat{background:#ffffff12;border:1px solid #ffffff16;border-radius:12px;padding:8px 11px;font-size:13px;min-width:75px}.stat b{color:#fff2b7;margin-left:3px}.save-state{font-size:11px;color:#c6e7cf;padding:0 5px}
+.page{width:min(1440px,100%);margin:auto;padding:16px;display:grid;grid-template-columns:minmax(0,1fr) 335px;gap:15px;align-items:start}
+.game-column{min-width:0}.game-frame{background:#193d34;padding:9px;border-radius:20px;border:1px solid #ffffff25;box-shadow:0 18px 50px #071b164d}.canvas-wrap{position:relative;overflow:hidden;border-radius:13px;background:#83c9d1}.canvas-wrap canvas{width:100%;height:auto;display:block;aspect-ratio:960/620;touch-action:pan-y}
+.canvas-tag{position:absolute;left:13px;top:12px;border-radius:999px;padding:7px 11px;background:#173b32db;border:1px solid #ffffff35;font-size:12px;color:#f8ffe9;pointer-events:none}.canvas-help{position:absolute;right:12px;top:12px;background:#173b32d9;border:1px solid #ffffff30;border-radius:10px;padding:7px 10px;font-size:11px;color:#f5ffe9;pointer-events:none}
+.game-footer{display:flex;justify-content:space-between;gap:10px;align-items:center;padding:10px 5px 2px;flex-wrap:wrap}.game-footer p{margin:0;color:#c3dfcb;font-size:12px}.action-row{display:flex;gap:7px;flex-wrap:wrap}.primary,.secondary,.soft{border-radius:11px;padding:10px 13px;font-weight:800;font-size:13px;transition:transform .12s,filter .12s}.primary{background:linear-gradient(145deg,#d5f3b8,#a6dfaa);color:#1c4637}.secondary{background:#f4d88f;color:#47391e}.soft{background:#ffffff16;color:#f5ffe9;border:1px solid #ffffff27}.primary:hover,.secondary:hover,.soft:hover{filter:brightness(1.07);transform:translateY(-1px)}
+.controls{display:flex;gap:12px;align-items:center;justify-content:center;margin-top:12px;flex-wrap:wrap}.dpad{display:grid;grid-template-columns:47px 47px 47px;grid-template-rows:42px 42px 42px;gap:4px}.pad{background:#ffffff18;color:#faffed;border:1px solid #ffffff30;border-radius:11px;font-size:18px;font-weight:bold;user-select:none}.pad[data-key="up"]{grid-column:2;grid-row:1}.pad[data-key="left"]{grid-column:1;grid-row:2}.pad[data-key="down"]{grid-column:2;grid-row:2}.pad[data-key="right"]{grid-column:3;grid-row:2}.act-pad{height:88px;min-width:88px;border-radius:50%;background:linear-gradient(145deg,#f4d98e,#eab95f);color:#45371e;font-weight:900;box-shadow:0 5px 0 #b88b42;font-size:14px}.control-note{font-size:11px;color:#b9d8c4;max-width:180px;line-height:1.45}
+.sidebar{display:flex;flex-direction:column;gap:11px;min-width:0}.card{background:linear-gradient(145deg,#2a5b49,#214b3e);border:1px solid #ffffff20;border-radius:16px;padding:14px;box-shadow:0 7px 20px #051d1730}.card h2{font-size:15px;margin:0 0 11px;display:flex;align-items:center;gap:7px;color:#e7f8d9}.card .sub{font-size:11px;color:#b9d7c1;margin:-5px 0 10px}.message-box{min-height:80px;border-radius:12px;background:#143d32a8;padding:12px;font-size:13px;line-height:1.5;color:#f4f8e9;border:1px solid #ffffff12}.speaker{display:block;color:#f6dc91;font-weight:900;margin-bottom:4px}.quest-list{display:flex;flex-direction:column;gap:7px;max-height:260px;overflow:auto;padding-right:2px}.quest{padding:9px 10px;border-radius:11px;background:#ffffff0d;border:1px solid #ffffff15;font-size:12px}.quest-top{display:flex;justify-content:space-between;gap:8px;font-weight:800;color:#f6f3dc}.quest-desc{color:#c6dfca;margin-top:4px;line-height:1.4}.bar{height:6px;border-radius:8px;background:#102f27;margin-top:7px;overflow:hidden}.bar span{height:100%;display:block;background:linear-gradient(90deg,#97e296,#ffe185);border-radius:8px}.shop-grid{display:grid;grid-template-columns:1fr 1fr;gap:7px}.shop-btn{padding:10px 8px;border-radius:12px;background:#ffffff14;border:1px solid #ffffff20;color:#f8fceb;font-size:12px;font-weight:700;display:flex;flex-direction:column;align-items:center;gap:3px}.shop-btn span{font-size:18px}.badge{background:#f3d789;color:#352c16;padding:2px 7px;border-radius:999px;font-size:10px;font-weight:900}
+.modal-layer{position:fixed;inset:0;background:#051713b3;display:none;align-items:center;justify-content:center;padding:16px;z-index:90;backdrop-filter:blur(3px)}.modal-layer.show{display:flex}.modal{width:min(560px,100%);max-height:88vh;background:linear-gradient(160deg,#245443,#1a3e33);border:1px solid #ffffff30;border-radius:20px;box-shadow:0 25px 60px #02110ea6;display:flex;flex-direction:column;overflow:hidden}.modal-head{display:flex;justify-content:space-between;align-items:center;padding:14px 18px;border-bottom:1px solid #ffffff1a}.modal-head h3{margin:0;font-size:18px;color:#f8ecd2}.close-btn{background:#ffffff17;border-radius:50%;width:33px;height:33px;font-size:18px;color:#fff;display:grid;place-items:center}.modal-body{padding:16px 18px;overflow:auto;display:flex;flex-direction:column;gap:12px;font-size:13px;line-height:1.5}.list-card{background:#ffffff0d;border:1px solid #ffffff14;border-radius:12px;padding:11px 13px;display:flex;justify-content:space-between;gap:10px;align-items:center}.chip{background:#ffffff12;padding:4px 8px;border-radius:8px;font-size:11px;font-weight:bold;color:#fce49b}
+.login-layer{position:fixed;inset:0;background:#102d26f2;display:none;align-items:center;justify-content:center;padding:16px;z-index:99}.login-layer.show{display:flex}.login-card{width:min(440px,100%);background:linear-gradient(160deg,#245242,#173a30);border:1px solid #ffffff35;border-radius:22px;padding:26px;box-shadow:0 30px 70px #020c09;text-align:center}.login-card h2{margin:0 0 6px;font-size:25px;color:#fae8bf}.login-card p{margin:0 0 16px;color:#c0dec9;font-size:13px;line-height:1.4}.name-input{width:100%;padding:13px 15px;border-radius:12px;border:1px solid #ffffff40;background:#ffffff15;color:#fff;font-size:16px;margin-bottom:12px}.name-input::placeholder{color:#bddcc4}.start-btn{width:100%;padding:13px;border-radius:12px;font-weight:900;background:linear-gradient(145deg,#d2f3b3,#99db9c);color:#194032;font-size:15px}
+@media(max-width:980px){.page{grid-template-columns:minmax(0,1fr) 300px}}@media(max-width:760px){.page{grid-template-columns:1fr;padding:10px}.sidebar{display:grid;grid-template-columns:1fr 1fr}.sidebar .wide{grid-column:1/-1}.topbar{padding:11px}.stat{min-width:auto;padding:7px 9px}.canvas-help{display:none}}@media(max-width:480px){.sidebar{grid-template-columns:1fr}.sidebar .wide{grid-column:auto}.shop-grid{grid-template-columns:1fr}.brand small{letter-spacing:1px}.game-footer{align-items:flex-start}.control-note{max-width:125px}}
 </style>
 </head>
 <body>
-<canvas id="game"></canvas>
 
-<div class="hud">
-  <div class="panel" id="brand">MEADOW DRIFT<small>ARNAW STUDIOS • ISLAND LIFE</small></div>
-  <div class="panel" id="stats">
-    <span class="pill" id="clock">☀️ 08:00</span>
-    <span class="pill" id="weather">🌤️ Clear</span>
-    <span class="pill" id="materials">🪵 0 · 🍓 0 · 🌼 0</span>
-    <span class="pill" id="location">🏝️ Meadow Island</span>
+<header class="topbar">
+  <div class="brand">
+    <div class="brand-mark">🌿</div>
+    <div>
+      <h1>Meadow Drift</h1>
+      <small>DELUXE EDITION • ARNAW STUDIOS</small>
+    </div>
+  </div>
+  <div class="hud">
+    <div class="stat">Day <b id="dayCount">1</b></div>
+    <div class="stat"><span id="clockEmoji">☀️</span> <b id="clockText">08:00</b></div>
+    <div class="stat"><span id="weatherEmoji">🌤️</span> <b id="weatherText">Sunny</b></div>
+    <div class="stat">🪙 <b id="coinCount">15</b></div>
+    <div class="stat">⚡ <b id="energyCount">100</b>/100</div>
+    <div class="save-state" id="saveState">● Synced</div>
+  </div>
+</header>
+
+<main class="page">
+  <section class="game-column">
+    <div class="game-frame">
+      <div class="canvas-wrap">
+        <canvas id="gameCanvas" width="960" height="620"></canvas>
+        <div class="canvas-tag" id="locationTag">📍 Meadow Square</div>
+        <div class="canvas-help">WASD / Click to move · E: Interact · Space: Action</div>
+      </div>
+      <div class="game-footer">
+        <div class="action-row">
+          <button class="primary" data-action="interact">ACT / Talk (E)</button>
+          <button class="secondary" data-action="journal">Quests (M)</button>
+          <button class="soft" data-action="bag">Bag (I)</button>
+          <button class="soft" data-action="enterHome" id="homeQuickBtn">Enter Home</button>
+          <button class="soft" data-action="menu">Settings</button>
+        </div>
+        <p id="subHint">Walk near an islander, shop or plant to interact.</p>
+      </div>
+    </div>
+
+    <div class="controls">
+      <div class="dpad">
+        <button class="pad" data-pad="up" data-key="up">▲</button>
+        <button class="pad" data-pad="left" data-key="left">◀</button>
+        <button class="pad" data-pad="down" data-key="down">▼</button>
+        <button class="pad" data-pad="right" data-key="right">▶</button>
+      </div>
+      <button class="act-pad" data-action="interact">ACT<br><small style="font-size:10px">E</small></button>
+      <div class="control-note">Touch buttons, tap anywhere on the meadow, or use WASD / Arrow keys.</div>
+    </div>
+  </section>
+
+  <aside class="sidebar">
+    <div class="card wide">
+      <h2>💬 Island Dialogue</h2>
+      <div class="message-box" id="speakerBox">
+        <span class="speaker" id="speakerName">Sunny Meadow</span>
+        <span id="speakerText">Welcome to Meadow Island! Stroll along the path, meet neighbours and collect timber and berries.</span>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>📜 Active Quests <span class="badge" id="activeQuestCount">0</span></h2>
+      <div class="sub">Complete tasks for neighbours to earn coins & friendship!</div>
+      <div class="quest-list" id="sidebarQuestList"></div>
+    </div>
+
+    <div class="card">
+      <h2>🏪 Island Services</h2>
+      <div class="shop-grid">
+        <button class="shop-btn" data-action="noticeBoard"><span>📌</span>Notice Board</button>
+        <button class="shop-btn" data-action="market"><span>🛒</span>Market</button>
+        <button class="shop-btn" data-action="estate"><span>🏡</span>Estate Agency</button>
+        <button class="shop-btn" data-action="openFurniture"><span>🛋️</span>Furniture</button>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>ℹ️ Controls & Tips</h2>
+      <div style="font-size:12px;color:#c0ded0;line-height:1.6">
+        • <b>E / Space:</b> Talk, harvest & enter houses<br>
+        • <b>Sleep at night:</b> Restores full energy & advances day<br>
+        • <b>Ravi the Trader:</b> Arrives every 3rd day at the dock!<br>
+        • <b>1,000,000 Homes:</b> Discover unique house IDs at the agency!
+      </div>
+    </div>
+  </aside>
+</main>
+
+<!-- Modals -->
+<div class="modal-layer" id="modalLayer">
+  <div class="modal">
+    <div class="modal-head">
+      <h3 id="modalTitle">Notice</h3>
+      <button class="close-btn" data-action="closeModal">✕</button>
+    </div>
+    <div class="modal-body" id="modalBody"></div>
   </div>
 </div>
 
-<div id="help" class="panel">WASD / Arrows: move · E: interact · G: gather · F: place furniture · H: home</div>
-<div id="toast"></div>
-
-<div id="dialog">
-  <h3 id="dialogTitle"></h3>
-  <p id="dialogText"></p>
-  <button id="dialogOk">Got it</button>
-</div>
-
-<div id="mobile">
-  <div class="pad">
-    <button class="btn up" data-key="ArrowUp">▲</button>
-    <button class="btn left" data-key="ArrowLeft">◀</button>
-    <button class="btn down" data-key="ArrowDown">▼</button>
-    <button class="btn right" data-key="ArrowRight">▶</button>
-  </div>
-  <div class="actions">
-    <button class="btn" id="actBtn">ACT · E</button>
-    <button class="btn" id="furnBtn">PLACE · F</button>
-  </div>
-</div>
-
-<div id="nameEntry">
-  <div id="nameCard">
-    <h1>Meadow Drift 🌿</h1>
-    <p>A peaceful island, gentle ocean waves, neighbours to meet, and a cozy home to call your own.</p>
-    <input id="playerName" maxlength="16" placeholder="What should we call you?" autocomplete="off"/>
-    <button id="startBtn">Start Exploring</button>
-    <p style="font-size:11px;color:#648075;margin-bottom:0">Progress automatically saves on your device.</p>
+<!-- Login Form -->
+<div class="login-layer" id="loginLayer">
+  <div class="login-card">
+    <h2>Welcome to Meadow Drift 🌿</h2>
+    <p>Enter your character name to start your peaceful island life.</p>
+    <form id="loginForm">
+      <input class="name-input" id="playerName" placeholder="Your name (e.g. Robin)" maxlength="18" required autofocus>
+      <button class="start-btn" type="submit">Begin Adventure</button>
+    </form>
   </div>
 </div>
 
@@ -278,1069 +141,688 @@
 (()=>{
 'use strict';
 
-const canvas = document.getElementById('game'), ctx = canvas.getContext('2d');
-let W = innerWidth, H = innerHeight, DPR = Math.min(devicePixelRatio || 1, 2);
+const canvas=document.getElementById('gameCanvas');
+const ctx=canvas.getContext('2d');
+const W=960,H=620;
+const $=id=>document.getElementById(id);
+const keyState={up:false,down:false,left:false,right:false};
 
-function resize() {
-  W = innerWidth; H = innerHeight; DPR = Math.min(devicePixelRatio || 1, 2);
-  canvas.width = Math.floor(W * DPR);
-  canvas.height = Math.floor(H * DPR);
-  canvas.style.width = W + 'px';
-  canvas.style.height = H + 'px';
-  ctx.setTransform(DPR, 0, 0, DPR, 0, 0);
-}
-addEventListener('resize', resize);
-resize();
-
-// Cozy Audio Synthesizer
-const IslandAudio = {
+// Cozy Web Audio Synthesizer
+const SoundFX = {
   ctx: null,
   init() {
     if (!this.ctx) this.ctx = new (window.AudioContext || window.webkitAudioContext)();
   },
-  play(freq, type, duration, vol=0.08) {
+  play(f, t, d, v=0.08) {
     try {
       this.init();
-      const osc = this.ctx.createOscillator();
-      const gain = this.ctx.createGain();
-      osc.type = type;
-      osc.frequency.setValueAtTime(freq, this.ctx.currentTime);
-      gain.gain.setValueAtTime(vol, this.ctx.currentTime);
-      gain.gain.exponentialRampToValueAtTime(0.0001, this.ctx.currentTime + duration);
-      osc.connect(gain);
-      gain.connect(this.ctx.destination);
-      osc.start();
-      osc.stop(this.ctx.currentTime + duration);
+      const o = this.ctx.createOscillator(), g = this.ctx.createGain();
+      o.type = t;
+      o.frequency.setValueAtTime(f, this.ctx.currentTime);
+      g.gain.setValueAtTime(v, this.ctx.currentTime);
+      g.gain.exponentialRampToValueAtTime(0.0001, this.ctx.currentTime + d);
+      o.connect(g);
+      g.connect(this.ctx.destination);
+      o.start();
+      o.stop(this.ctx.currentTime + d);
     } catch(e) {}
   },
-  chime() {
-    this.play(659, "sine", 0.3, 0.09);
-    setTimeout(() => this.play(880, "sine", 0.4, 0.09), 90);
+  talk() { this.play(587, 'sine', 0.15, 0.07); },
+  coin() {
+    this.play(987, 'sine', 0.08, 0.1);
+    setTimeout(() => this.play(1318, 'sine', 0.2, 0.1), 70);
   },
-  gather() {
-    this.play(523, "triangle", 0.15, 0.08);
-    setTimeout(() => this.play(659, "triangle", 0.2, 0.08), 80);
+  harvest() {
+    this.play(523, 'triangle', 0.12, 0.08);
+    setTimeout(() => this.play(659, 'triangle', 0.15, 0.08), 60);
   },
   door() {
-    this.play(349, "triangle", 0.25, 0.07);
-    setTimeout(() => this.play(440, "sine", 0.35, 0.07), 110);
+    this.play(349, 'triangle', 0.25, 0.07);
+    setTimeout(() => this.play(440, 'sine', 0.35, 0.07), 100);
+  },
+  quest() {
+    [523, 659, 784, 1046].forEach((f, i) => setTimeout(() => this.play(f, 'triangle', 0.22, 0.09), i * 110));
   }
 };
 
-const WORLD = { w: 3200, h: 2300 };
-const saveKey = 'meadowDriftSaveV2';
+const particles = [];
+function addSparkle(x, y, color='#ffe066', count=6) {
+  for (let i = 0; i < count; i++) {
+    particles.push({
+      x, y,
+      vx: (Math.random() - 0.5) * 3,
+      vy: (Math.random() - 0.5) * 3 - 1,
+      r: Math.random() * 3 + 2,
+      c: color,
+      life: 25
+    });
+  }
+}
 
-let saved = {};
-try { saved = JSON.parse(localStorage.getItem(saveKey) || '{}') || {}; } catch(e) {}
+let player={x:480,y:350,speed:3.2,face:1,bob:0};
+let inside=false,modalOpen=false,loginOpen=false,lastFrame=0,saveTimer=0,lastLocationText='';
+let moveTarget=null,targetInteract=false;
 
-let player = {
-  x: saved.x || 980,
-  y: saved.y || 920,
-  inX: 400, // Indoor X coordinate
-  inY: 300, // Indoor Y coordinate
-  name: saved.name || 'Island Friend',
-  speed: 220,
-  wood: saved.wood || 0,
-  berries: saved.berries || 0,
-  flowers: saved.flowers || 0,
-  walkTimer: 0
+const SAVE_KEY='meadowDriftDeluxe_save';
+
+const furnitureCatalog=[
+ {name:'Cozy Armchair',cost:25,icon:'🛋️'},
+ {name:'Oak Dining Table',cost:45,icon:'🍽️'},
+ {name:'Vintage Bookshelf',cost:60,icon:'📚'},
+ {name:'Brass Floor Lamp',cost:30,icon:'💡'},
+ {name:'Potted Monstera',cost:20,icon:'🪴'},
+ {name:'Feather Bed',cost:75,icon:'🛏️'},
+ {name:'Retro TV',cost:65,icon:'📺'},
+ {name:'Cast Iron Stove',cost:55,icon:'🍳'}
+];
+
+const citizens=[
+ {id:'luna',name:'Luna',x:290,y:250,color:'#d48eb3',hair:'#463022',role:'Botanist',line:'The meadows smell sweetest after morning dew!'},
+ {id:'milo',name:'Milo',x:610,y:245,color:'#6aa9d2',hair:'#7a4726',role:'Carpenter',line:'Looking for quality timber? The big oaks to the west are sturdy.'},
+ {id:'ava',name:'Ava',x:330,y:430,color:'#e5a95d',hair:'#2b231d',role:'Baker',line:'Fresh berry pies require sweet forest berries!'},
+ {id:'noah',name:'Noah',x:680,y:425,color:'#7ebd7e',hair:'#382b20',role:'Fisher',line:'The sea carries gifts from all around the archipelago.'},
+ {id:'oliver',name:'Oliver',x:210,y:355,color:'#a68ed4',hair:'#5b4034',role:'Historian',line:'Every house on this island has a story going back generations.'},
+ {id:'emma',name:'Emma',x:765,y:350,color:'#e58c77',hair:'#262426',role:'Florist',line:'Fresh blossoms brighten up any home interior!'},
+ {id:'bram',name:'Bram',x:480,y:140,color:'#8ba895',hair:'#4f3a2b',role:'Mayor',line:'Welcome to our community! Make yourself at home.'},
+ {id:'piper',name:'Piper',x:530,y:385,color:'#d47878',hair:'#2d231e',role:'Courier',line:'Check the Notice Board daily for fresh requests!'}
+];
+
+const travellingTrader={name:'Ravi',x:690,y:230,color:'#e0a553',hair:'#2d2015'};
+
+const resourceNodes=[
+ {id:'tree',name:'Oak Tree',x:160,y:450,resource:'wood',icon:'🪵',label:'Chop Wood'},
+ {id:'berries',name:'Berry Bush',x:810,y:460,resource:'berries',icon:'🫐',label:'Pick Berries'},
+ {id:'flowers',name:'Wildflower Meadow',x:240,y:170,resource:'flowers',icon:'🌷',label:'Pick Flowers'}
+];
+
+function defaultGame(){
+ return {
+  name:'Friend',day:1,coins:20,energy:100,clockMinutes:480,worldMinutes:0,
+  weather:'sunny',weatherNextChange:260,
+  inventory:{wood:2,berries:3,flowers:1},
+  furnitureOwned:['Cozy Armchair','Potted Monstera'],
+  placedFurniture:[{name:'Cozy Armchair',x:280,y:280},{name:'Potted Monstera',x:680,y:260}],
+  quests:[
+   {id:'q1',citizenId:'milo',title:'Timber for Milo',desc:'Gather 3 wood logs for the workshop.',req:{wood:3},reward:25,done:false},
+   {id:'q2',citizenId:'ava',title:'Pie Ingredients',desc:'Collect 4 wild berries for Ava.',req:{berries:4},reward:30,done:false}
+  ],
+  dailyQuests:[
+   {title:'Daily Walk',desc:'Harvest 2 wildflowers today.',req:{flowers:2},reward:18,claimed:false}
+  ],
+  customHome:{number:104,name:'Meadow Villa',color:'#f7e4be'}
+ };
+}
+
+let game=defaultGame();
+
+function safeNumber(v, fallback){return typeof v==='number'&&!isNaN(v)?v:fallback;}
+
+function loadGame(name){
+ try{
+  const raw=localStorage.getItem(SAVE_KEY);
+  if(raw){
+   const s=JSON.parse(raw);
+   game=Object.assign(defaultGame(),s);
+   if(name)game.name=name;
+  } else if(name){
+   game.name=name;
+  }
+ }catch(e){game=defaultGame();}
+ loginOpen=false;
+ $('loginLayer').classList.remove('show');
+ updateUI();
+}
+
+function saveGame(){
+ try{
+  localStorage.setItem(SAVE_KEY,JSON.stringify(game));
+  localStorage.setItem('meadowDriftDeluxe_last',game.name);
+  $('saveState').textContent='● Synced';
+ }catch(e){}
+}
+
+function updateUI(){
+ $('dayCount').textContent=game.day;
+ const h=Math.floor(game.clockMinutes/60),m=Math.floor(game.clockMinutes%60);
+ $('clockText').textContent=`${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}`;
+ $('clockEmoji').textContent=h>=6&&h<18?'☀️':'🌙';
+ $('weatherText').textContent=game.weather.charAt(0).toUpperCase()+game.weather.slice(1);
+ $('weatherEmoji').textContent=game.weather==='sunny'?'☀️':game.weather==='rainy'?'🌧️':'🌤️';
+ $('coinCount').textContent=game.coins;
+ $('energyCount').textContent=Math.round(game.energy);
+
+ const qList=$('sidebarQuestList');
+ qList.innerHTML='';
+ let count=0;
+ game.quests.forEach(q=>{
+  if(q.done)return;
+  count++;
+  const div=document.createElement('div');
+  div.className='quest';
+  const resKey=Object.keys(q.req)[0];
+  const cur=game.inventory[resKey]||0,max=q.req[resKey];
+  div.innerHTML=`<div class="quest-top"><span>${q.title}</span><span style="color:#f7df94">+${q.reward}🪙</span></div>
+  <div class="quest-desc">${q.desc} (${cur}/${max})</div>
+  <div class="bar"><span style="width:${Math.min(100,(cur/max)*100)}%"></span></div>`;
+  qList.appendChild(div);
+ });
+ $('activeQuestCount').textContent=count;
+}
+
+function advanceWorldClock(dt){
+ game.clockMinutes=(game.clockMinutes+dt*0.5)%1440;
+ game.worldMinutes+=dt*0.5;
+ if(game.worldMinutes>=game.weatherNextChange){
+  game.weatherNextChange=game.worldMinutes+200+Math.random()*300;
+  game.weather=['sunny','cloudy','rainy'][Math.floor(Math.random()*3)];
+ }
+ updateUI();
+}
+
+function traderIsHere(){
+ return game.day%3===0;
+}
+
+function getNearby(){
+ if(inside)return null;
+ for(const c of citizens){
+  if(Math.hypot(player.x-c.x,player.y-c.y)<48)return {kind:'citizen',data:c,label:c.name};
+ }
+ if(traderIsHere()&&Math.hypot(player.x-travellingTrader.x,player.y-travellingTrader.y)<52){
+  return {kind:'trader',data:travellingTrader,label:'Ravi the Trader'};
+ }
+ for(const r of resourceNodes){
+  if(Math.hypot(player.x-r.x,player.y-r.y)<54)return {kind:'resource',data:r,label:r.name};
+ }
+ if(Math.hypot(player.x-180,player.y-190)<70)return {kind:'landmark',data:{action:'market'},label:'Meadow Market'};
+ if(Math.hypot(player.x-480,player.y-185)<70)return {kind:'landmark',data:{action:'estate'},label:'Estate Office'};
+ if(Math.hypot(player.x-780,player.y-190)<70)return {kind:'landmark',data:{action:'enterHome'},label:'Your Villa'};
+ if(Math.hypot(player.x-480,player.y-480)<55)return {kind:'landmark',data:{action:'noticeBoard'},label:'Notice Board'};
+ return null;
+}
+
+function harvestResource(node){
+ SoundFX.harvest(); addSparkle(player.x, player.y, "#95e06c", 8);
+ if(game.energy<5){
+  showMessage('Exhausted','You need to rest! Sleep at home to replenish your energy.');
+  return;
+ }
+ game.energy=Math.max(0,game.energy-5);
+ game.inventory[node.resource]=(game.inventory[node.resource]||0)+1;
+ showMessage(node.name,`Harvested 1 ${node.resource}! Checked your bag.`);
+ updateUI();
+ saveGame();
+}
+
+function completeQuest(q){
+ SoundFX.quest(); addSparkle(player.x, player.y, "#ffd700", 12);
+ q.done=true;
+ game.coins+=q.reward;
+ showMessage('Quest Complete!',`Completed "${q.title}" and earned ${q.reward} coins!`);
+ updateUI();
+ saveGame();
+}
+
+function talkToCitizen(c){
+ SoundFX.talk();
+ const q=game.quests.find(q=>q.citizenId===c.id&&!q.done);
+ if(q){
+  const resKey=Object.keys(q.req)[0];
+  if((game.inventory[resKey]||0)>=q.req[resKey]){
+   game.inventory[resKey]-=q.req[resKey];
+   completeQuest(q);
+   return;
+  }
+ }
+ showMessage(`${c.name} (${c.role})`,c.line);
+}
+
+function talkToTrader(){
+ SoundFX.talk();
+ showModal('Ravi the Travelling Trader','<div class="quest"><b>Rare Exotic Decor</b><div class="quest-desc">Ravi sails between islands bringing unique furnishings!</div></div><div class="shop-grid"><button class="shop-btn" data-action="buyFurniture" data-index="6"><span>📺</span>Retro TV (65🪙)</button><button class="shop-btn" data-action="buyFurniture" data-index="7"><span>🍳</span>Cast Iron Stove (55🪙)</button></div>');
+}
+
+function showMessage(speaker,text){
+ $('speakerName').textContent=speaker;
+ $('speakerText').textContent=text;
+}
+
+function showModal(title,html){
+ modalOpen=true;
+ $('modalTitle').textContent=title;
+ $('modalBody').innerHTML=html;
+ $('modalLayer').classList.add('show');
+}
+
+function closeModal(){
+ modalOpen=false;
+ $('modalLayer').classList.remove('show');
+}
+
+function openMarket(){
+ let html='<p>Trade raw island resources for gleaming coins!</p>';
+ ['wood','berries','flowers'].forEach(r=>{
+  const count=game.inventory[r]||0;
+  const price=r==='wood'?8:r==='berries'?6:10;
+  html+=`<div class="list-card"><div><b>${r.toUpperCase()}</b> <span class="chip">Own: ${count}</span></div>
+  <button class="primary" data-action="sellResource" data-resource="${r}" ${count<=0?'disabled':''}>Sell for ${price}🪙</button></div>`;
+ });
+ showModal('🛒 Meadow Island Market',html);
+}
+
+function sellResource(r){
+ const price=r==='wood'?8:r==='berries'?6:10;
+ if((game.inventory[r]||0)>0){
+  game.inventory[r]--;
+  game.coins+=price;
+  SoundFX.coin();
+  openMarket();
+  updateUI();
+  saveGame();
+ }
+}
+
+function openEstate(){
+ let html=`<p>Your current house: <b>${game.customHome.name}</b> (No. ${game.customHome.number})</p>
+ <p>Discover 1 of 1,000,000 procedural island homes!</p>
+ <div style="display:flex;gap:8px;margin-bottom:12px">
+   <input type="number" id="houseSearch" min="1" max="1000000" placeholder="House # (1 - 1000000)" style="flex:1;padding:8px;border-radius:8px;border:1px solid #ffffff40;background:#ffffff15;color:#fff">
+   <button class="primary" onclick="searchHouse()">Search</button>
+ </div>
+ <div id="houseResult"></div>`;
+ showModal('🏡 Island Estate Agency',html);
+}
+
+window.searchHouse=()=>{
+ const num=Number($('houseSearch').value);
+ if(num>=1&&num<=1000000){
+  const names=['Meadow Haven','Seaside Villa','Clover Cottage','Pine Lodge','Sunburst Manor','Breeze Villa'];
+  const name=names[num%names.length]+' #'+num;
+  $('houseResult').innerHTML=`<div class="list-card"><div><b>${name}</b><br><small>Cost: 50🪙</small></div><button class="secondary" onclick="purchaseHouse(${num},'${name}')">Purchase Title</button></div>`;
+ }
 };
 
-let scene = 'outside',
-    insideAt = { x: 980, y: 920 },
-    boatMode = false,
-    boat = { x: 1530, y: 900 },
-    boatDir = 0,
-    boatWake = [];
+window.purchaseHouse=(num,name)=>{
+ if(game.coins>=50){
+  game.coins-=50;
+  game.customHome={number:num,name:name};
+  SoundFX.coin();
+  showMessage('Estate Office',`Congratulations! You are now the proud owner of ${name}!`);
+  closeModal();
+  updateUI();
+  saveGame();
+ } else {
+  alert('You need 50 coins to purchase this home title!');
+ }
+};
 
-let keys = {},
-    last = performance.now(),
-    toastTimer = 0,
-    dialogOpen = false,
-    day = saved.day || 1,
-    gameMinute = saved.gameMinute || 480,
-    lastHour = Math.floor(gameMinute / 60),
-    citizensGone = false,
-    eveningNoticeDay = -1;
-
-let weather = 'clear',
-    weatherTimer = 35,
-    wetUntil = 0,
-    snowCover = 0,
-    particles = [];
-
-let houseWindowOpen = !!saved.windowOpen;
-let furniture = ['sofa', 'smart TV', 'bookshelf', 'plant', 'bed', 'dining table'];
-let placed = saved.placed || ['sofa', 'smart TV', 'bed', 'plant'];
-let furnitureIndex = 0;
-
-const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
-const rnd = (a, b) => a + Math.random() * (b - a);
-
-const land = { cx: 1050, cy: 980, rx: 930, ry: 760 };
-
-const traders = [
-  { name: 'Ravi', x: 2210, y: 790, color: '#f0bc72', goods: 'rare seeds, polished shells and seaside decorations' },
-  { name: 'Mira', x: 2460, y: 1120, color: '#dba6d5', goods: 'fruit baskets and flower bundles' },
-  { name: 'Tao', x: 2050, y: 1430, color: '#9fd4df', goods: 'furniture, lamps and little surprises' }
-];
-
-const citizens = [
-  { name: 'Luna', x: 790, y: 770, shirt: '#e6a7c5', line: 'The sea looks extra sparkly today. Have you visited the harbour?' },
-  { name: 'Milo', x: 1190, y: 820, shirt: '#8abce8', line: 'I heard Ravi has arrived with a special delivery!' },
-  { name: 'Ava', x: 650, y: 1080, shirt: '#f1c36f', line: 'I am collecting flowers for the town square.' },
-  { name: 'Noah', x: 1270, y: 1120, shirt: '#9bcf9b', line: 'A good home needs a cosy corner and a window with a view.' },
-  { name: 'Oliver', x: 930, y: 590, shirt: '#c2a4e6', line: 'The weather changes quickly on this island. Keep an eye on the sky!' },
-  { name: 'Emma', x: 1420, y: 990, shirt: '#efa18c', line: 'I love when the travelling traders visit.' }
-];
-
-const trees = [];
-for (let i = 0; i < 90; i++) {
-  let a = rnd(0, Math.PI * 2), r = Math.sqrt(Math.random());
-  let x = land.cx + Math.cos(a) * land.rx * r * 0.88;
-  let y = land.cy + Math.sin(a) * land.ry * r * 0.88;
-  if (Math.hypot(x - 1050, y - 950) > 250 && Math.hypot(x - 530, y - 720) > 150 && Math.hypot(x - 1450, y - 1000) > 140)
-    trees.push({ x, y, s: rnd(0.75, 1.3), tone: Math.random() });
+function openFurniture(){
+ let html='<div class="shop-grid">';
+ furnitureCatalog.forEach((f,i)=>{
+  const owned=game.furnitureOwned.includes(f.name);
+  html+=`<div class="shop-btn"><span>${f.icon}</span><b>${f.name}</b><span class="chip">${owned?'OWNED':f.cost+'🪙'}</span>
+  <button class="primary" style="margin-top:6px;padding:5px 8px;font-size:11px" data-action="buyFurniture" data-index="${i}" ${owned||game.coins<f.cost?'disabled':''}>Buy</button></div>`;
+ });
+ html+='</div>';
+ showModal('🛋️ Island Furniture Studio',html);
 }
 
-const flowers = [];
-for (let i = 0; i < 110; i++) {
-  let a = rnd(0, Math.PI * 2), r = Math.sqrt(Math.random());
-  flowers.push({
-    x: land.cx + Math.cos(a) * land.rx * r * 0.85,
-    y: land.cy + Math.sin(a) * land.ry * r * 0.85,
-    c: ['#fff0a6', '#f5b6da', '#d8c5ff', '#ffffff'][i % 4]
-  });
+function buyFurniture(idx){
+ const item=furnitureCatalog[idx];
+ if(item&&game.coins>=item.cost&&!game.furnitureOwned.includes(item.name)){
+  game.coins-=item.cost;
+  game.furnitureOwned.push(item.name);
+  game.placedFurniture.push({name:item.name,x:300+(idx*45)%300,y:250+(idx*35)%200});
+  SoundFX.coin();
+  openFurniture();
+  updateUI();
+  saveGame();
+ }
 }
 
-function save() {
-  try {
-    localStorage.setItem(saveKey, JSON.stringify({
-      name: player.name,
-      x: player.x,
-      y: player.y,
-      wood: player.wood,
-      berries: player.berries,
-      flowers: player.flowers,
-      day,
-      gameMinute,
-      windowOpen: houseWindowOpen,
-      placed
-    }));
-  } catch(e) {}
-}
-setInterval(save, 5000);
-
-function toast(t, ms = 2400) {
-  const el = document.getElementById('toast');
-  el.textContent = t;
-  el.classList.add('show');
-  clearTimeout(toastTimer);
-  toastTimer = setTimeout(() => el.classList.remove('show'), ms);
+function openNoticeBoard(){
+ let html='<p>Daily island requests from town hall:</p>';
+ game.dailyQuests.forEach((dq,i)=>{
+  html+=`<div class="list-card"><div><b>${dq.title}</b><div style="font-size:11px;color:#c0ded0">${dq.desc}</div></div>
+  <button class="primary" data-action="claimDaily" data-index="${i}" ${dq.claimed?'disabled':''}>${dq.claimed?'CLAIMED':'+'+dq.reward+'🪙'}</button></div>`;
+ });
+ showModal('📌 Island Notice Board',html);
 }
 
-function showDialog(title, text) {
-  dialogOpen = true;
-  IslandAudio.chime();
-  document.getElementById('dialogTitle').textContent = title;
-  document.getElementById('dialogText').textContent = text;
-  document.getElementById('dialog').style.display = 'block';
+function claimDailyQuest(idx){
+ const dq=game.dailyQuests[idx];
+ if(dq&&!dq.claimed){
+  dq.claimed=true;
+  game.coins+=dq.reward;
+  SoundFX.quest();
+  openNoticeBoard();
+  updateUI();
+  saveGame();
+ }
 }
 
-function closeDialog() {
-  dialogOpen = false;
-  document.getElementById('dialog').style.display = 'none';
-}
-document.getElementById('dialogOk').onclick = closeDialog;
-
-function dist(a, b) { return Math.hypot(a.x - b.x, a.y - b.y); }
-function screenX(x, cx) { return x - cx + W / 2; }
-function screenY(y, cy) { return y - cy + H / 2; }
-
-function camera() {
-  if (boatMode) return { x: boat.x, y: boat.y };
-  return {
-    x: clamp(player.x, W / 2, WORLD.w - W / 2),
-    y: clamp(player.y, H / 2, WORLD.h - H / 2)
-  };
+function openBag(){
+ let html='<div class="shop-grid">';
+ ['wood','berries','flowers'].forEach(r=>{
+  html+=`<div class="shop-btn"><span>${r==='wood'?'🪵':r==='berries'?'🫐':'🌷'}</span><b>${r.toUpperCase()}</b><span class="chip">${game.inventory[r]||0} in Bag</span></div>`;
+ });
+ html+='</div>';
+ showModal('🎒 Inventory Backpack',html);
 }
 
-// Dynamic Shoreline Waves & Water
-function drawWater(cx, cy) {
-  ctx.fillStyle = '#4fa9b8';
-  ctx.fillRect(0, 0, W, H);
-  const t = performance.now() / 1000;
-
-  // Ocean wave curves
-  for (let y = -50; y < H + 60; y += 60) {
-    for (let x = -30; x < W + 60; x += 110) {
-      let xx = x + Math.sin(t * 0.5 + y * 0.01) * 16;
-      let yy = y + Math.cos(t * 0.4 + x * 0.01) * 6;
-      ctx.strokeStyle = 'rgba(235, 255, 250, 0.22)';
-      ctx.lineWidth = 2.5;
-      ctx.beginPath();
-      ctx.moveTo(xx, yy);
-      ctx.quadraticCurveTo(xx + 22, yy - 6, xx + 44, yy);
-      ctx.stroke();
-    }
-  }
-
-  // Draw Boat Wake Trails
-  for (let i = boatWake.length - 1; i >= 0; i--) {
-    const w = boatWake[i];
-    const sx = screenX(w.x, cx), sy = screenY(w.y, cy);
-    ctx.fillStyle = `rgba(255, 255, 255, ${w.alpha})`;
-    ctx.beginPath();
-    ctx.arc(sx, sy, w.r, 0, Math.PI * 2);
-    ctx.fill();
-    w.r += 0.4;
-    w.alpha -= 0.012;
-    if (w.alpha <= 0) boatWake.splice(i, 1);
-  }
+function openJournal(){
+ let html='<p>Active and past goals across Meadow Drift:</p>';
+ game.quests.forEach(q=>{
+  html+=`<div class="quest"><div class="quest-top"><span>${q.title}</span><span>${q.done?'✅ COMPLETE':'+'+q.reward+'🪙'}</span></div><div class="quest-desc">${q.desc}</div></div>`;
+ });
+ showModal('📜 Quest Journal',html);
 }
 
-// Island with Animated Shoreline Foam
-function drawIsland(cx, cy) {
-  const x = screenX(land.cx, cx), y = screenY(land.cy, cy);
-  const waveCycle = Math.sin(performance.now() / 800) * 6;
-
-  ctx.save();
-  ctx.translate(x, y);
-
-  // Shoreline White Foam Wave
-  ctx.fillStyle = 'rgba(255, 255, 255, 0.4)';
-  ctx.beginPath();
-  ctx.ellipse(0, 0, land.rx + 34 + waveCycle, land.ry + 30 + waveCycle, 0, 0, Math.PI * 2);
-  ctx.fill();
-
-  // Sandy Beach
-  ctx.fillStyle = '#e8d59b';
-  ctx.beginPath();
-  ctx.ellipse(0, 0, land.rx + 24, land.ry + 22, 0, 0, Math.PI * 2);
-  ctx.fill();
-
-  // Lush Green Meadow
-  ctx.fillStyle = wetUntil > Date.now() ? '#5b9666' : '#73b26c';
-  ctx.beginPath();
-  ctx.ellipse(0, 0, land.rx, land.ry, 0, 0, Math.PI * 2);
-  ctx.fill();
-  ctx.restore();
-
-  // Cobblestone Walking Paths
-  ctx.lineCap = 'round';
-  ctx.strokeStyle = '#dfcba2';
-  ctx.lineWidth = 55;
-  ctx.beginPath();
-  ctx.moveTo(screenX(710, cx), screenY(990, cy));
-  ctx.quadraticCurveTo(screenX(920, cx), screenY(880, cy), screenX(1100, cx), screenY(930, cy));
-  ctx.quadraticCurveTo(screenX(1280, cx), screenY(1000, cy), screenX(1430, cx), screenY(870, cy));
-  ctx.stroke();
-
-  ctx.lineWidth = 32;
-  ctx.strokeStyle = '#f3e3be';
-  ctx.stroke();
-
-  ctx.beginPath();
-  ctx.moveTo(screenX(1080, cx), screenY(930, cy));
-  ctx.quadraticCurveTo(screenX(1280, cx), screenY(780, cy), screenX(1430, cx), screenY(720, cy));
-  ctx.stroke();
+function enterHome(){
+ SoundFX.door();
+ inside=true;
+ player.x=480;player.y=480;
+ $('homeQuickBtn').textContent='Exit Home';
+ $('locationTag').textContent='🏠 '+game.customHome.name;
+ showMessage('Home Sweet Home','Press E near bed to sleep & restore energy, or re-arrange your furniture.');
 }
 
-// Swaying Trees in Wind
-function drawTree(t, cx, cy) {
-  const x = screenX(t.x, cx), y = screenY(t.y, cy), s = t.s;
-  if (x < -80 || x > W + 80 || y < -100 || y > H + 100) return;
-
-  const sway = Math.sin(performance.now() / 1200 + t.x * 0.05) * 3 * s;
-
-  ctx.fillStyle = '#684531';
-  ctx.fillRect(x - 5 * s, y + 8 * s, 10 * s, 24 * s);
-
-  ctx.fillStyle = t.tone > 0.5 ? '#2f744d' : '#3f8558';
-  ctx.beginPath();
-  ctx.arc(x + sway, y, 26 * s, 0, Math.PI * 2);
-  ctx.arc(x - 16 * s + sway, y + 6 * s, 19 * s, 0, Math.PI * 2);
-  ctx.arc(x + 16 * s + sway, y + 7 * s, 18 * s, 0, Math.PI * 2);
-  ctx.fill();
-
-  ctx.fillStyle = 'rgba(215, 255, 180, 0.3)';
-  ctx.beginPath();
-  ctx.arc(x - 8 * s + sway, y - 9 * s, 9 * s, 0, Math.PI * 2);
-  ctx.fill();
+function exitHome(){
+ SoundFX.door();
+ inside=false;
+ player.x=780;player.y=240;
+ $('homeQuickBtn').textContent='Enter Home';
+ $('locationTag').textContent='📍 Meadow Square';
 }
 
-function drawBuilding(x, y, w, h, label, kind, cx, cy) {
-  const sx = screenX(x, cx), sy = screenY(y, cy);
-
-  ctx.fillStyle = 'rgba(0, 0, 0, 0.15)';
-  ctx.fillRect(sx + 8, sy + 14, w, h);
-
-  ctx.fillStyle = kind === 'home' ? '#f5e4c6' : kind === 'market' ? '#f3cd88' : '#dbe8d3';
-  ctx.fillRect(sx, sy, w, h);
-
-  // Roof
-  ctx.fillStyle = kind === 'home' ? '#c46d4c' : kind === 'market' ? '#bf5348' : '#578369';
-  ctx.beginPath();
-  ctx.moveTo(sx - 12, sy + 5);
-  ctx.lineTo(sx + w / 2, sy - 44);
-  ctx.lineTo(sx + w + 12, sy + 5);
-  ctx.closePath();
-  ctx.fill();
-
-  // Door
-  ctx.fillStyle = '#5c3e2e';
-  ctx.fillRect(sx + w / 2 - 14, sy + h - 44, 28, 44);
-
-  // Windows with Warm Glow
-  const hour = Math.floor((gameMinute % 1440) / 60);
-  const isDark = hour < 6 || hour >= 19;
-  ctx.fillStyle = isDark ? '#ffe27a' : '#bfe8ea';
-  ctx.fillRect(sx + 18, sy + 25, 26, 26);
-  ctx.fillRect(sx + w - 44, sy + 25, 26, 26);
-
-  ctx.fillStyle = '#1c4033';
-  ctx.font = 'bold 13px system-ui';
-  ctx.textAlign = 'center';
-  ctx.fillText(label, sx + w / 2, sy + h + 22);
+function interact(){
+ if(modalOpen){closeModal();return;}
+ if(inside){
+  if(player.y>510){exitHome();return;}
+  if(Math.hypot(player.x-750,player.y-220)<80){
+   // Sleep in bed
+   game.day++;
+   game.energy=100;
+   game.clockMinutes=480;
+   SoundFX.quest();
+   showMessage('Restful Sleep',`Good morning! Day ${game.day} begins on Meadow Drift with 100% energy.`);
+   updateUI();
+   saveGame();
+   return;
+  }
+  showMessage('Interior','Decorate your 4-room villa or rest on the bed.');
+  return;
+ }
+ const n=getNearby();
+ if(!n){showMessage('Meadow Island','Nothing to interact with right here. Stroll around!');return;}
+ if(n.kind==='citizen')talkToCitizen(n.data);
+ else if(n.kind==='trader')talkToTrader();
+ else if(n.kind==='resource')harvestResource(n.data);
+ else if(n.kind==='landmark'){
+  if(n.data.action==='enterHome')enterHome();
+  else if(n.data.action==='market')openMarket();
+  else if(n.data.action==='estate')openEstate();
+  else if(n.data.action==='noticeBoard')openNoticeBoard();
+ }
 }
 
-function drawDock(cx, cy) {
-  const x = screenX(1450, cx), y = screenY(900, cy);
-  ctx.fillStyle = '#8f643f';
-  ctx.fillRect(x, y, 170, 30);
-
-  for (let i = 0; i < 8; i++) {
-    ctx.fillStyle = '#b18051';
-    ctx.fillRect(x + i * 22, y, 18, 30);
-  }
-
-  ctx.fillStyle = '#6b4c32';
-  ctx.fillRect(x + 5, y + 26, 12, 28);
-  ctx.fillRect(x + 150, y + 26, 12, 28);
-
-  ctx.fillStyle = '#fff0c9';
-  ctx.font = 'bold 12px system-ui';
-  ctx.fillText('HARBOUR', x + 85, y - 10);
+// Drawing Island and Environment
+function drawWater(t){
+ ctx.fillStyle='#72c4d0';ctx.fillRect(0,0,W,H);
+ for(let row=0;row<9;row++){
+  const y=25+row*72+(Math.sin(t*.0006+row)*5);
+  ctx.strokeStyle='rgba(236,255,239,.23)';ctx.lineWidth=2;ctx.beginPath();
+  for(let x=-20;x<=W+20;x+=8){const yy=y+Math.sin(x*.022+t*.0012+row)*4;if(x===-20)ctx.moveTo(x,yy);else ctx.lineTo(x,yy);}ctx.stroke();
+ }
+ for(let i=0;i<22;i++){const x=(i*137+Math.sin(t*.0003+i)*23)%W;const y=(i*83+30)%H;ctx.fillStyle='rgba(255,255,255,.12)';ctx.beginPath();ctx.ellipse(x,y,10,3,-.2,0,Math.PI*2);ctx.fill();}
 }
 
-function drawBoat(x, y, name, cx, cy, isPlayer = false) {
-  const sx = screenX(x, cx), sy = screenY(y, cy);
-  ctx.save();
-  ctx.translate(sx, sy);
-  ctx.rotate(isPlayer ? boatDir : Math.sin(performance.now() / 1800 + y) * 0.03);
+function islandPath(){ctx.beginPath();ctx.moveTo(82,100);ctx.bezierCurveTo(165,40,335,48,435,70);ctx.bezierCurveTo(580,28,770,58,867,115);ctx.bezierCurveTo(942,165,934,360,884,472);ctx.bezierCurveTo(838,570,690,585,553,565);ctx.bezierCurveTo(405,602,198,565,104,500);ctx.bezierCurveTo(26,444,30,230,82,100);ctx.closePath();}
 
-  // Hull
-  ctx.fillStyle = '#573b2d';
-  ctx.beginPath();
-  ctx.moveTo(-44, 0);
-  ctx.lineTo(-30, 20);
-  ctx.lineTo(36, 20);
-  ctx.lineTo(48, 0);
-  ctx.closePath();
-  ctx.fill();
+function drawIsland(){
+ const wave = Math.sin(performance.now() * 0.003) * 4;
+ ctx.save();
+ islandPath();ctx.lineWidth=37+wave;ctx.strokeStyle='rgba(255,255,255,0.45)';ctx.stroke();
+ islandPath();ctx.lineWidth=27;ctx.strokeStyle='#e8d59b';ctx.stroke();
+ ctx.fillStyle='#91c978';ctx.fill();ctx.lineWidth=4;ctx.strokeStyle='#5d9e67';ctx.stroke();
+ ctx.restore();
 
-  ctx.fillStyle = '#dca76a';
-  ctx.fillRect(-34, -7, 68, 14);
-
-  // Mast
-  ctx.strokeStyle = '#634e38';
-  ctx.lineWidth = 3;
-  ctx.beginPath();
-  ctx.moveTo(0, -6);
-  ctx.lineTo(0, -56);
-  ctx.stroke();
-
-  // Sail
-  ctx.fillStyle = isPlayer ? '#fff7db' : '#f8ebd2';
-  ctx.beginPath();
-  ctx.moveTo(3, -52);
-  ctx.lineTo(36, -16);
-  ctx.lineTo(3, -16);
-  ctx.closePath();
-  ctx.fill();
-
-  ctx.fillStyle = '#163d35';
-  ctx.font = 'bold 12px system-ui';
-  ctx.textAlign = 'center';
-  ctx.fillText(name, 0, 38);
-  ctx.restore();
+ // Grass tufts
+ for(let i=0;i<85;i++){const x=75+(i*97)%810,y=92+(i*53)%450;const nx=(x-480)/445,ny=(y-315)/285;if(nx*nx+ny*ny<.92){ctx.strokeStyle=i%3?'#74b66b':'#a8d77e';ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(x,y);ctx.lineTo(x+3,y-6);ctx.moveTo(x+4,y);ctx.lineTo(x+7,y-5);ctx.stroke();}}
+ // Cobblestone trails
+ ctx.lineCap='round';ctx.lineJoin='round';ctx.strokeStyle='#d8c58f';ctx.lineWidth=42;ctx.beginPath();ctx.moveTo(180,290);ctx.bezierCurveTo(310,285,350,305,480,305);ctx.bezierCurveTo(615,305,700,285,780,290);ctx.stroke();
+ ctx.beginPath();ctx.moveTo(480,210);ctx.bezierCurveTo(480,275,470,350,480,500);ctx.stroke();
+ ctx.strokeStyle='#f0dfb5';ctx.lineWidth=3;ctx.setLineDash([8,12]);ctx.beginPath();ctx.moveTo(180,290);ctx.bezierCurveTo(310,285,350,305,480,305);ctx.bezierCurveTo(615,305,700,285,780,290);ctx.stroke();ctx.setLineDash([]);
+ // Pond
+ ctx.fillStyle='#69bdc5';ctx.beginPath();ctx.ellipse(720,330,62,35,-.2,0,Math.PI*2);ctx.fill();ctx.strokeStyle='#d8d18c';ctx.lineWidth=6;ctx.stroke();
+ ctx.fillStyle='#d0e8ad';ctx.beginPath();ctx.ellipse(715,325,26,8,-.2,0,Math.PI*2);ctx.fill();
+ // Flowers
+ for(let i=0;i<27;i++){const x=90+(i*149)%780,y=100+(i*71)%445;ctx.fillStyle=['#f5c6d6','#fff0a5','#e7c4f0'][i%3];ctx.beginPath();ctx.arc(x,y,3,0,Math.PI*2);ctx.fill();ctx.fillStyle='#e3b85b';ctx.beginPath();ctx.arc(x,y,1.3,0,Math.PI*2);ctx.fill();}
 }
 
-// Character Rendering with Walking Leg Cycle
-function drawPerson(p, cx, cy, isPlayer = false) {
-  const x = screenX(p.x, cx), y = screenY(p.y, cy);
-  if (x < -50 || x > W + 50 || y < -60 || y > H + 60) return;
-
-  const walkOffset = isPlayer ? Math.sin(player.walkTimer) * 4 : 0;
-
-  // Shadow
-  ctx.fillStyle = 'rgba(0, 0, 0, 0.18)';
-  ctx.beginPath();
-  ctx.ellipse(x, y + 14, 13, 6, 0, 0, Math.PI * 2);
-  ctx.fill();
-
-  // Torso / Shirt
-  ctx.fillStyle = isPlayer ? '#3472c9' : p.shirt;
-  ctx.beginPath();
-  ctx.roundRect(x - 10, y - 9, 20, 22, 6);
-  ctx.fill();
-
-  // Legs / Feet
-  ctx.fillStyle = '#2c3e50';
-  ctx.fillRect(x - 8, y + 11 + walkOffset, 6, 7);
-  ctx.fillRect(x + 2, y + 11 - walkOffset, 6, 7);
-
-  // Head
-  ctx.fillStyle = '#f6cca6';
-  ctx.beginPath();
-  ctx.arc(x, y - 17, 9, 0, Math.PI * 2);
-  ctx.fill();
-
-  // Hair
-  ctx.fillStyle = '#452b22';
-  ctx.beginPath();
-  ctx.arc(x, y - 21, 9, Math.PI, Math.PI * 2);
-  ctx.fill();
-
-  if (isPlayer) {
-    ctx.fillStyle = '#133a32';
-    ctx.font = 'bold 12px system-ui';
-    ctx.textAlign = 'center';
-    ctx.fillText(player.name, x, y - 34);
-  }
+function drawTree(x,y,scale=1){
+ const sway = Math.sin(performance.now() * 0.002 + x * 0.05) * 3 * scale;
+ ctx.fillStyle='#0002';ctx.beginPath();ctx.ellipse(x,y+13,28*scale,8*scale,0,0,Math.PI*2);ctx.fill();
+ ctx.fillStyle='#875a3b';ctx.fillRect(x-5*scale,y-25*scale,10*scale,38*scale);
+ [[-15,-30,22,'#4f995c'],[10,-34,24,'#65aa61'],[-1,-53,22,'#78b96a'],[-25,-43,16,'#5ca35f']].forEach(a=>{
+  ctx.fillStyle=a[3];ctx.beginPath();ctx.arc(x+(a[0]+sway)*scale,y+a[1]*scale,a[2]*scale,0,Math.PI*2);ctx.fill();
+ });
 }
 
-// 24-Hour Ambient Day/Night Lighting Filter
-function drawDayNightLighting() {
-  const total = ((gameMinute % 1440) + 1440) % 1440;
-  const hour = total / 60;
-  let color = 'transparent';
-
-  // Dawn (05:00 - 08:00)
-  if (hour >= 5 && hour < 8) {
-    const t = (hour - 5) / 3;
-    color = `rgba(255, 180, 110, ${0.28 * (1 - t)})`;
-  }
-  // Sunset / Golden Hour (17:00 - 20:00)
-  else if (hour >= 17 && hour < 20) {
-    const t = (hour - 17) / 3;
-    color = `rgba(235, 100, 60, ${0.35 * t})`;
-  }
-  // Night / Starlight (20:00 - 05:00)
-  else if (hour >= 20 || hour < 5) {
-    color = 'rgba(10, 22, 45, 0.48)';
-  }
-
-  if (color !== 'transparent') {
-    ctx.fillStyle = color;
-    ctx.fillRect(0, 0, W, H);
-  }
+function drawBuilding(kind,x,y){
+ ctx.fillStyle='#0002';ctx.beginPath();ctx.ellipse(x,y+28,73,17,0,0,Math.PI*2);ctx.fill();
+ if(kind==='market'){
+  ctx.fillStyle='#e9d7ad';ctx.fillRect(x-56,y-5,112,47);ctx.fillStyle='#a86c48';ctx.fillRect(x-61,y-8,122,9);
+  ctx.fillStyle='#fff1d3';ctx.fillRect(x-51,y+4,102,33);
+  ctx.fillStyle='#d78a61';ctx.fillRect(x-52,y-29,104,25);
+  for(let i=0;i<5;i++){ctx.fillStyle=i%2?'#f2d89b':'#cf715d';ctx.fillRect(x-52+i*21,y-29,10,24);}
+  ctx.fillStyle='#76523b';ctx.fillRect(x-15,y+7,30,29);
+  ctx.font='bold 12px Arial';ctx.fillStyle='#fff';ctx.textAlign='center';ctx.fillText('MARKET',x,y-38);ctx.textAlign='left';
+ }else if(kind==='estateOffice'){
+  ctx.fillStyle='#f1e9d4';ctx.fillRect(x-60,y-27,120,66);ctx.fillStyle='#5e927f';ctx.fillRect(x-66,y-34,132,12);
+  ctx.fillStyle='#9accc0';ctx.fillRect(x-47,y-15,27,29);ctx.fillRect(x+20,y-15,27,29);ctx.fillStyle='#fff2ce';ctx.fillRect(x-12,y+2,24,37);
+  ctx.font='bold 12px Arial';ctx.fillStyle='#fff';ctx.textAlign='center';ctx.fillText('ESTATE OFFICE',x,y-44);ctx.textAlign='left';
+ }else if(kind==='home'){
+  ctx.fillStyle='#f6e2bd';ctx.fillRect(x-62,y-25,124,64);ctx.fillStyle='#b85e4a';ctx.fillRect(x-68,y-32,136,12);
+  ctx.fillStyle='#7a4c33';ctx.fillRect(x-14,y+3,28,36);
+  ctx.fillStyle='#bce7ea';ctx.fillRect(x-48,y-12,24,24);ctx.fillRect(x+24,y-12,24,24);
+  ctx.font='bold 12px Arial';ctx.fillStyle='#fff';ctx.textAlign='center';ctx.fillText(game.customHome.name,x,y-42);ctx.textAlign='left';
+ }
 }
 
-function drawOutside(cx, cy) {
-  drawWater(cx, cy);
-  drawIsland(cx, cy);
-
-  // Swaying Flowers
-  for (const f of flowers) {
-    const x = screenX(f.x, cx), y = screenY(f.y, cy);
-    if (x > -8 && x < W + 8 && y > -8 && y < H + 8) {
-      const fSway = Math.sin(performance.now() / 900 + f.x) * 1.5;
-      ctx.fillStyle = f.c;
-      ctx.beginPath();
-      ctx.arc(x + fSway, y, 3.5, 0, Math.PI * 2);
-      ctx.fill();
-    }
-  }
-
-  for (const t of trees) drawTree(t, cx, cy);
-
-  drawBuilding(850, 700, 210, 175, 'YOUR HOME', 'home', cx, cy);
-  drawBuilding(570, 850, 150, 120, 'MARKET', 'market', cx, cy);
-  drawBuilding(1210, 650, 175, 135, 'ESTATE OFFICE', 'office', cx, cy);
-  drawBuilding(1270, 1070, 170, 130, 'FURNITURE', 'shop', cx, cy);
-  drawDock(cx, cy);
-
-  if (!boatMode) drawBoat(boat.x, boat.y, 'YOUR BOAT', cx, cy, true);
-
-  traders.forEach(t => {
-    drawBoat(t.x, t.y, t.name + ' · TRADER', cx, cy, false);
-    const sx = screenX(t.x, cx), sy = screenY(t.y, cy);
-    ctx.fillStyle = '#143d36';
-    ctx.font = '11px system-ui';
-    ctx.textAlign = 'center';
-    ctx.fillText('E: talk to ' + t.name, sx, sy + 54);
-  });
-
-  const currentHour = Math.floor((gameMinute % 1440) / 60);
-  if (currentHour >= 6 && currentHour < 18) {
-    citizens.forEach(p => drawPerson(p, cx, cy));
-  }
-
-  if (boatMode) drawBoat(boat.x, boat.y, player.name, cx, cy, true);
-  else drawPerson(player, cx, cy, true);
-
-  // Harvest / Wind Particles
-  for (let i = particles.length - 1; i >= 0; i--) {
-    const p = particles[i];
-    const sx = screenX(p.x, cx), sy = screenY(p.y, cy);
-    ctx.fillStyle = p.c;
-    ctx.beginPath();
-    ctx.arc(sx, sy, p.r, 0, Math.PI * 2);
-    ctx.fill();
-    p.x += p.vx;
-    p.y += p.vy;
-    p.life--;
-    if (p.life <= 0) particles.splice(i, 1);
-  }
-
-  if (snowCover > 0) {
-    ctx.fillStyle = `rgba(237, 249, 255, ${Math.min(0.35, snowCover * 0.22)})`;
-    ctx.fillRect(0, 0, W, H);
-  }
-
-  drawDayNightLighting();
+function drawPerson(x,y,name,color,hair,isPlayer=false,bob=0,hasQuest=false){
+ const lift=Math.sin(bob)*2;
+ ctx.fillStyle='#0002';ctx.beginPath();ctx.ellipse(x,y+5,15,6,0,0,Math.PI*2);ctx.fill();
+ ctx.fillStyle=isPlayer?'#355eab':color;ctx.beginPath();ctx.roundRect(x-10,y-22+lift,20,23,7);ctx.fill();
+ ctx.fillStyle='#f3c9a5';ctx.beginPath();ctx.arc(x,y-31+lift,9,0,Math.PI*2);ctx.fill();
+ ctx.fillStyle=hair;ctx.beginPath();ctx.arc(x,y-35+lift,9,Math.PI,Math.PI*2);ctx.fill();ctx.fillRect(x-9,y-35+lift,4,8);
+ if(isPlayer){ctx.fillStyle='#f1d57c';ctx.fillRect(x-8,y-48+lift,16,5);ctx.fillRect(x-5,y-54+lift,10,7);}
+ ctx.font='bold 12px Arial';ctx.textAlign='center';ctx.lineWidth=3;ctx.strokeStyle='#f1f4d8';ctx.strokeText(name,x,y-57+lift);ctx.fillStyle='#284a38';ctx.fillText(name,x,y-57+lift);
+ if(hasQuest){ctx.fillStyle='#f5dc8e';ctx.beginPath();ctx.arc(x+14,y-48+lift,9,0,Math.PI*2);ctx.fill();ctx.fillStyle='#3b4a31';ctx.font='bold 11px Arial';ctx.fillText('!',x+14,y-44+lift);}
+ ctx.textAlign='left';
 }
 
-// Fixed 4-Room House Interior Rendering
-function drawInterior() {
-  ctx.fillStyle = '#d3b991';
-  ctx.fillRect(0, 0, W, H);
-
-  const margin = Math.min(50, W * 0.08);
-  const x = margin, y = margin + 20, w = W - 2 * margin, h = H - 2 * margin - 30;
-
-  // Floor Planks
-  ctx.fillStyle = '#f4e8cf';
-  ctx.fillRect(x, y, w, h);
-
-  // Perimeter Walls
-  ctx.strokeStyle = '#7c543f';
-  ctx.lineWidth = 14;
-  ctx.strokeRect(x, y, w, h);
-
-  // Room Dividers
-  ctx.strokeStyle = '#b8946e';
-  ctx.lineWidth = 5;
-  ctx.beginPath();
-  ctx.moveTo(x + w / 2, y); ctx.lineTo(x + w / 2, y + h);
-  ctx.moveTo(x, y + h / 2); ctx.lineTo(x + w, y + h / 2);
-  ctx.stroke();
-
-  // Room Name Headings
-  ctx.fillStyle = '#496153';
-  ctx.font = 'bold 15px system-ui';
-  ctx.textAlign = 'left';
-  ctx.fillText('LIVING ROOM', x + 25, y + 28);
-  ctx.fillText('BEDROOM', x + w / 2 + 25, y + 28);
-  ctx.fillText('KITCHEN', x + 25, y + h / 2 + 28);
-  ctx.fillText('STUDY & HOBBY ROOM', x + w / 2 + 25, y + h / 2 + 28);
-
-  // House Window
-  ctx.fillStyle = houseWindowOpen ? '#74c8d5' : '#a4cdd2';
-  ctx.fillRect(x + w / 2 - 44, y - 2, 88, 16);
-  ctx.strokeStyle = '#fff7dd';
-  ctx.lineWidth = 4;
-  ctx.strokeRect(x + w / 2 - 44, y - 2, 88, 16);
-
-  ctx.fillStyle = '#6e9f7d';
-  ctx.font = '12px system-ui';
-  ctx.fillText(houseWindowOpen ? 'Window open · fresh sea breeze' : 'Window closed · press E near window', x + 15, y + h - 14);
-
-  // Furniture Renderers
-  function sofa(px, py) {
-    ctx.fillStyle = '#507d71'; ctx.fillRect(px, py, 115, 48);
-    ctx.fillStyle = '#8cb6a4'; ctx.fillRect(px + 8, py + 7, 99, 32);
-    ctx.fillStyle = '#e6d1a4'; ctx.fillRect(px + 15, py + 12, 25, 20); ctx.fillRect(px + 48, py + 12, 25, 20);
-  }
-  function tv(px, py) {
-    ctx.fillStyle = '#553e33'; ctx.fillRect(px, py, 92, 54);
-    ctx.fillStyle = '#172e37'; ctx.fillRect(px + 6, py + 5, 80, 40);
-    ctx.fillStyle = '#5eb4bd'; ctx.fillRect(px + 14, py + 12, 64, 25);
-    ctx.fillStyle = '#553e33'; ctx.fillRect(px + 37, py + 54, 18, 8);
-  }
-  function bed(px, py) {
-    ctx.fillStyle = '#83634e'; ctx.fillRect(px, py, 112, 75);
-    ctx.fillStyle = '#f5eedc'; ctx.fillRect(px + 7, py + 7, 98, 61);
-    ctx.fillStyle = '#9eb7d2'; ctx.fillRect(px + 12, py + 12, 40, 22);
-    ctx.fillStyle = '#d18d83'; ctx.fillRect(px + 58, py + 12, 40, 22);
-  }
-  function plant(px, py) {
-    ctx.fillStyle = '#a95f49'; ctx.fillRect(px - 10, py + 18, 22, 20);
-    ctx.strokeStyle = '#447d53'; ctx.lineWidth = 5;
-    ctx.beginPath(); ctx.moveTo(px, py + 20); ctx.lineTo(px, py - 20); ctx.stroke();
-    ctx.fillStyle = '#5c9e69';
-    for (let i = -1; i <= 1; i++) {
-      ctx.beginPath(); ctx.ellipse(px + i * 12, py - 14 - Math.abs(i) * 5, 10, 5, i * 0.5, 0, Math.PI * 2); ctx.fill();
-    }
-  }
-  function table(px, py) {
-    ctx.fillStyle = '#9a6d48'; ctx.fillRect(px, py, 96, 55);
-    ctx.fillStyle = '#d4a675'; ctx.fillRect(px + 5, py + 5, 86, 45);
-    ctx.fillStyle = '#7e5940'; ctx.fillRect(px + 10, py + 52, 8, 18); ctx.fillRect(px + 78, py + 52, 8, 18);
-  }
-  function shelf(px, py) {
-    ctx.fillStyle = '#966b4c'; ctx.fillRect(px, py, 78, 74);
-    for (let i = 0; i < 3; i++) {
-      ctx.fillStyle = ['#d99b64', '#85bba0', '#c69bd4'][i];
-      ctx.fillRect(px + 9 + i * 20, py + 8, 14, 24);
-      ctx.fillStyle = '#6f4d38';
-      ctx.fillRect(px + 5, py + 36 + i * 2, 68, 5);
-    }
-  }
-
-  const positions = {
-    'sofa': [x + 35, y + 70],
-    'smart TV': [x + 190, y + 75],
-    'bed': [x + w / 2 + 40, y + 80],
-    'plant': [x + 45, y + h / 2 + 90],
-    'dining table': [x + 180, y + h / 2 + 85],
-    'bookshelf': [x + w / 2 + 80, y + h / 2 + 80]
-  };
-
-  for (const item of placed) {
-    const p = positions[item];
-    if (!p) continue;
-    if (item === 'sofa') sofa(...p);
-    if (item === 'smart TV') tv(...p);
-    if (item === 'bed') bed(...p);
-    if (item === 'plant') plant(...p);
-    if (item === 'dining table') table(...p);
-    if (item === 'bookshelf') shelf(...p);
-  }
-
-  // FIXED: Draw player at actual player.inX and player.inY coordinates!
-  const px = player.inX, py = player.inY;
-  ctx.fillStyle = 'rgba(0, 0, 0, 0.16)';
-  ctx.beginPath();
-  ctx.ellipse(px, py + 14, 12, 5, 0, 0, Math.PI * 2);
-  ctx.fill();
-
-  ctx.fillStyle = '#3d76bd';
-  ctx.beginPath();
-  ctx.arc(px, py, 13, 0, Math.PI * 2);
-  ctx.fill();
-
-  ctx.fillStyle = '#f2c6a2';
-  ctx.beginPath();
-  ctx.arc(px, py - 17, 9, 0, Math.PI * 2);
-  ctx.fill();
-
-  ctx.fillStyle = '#153b35';
-  ctx.font = 'bold 12px system-ui';
-  ctx.textAlign = 'center';
-  ctx.fillText(player.name, px, py - 34);
-
-  ctx.fillStyle = '#244b3e';
-  ctx.font = 'bold 14px system-ui';
-  ctx.textAlign = 'center';
-  ctx.fillText('HOME · 4 ROOMS (Walk with WASD/Arrows)', W / 2, 24);
+function drawTimeLighting(){
+ const hour=Math.floor(game.clockMinutes/60);
+ if(hour>=20||hour<5){ctx.fillStyle='rgba(15,25,55,.36)';ctx.fillRect(0,0,W,H);}
+ else if(hour>=17&&hour<20){ctx.fillStyle='rgba(255,140,70,.14)';ctx.fillRect(0,0,W,H);}
+ else if(hour>=5&&hour<8){ctx.fillStyle='rgba(255,210,130,.10)';ctx.fillRect(0,0,W,H);}
 }
 
-function updateHUD() {
-  const total = ((gameMinute % 1440) + 1440) % 1440;
-  const h = Math.floor(total / 60), m = Math.floor(total % 60);
-
-  document.getElementById('clock').textContent =
-    (h >= 6 && h < 18 ? '☀️' : '🌙') + ' ' +
-    String(h).padStart(2, '0') + ':' +
-    String(m).padStart(2, '0') + ' · Day ' + day;
-
-  document.getElementById('weather').textContent =
-    weather === 'rain' ? '🌧️ Rain' :
-    weather === 'snow' ? '❄️ Snow' :
-    wetUntil > Date.now() ? '💧 Wet ground' : '🌤️ Clear';
-
-  document.getElementById('materials').textContent =
-    `🪵 ${player.wood} · 🍓 ${player.berries} · 🌼 ${player.flowers}`;
-
-  document.getElementById('location').textContent =
-    scene === 'inside' ? '🏡 Your Home' :
-    boatMode ? '🚤 At Sea' : '🏝️ Meadow Island';
+function drawWeather(t){
+ if(game.weather==='sunny')return;
+ if(game.weather==='cloudy'){
+  ctx.fillStyle='rgba(68,85,91,.10)';ctx.fillRect(0,0,W,H);
+  for(let i=0;i<5;i++){const x=(i*225+((t*.012)%180)-90);const y=58+(i%2)*26;ctx.fillStyle='rgba(241,247,245,.50)';ctx.beginPath();ctx.arc(x,y,24,0,Math.PI*2);ctx.arc(x+25,y-8,29,0,Math.PI*2);ctx.arc(x+53,y,23,0,Math.PI*2);ctx.fill();}
+  return;
+ }
+ ctx.fillStyle='rgba(39,61,81,.19)';ctx.fillRect(0,0,W,H);
+ for(let i=0;i<100;i++){
+  const x=(i*97+(t*.34))%(W+40)-20;const y=(i*59+(t*.72))%(H+50)-25;
+  ctx.strokeStyle='rgba(222,241,255,.62)';ctx.lineWidth=1.4;ctx.beginPath();ctx.moveTo(x,y);ctx.lineTo(x-5,y+15);ctx.stroke();
+ }
 }
 
-function nearest() {
-  if (scene === 'inside') return null;
-  const point = boatMode ? boat : player;
-  const opts = [];
+function drawHouse(t){
+ ctx.fillStyle='#d8c49a';ctx.fillRect(0,0,W,H);
+ ctx.fillStyle='#f3e7ca';ctx.fillRect(48,40,864,540);
+ ctx.fillStyle='#b17e59';ctx.fillRect(48,40,864,28);ctx.fillRect(48,40,24,540);ctx.fillRect(888,40,24,540);ctx.fillRect(48,556,864,24);
+ ctx.fillStyle='#d6b78a';ctx.fillRect(72,68,816,488);
+ for(let y=115;y<540;y+=70){ctx.strokeStyle='#c9a477';ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(75,y);ctx.lineTo(885,y);ctx.stroke();}
 
-  if (boatMode) {
-    traders.forEach(t => opts.push({ d: dist(point, t), type: 'trader', obj: t }));
-    opts.push({ d: Math.hypot(point.x - 1450, point.y - 900), type: 'dock' });
+ // Bed
+ ctx.fillStyle='#835f49';ctx.fillRect(700,160,110,95);
+ ctx.fillStyle='#f4eedb';ctx.fillRect(706,168,98,80);
+ ctx.fillStyle='#d87a6c';ctx.fillRect(712,174,40,26);
+
+ // Rug
+ ctx.fillStyle='#7aa893';ctx.beginPath();ctx.ellipse(480,310,90,55,0,0,Math.PI*2);ctx.fill();
+
+ // Placed furniture items
+ game.placedFurniture.forEach(f=>{
+  ctx.fillStyle='#2c4c3b';ctx.font='bold 14px Arial';
+  ctx.fillText(f.name==='Cozy Armchair'?'🛋️':f.name==='Vintage Bookshelf'?'📚':f.name==='Potted Monstera'?'🪴':f.name==='Retro TV'?'📺':'🪑',f.x,f.y);
+ });
+
+ drawPerson(player.x,player.y,game.name,'#355eab','#463b35',true,player.bob,false);
+}
+
+function drawWorld(t){
+ drawWater(t);drawIsland();
+ drawTree(80,160,.65);drawTree(890,145,.75);drawTree(880,540,.8);drawTree(95,540,.65);
+ drawBuilding('market',180,190);drawBuilding('estateOffice',480,185);drawBuilding('home',780,190);
+
+ if(traderIsHere()){
+  ctx.fillStyle='#8b6746';ctx.fillRect(646,168,88,48);
+  ctx.fillStyle='#f1d69b';ctx.fillRect(652,175,76,35);
+  ctx.font='bold 11px Arial';ctx.fillStyle='#fff';ctx.fillText('RAVI TRADER',655,160);
+  drawPerson(travellingTrader.x,travellingTrader.y,travellingTrader.name,travellingTrader.color,travellingTrader.hair,false,t*.005,true);
+ }
+
+ // Notice Board
+ ctx.fillStyle='#8c613f';ctx.fillRect(458,465,44,31);ctx.fillStyle='#e7d6a5';ctx.fillRect(462,468,36,21);ctx.fillStyle='#6b4933';ctx.font='bold 9px Arial';ctx.textAlign='center';ctx.fillText('NEWS',480,481);ctx.textAlign='left';
+
+ // Resource Nodes
+ resourceNodes.forEach(rn=>{
+  if(rn.id==='tree')drawTree(rn.x,rn.y,1.1);
+  else if(rn.id==='berries'){
+   ctx.fillStyle='#4f995c';ctx.beginPath();ctx.arc(rn.x,rn.y,22,0,Math.PI*2);ctx.fill();
+   for(let i=0;i<7;i++){ctx.fillStyle='#5c35b5';ctx.beginPath();ctx.arc(rn.x-10+(i*4)%20,rn.y-10+(i*5)%20,4,0,Math.PI*2);ctx.fill();}
   } else {
-    opts.push({ d: dist(point, boat), type: 'boat' });
-    citizens.forEach(c => opts.push({ d: dist(point, c), type: 'citizen', obj: c }));
-    traders.forEach(t => opts.push({ d: dist(point, t), type: 'trader', obj: t }));
-
-    if (Math.hypot(point.x - 955, point.y - 870) < 130)
-      opts.push({ d: Math.hypot(point.x - 955, point.y - 870), type: 'home' });
-
-    if (Math.hypot(point.x - 650, point.y - 910) < 110)
-      opts.push({ d: Math.hypot(point.x - 650, point.y - 910), type: 'market' });
-
-    if (Math.hypot(point.x - 1320, point.y - 1135) < 120)
-      opts.push({ d: Math.hypot(point.x - 1320, point.y - 1135), type: 'furniture' });
+   for(let i=0;i<8;i++){ctx.fillStyle=['#ff6b8b','#ffd166','#06d6a0'][i%3];ctx.beginPath();ctx.arc(rn.x-12+i*5,rn.y-6+(i%2)*10,5,0,Math.PI*2);ctx.fill();}
   }
+ });
 
-  return opts.filter(o => o.d < 115).sort((a, b) => a.d - b.d)[0] || null;
+ citizens.forEach(c=>{
+  const q=game.quests.find(q=>q.citizenId===c.id);
+  drawPerson(c.x,c.y,c.name,c.color,c.hair,false,t*.004+c.x*.03,!!(!q||!q.done));
+ });
+
+ drawPerson(player.x,player.y,game.name||'YOU','#355eab','#463b35',true,player.bob,false);
+
+ if(!inside)drawWeather(t);
+ for (let i = particles.length - 1; i >= 0; i--) {
+   const p = particles[i];
+   ctx.fillStyle = p.c;
+   ctx.beginPath(); ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2); ctx.fill();
+   p.x += p.vx; p.y += p.vy; p.life--;
+   if (p.life <= 0) particles.splice(i, 1);
+ }
+ drawTimeLighting();
+
+ const n=getNearby();
+ if(n){
+  ctx.strokeStyle='rgba(255,247,190,.85)';ctx.lineWidth=2;ctx.setLineDash([5,5]);
+  ctx.beginPath();ctx.arc(player.x,player.y-15,34,0,Math.PI*2);ctx.stroke();ctx.setLineDash([]);
+ }
 }
 
-function interact() {
-  if (dialogOpen) {
-    closeDialog();
-    return;
-  }
-
-  if (scene === 'inside') {
-    // Walk to door to exit
-    if (player.inY > H - 80 || player.inX < 80) {
-      scene = 'outside';
-      player.x = insideAt.x;
-      player.y = insideAt.y;
-      IslandAudio.door();
-      toast('Back to Meadow Island!');
-      return;
-    }
-
-    if (player.inY < 100) {
-      houseWindowOpen = !houseWindowOpen;
-      IslandAudio.chime();
-      toast(houseWindowOpen ? 'Window opened. A lovely sea breeze!' : 'Window closed.');
-      return;
-    }
-
-    const h = ((gameMinute % 1440) + 1440) % 1440;
-    // Bed interaction in Bedroom (top-right room)
-    if (player.inX > W / 2 && player.inY < H / 2) {
-      if (h >= 18 || h < 6) {
-        day++;
-        gameMinute = 480;
-        citizensGone = false;
-        eveningNoticeDay = -1;
-        weather = 'clear';
-        weatherTimer = 45;
-        wetUntil = 0;
-        IslandAudio.chime();
-        toast('Good morning! A fresh new day on Meadow Drift.');
-        save();
-      } else {
-        toast('You can sleep after 6 PM. Enjoy the island daylight!');
-      }
-      return;
-    }
-
-    toast('Press H anytime to head back outside.');
-    return;
-  }
-
-  const n = nearest();
-  if (!n) {
-    if (boatMode) toast('Sail across the sea. Find the trader boats to meet the crew!');
-    else toast('Nothing nearby. Press G to gather, or visit your neighbours!');
-    return;
-  }
-
-  if (n.type === 'boat') {
-    boatMode = true;
-    boat.x = player.x;
-    boat.y = player.y;
-    IslandAudio.door();
-    toast('You boarded your boat. Enjoy sailing the open sea!');
-    return;
-  }
-
-  if (n.type === 'dock') {
-    boatMode = false;
-    player.x = 1450;
-    player.y = 960;
-    IslandAudio.door();
-    toast('You returned safely to the harbour dock.');
-    return;
-  }
-
-  if (n.type === 'citizen') {
-    const c = n.obj;
-    showDialog(c.name, c.line + ' Head down to the harbour to meet the traders!');
-    return;
-  }
-
-  if (n.type === 'trader') {
-    const t = n.obj;
-    showDialog(t.name + ' · Travelling Trader', `Welcome aboard! Today I brought ${t.goods}. Thanks for visiting!`);
-    player.berries += 1;
-    IslandAudio.gather();
-    toast('Trader welcome gift: +1 berry!');
-    return;
-  }
-
-  if (n.type === 'home') {
-    insideAt = { x: player.x, y: player.y };
-    scene = 'inside';
-    player.inX = W / 2;
-    player.inY = H / 2;
-    IslandAudio.door();
-    toast('Welcome home! Move freely across all four rooms.');
-    return;
-  }
-
-  if (n.type === 'market') {
-    if (player.berries >= 2) {
-      player.berries -= 2;
-      player.flowers += 1;
-      IslandAudio.gather();
-      toast('Market trade: 2 berries → 1 flower!');
-    } else {
-      showDialog('Meadow Market', 'Gather wild berries around the island. Bring 2 berries here to trade for fresh flowers!');
-    }
-    return;
-  }
-
-  if (n.type === 'furniture') {
-    furnitureIndex = (furnitureIndex + 1) % furniture.length;
-    showDialog('Furniture Studio', 'Furniture selected: ' + furniture[furnitureIndex] + '. Head inside your home and press F to place it!');
-    return;
-  }
+function draw(t){
+ if(inside)drawHouse(t);
+ else drawWorld(t);
 }
 
-function placeFurniture() {
-  if (scene !== 'inside') {
-    toast('Furniture can only be placed inside your home.');
-    return;
-  }
+function updateMovement(dt){
+ if(modalOpen||loginOpen)return;
+ let dx=(keyState.right?1:0)-(keyState.left?1:0);
+ let dy=(keyState.down?1:0)-(keyState.up?1:0);
+ if(dx||dy){moveTarget=null;targetInteract=false;}
+ else if(moveTarget){
+  dx=moveTarget.x-player.x;dy=moveTarget.y-player.y;
+  const dist=Math.hypot(dx,dy);
+  if(dist<5){moveTarget=null;if(targetInteract){targetInteract=false;interact();}return;}
+  dx/=dist;dy/=dist;
+ } else return;
 
-  const item = furniture.find(v => !placed.includes(v));
-  if (!item) {
-    toast('All six furniture pieces are already placed!');
-    return;
-  }
-
-  furnitureIndex = furniture.indexOf(item);
-  placed.push(item);
-  IslandAudio.chime();
-  toast('Placed ' + item + ' in your room!');
-  save();
+ const len=Math.hypot(dx,dy)||1;
+ dx/=len;dy/=len;
+ const spd=player.speed*dt;
+ player.x=Math.max(50,Math.min(W-50,player.x+dx*spd));
+ player.y=Math.max(80,Math.min(H-60,player.y+dy*spd));
+ player.bob+=dt*0.22;
 }
 
-function actionKey(e) {
-  if (e.repeat) return;
-  if (e.key === 'e' || e.key === 'E' || e.key === 'Enter') {
-    e.preventDefault();
-    interact();
-  }
-  if (e.key === 'f' || e.key === 'F') {
-    placeFurniture();
-  }
-  if (e.key === 'h' || e.key === 'H') {
-    if (scene === 'outside' && !boatMode) {
-      insideAt = { x: player.x, y: player.y };
-      scene = 'inside';
-      player.inX = W / 2;
-      player.inY = H / 2;
-      IslandAudio.door();
-      toast('Welcome home!');
-    } else if (scene === 'inside') {
-      scene = 'outside';
-      player.x = insideAt.x;
-      player.y = insideAt.y;
-      IslandAudio.door();
-      toast('Back outside to the meadow!');
-    }
-  }
-  if (e.key === 'Escape') closeDialog();
+function frame(t){
+ const dt=lastFrame?Math.min((t-lastFrame)/16.667,2):1;
+ lastFrame=t;
+ advanceWorldClock(dt);
+ updateMovement(dt);
+ draw(t);
+ requestAnimationFrame(frame);
 }
 
-addEventListener('keydown', e => {
-  if (['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', ' '].includes(e.key)) e.preventDefault();
-  if (e.target && ['INPUT', 'TEXTAREA'].includes(e.target.tagName)) return;
-  keys[e.key.toLowerCase()] = true;
-  keys[e.key] = true;
-  actionKey(e);
+// Event Listeners
+const keyMap={w:'up',arrowup:'up',s:'down',arrowdown:'down',a:'left',arrowleft:'left',d:'right',arrowright:'right'};
+document.addEventListener('keydown',e=>{
+ const k=e.key.toLowerCase();
+ if(keyMap[k]){keyState[keyMap[k]]=true;e.preventDefault();}
+ if((k==='e'||k==='enter')&&!e.repeat){e.preventDefault();interact();}
+ if(k==='m'&&!e.repeat){e.preventDefault();openJournal();}
+ if(k==='i'&&!e.repeat){e.preventDefault();openBag();}
+});
+document.addEventListener('keyup',e=>{
+ const k=e.key.toLowerCase();if(keyMap[k])keyState[keyMap[k]]=false;
 });
 
-addEventListener('keyup', e => {
-  keys[e.key.toLowerCase()] = false;
-  keys[e.key] = false;
-});
-addEventListener('blur', () => keys = {});
-
-// Mobile Button Touch Listeners
-for (const b of document.querySelectorAll('[data-key]')) {
-  const k = b.dataset.key;
-  b.addEventListener('pointerdown', e => {
-    e.preventDefault();
-    keys[k] = true;
-    keys[k.toLowerCase()] = true;
-    b.setPointerCapture(e.pointerId);
-  });
-  ['pointerup', 'pointercancel', 'lostpointercapture'].forEach(ev =>
-    b.addEventListener(ev, () => {
-      keys[k] = false;
-      keys[k.toLowerCase()] = false;
-    })
-  );
-}
-
-document.getElementById('actBtn').onclick = interact;
-document.getElementById('furnBtn').onclick = placeFurniture;
-
-function update(dt) {
-  if (dialogOpen) return;
-
-  gameMinute += dt;
-  const hour = Math.floor((gameMinute % 1440) / 60);
-
-  if (hour !== lastHour) {
-    lastHour = hour;
-    if (hour === 18) {
-      citizensGone = true;
-      eveningNoticeDay = day;
-      toast('Evening falls. The islanders are resting for the night.');
-    }
-    if (hour === 6) {
-      citizensGone = false;
-      toast('Good morning! The island wakes up to fresh sunlight.');
-    }
-  }
-
-  // Weather Shifts
-  weatherTimer -= dt;
-  if (weatherTimer <= 0) {
-    if (weather === 'rain') {
-      weather = 'clear';
-      wetUntil = Date.now() + 300000;
-      weatherTimer = rnd(30, 60);
-      toast('The rain clouds part. The fresh grass stays wet for a while.');
-    } else {
-      const roll = Math.random();
-      weather = roll < 0.6 ? 'clear' : roll < 0.85 ? 'rain' : 'snow';
-      weatherTimer = weather === 'rain' ? rnd(25, 45) : rnd(40, 70);
-      if (weather === 'rain') toast('A warm summer rain showers over Meadow Drift!');
-      if (weather === 'snow') toast('Gentle snowflakes float across the island!');
-    }
-  }
-
-  if (weather === 'snow') snowCover = clamp(snowCover + dt * 0.025, 0, 1);
-  else snowCover = clamp(snowCover - dt * 0.008, 0, 1);
-
-  const moveX = (keys.a || keys.A || keys.ArrowLeft ? -1 : 0) + (keys.d || keys.D || keys.ArrowRight ? 1 : 0);
-  const moveY = (keys.w || keys.W || keys.ArrowUp ? -1 : 0) + (keys.s || keys.S || keys.ArrowDown ? 1 : 0);
-
-  const len = Math.hypot(moveX, moveY) || 1;
-  const normX = moveX / len, normY = moveY / len;
-
-  if (moveX !== 0 || moveY !== 0) {
-    player.walkTimer += dt * 9;
-  }
-
-  if (scene === 'outside') {
-    const target = boatMode ? boat : player;
-    const spd = boatMode ? 320 : player.speed;
-
-    target.x += normX * spd * dt;
-    target.y += normY * spd * dt;
-
-    if (!boatMode) {
-      target.x = clamp(target.x, 50, WORLD.w - 50);
-      target.y = clamp(target.y, 50, WORLD.h - 50);
-    } else {
-      if (moveX !== 0 || moveY !== 0) {
-        boatDir = Math.atan2(normY, normX) + Math.PI / 2;
-        // Spawn boat water wake ripples
-        if (Math.random() < 0.4) {
-          boatWake.push({ x: boat.x, y: boat.y, r: 6, alpha: 0.6 });
-        }
-      }
-    }
-
-    // Gathering Material Action
-    if (keys.g || keys.G) {
-      if (!boatMode) {
-        player.wood += 1;
-        player.berries += 1;
-        player.flowers += 1;
-        keys.g = false;
-        keys.G = false;
-        IslandAudio.gather();
-        toast('Gathered fresh wood, sweet berries and flowers!');
-        for (let i = 0; i < 8; i++) {
-          particles.push({
-            x: player.x, y: player.y,
-            vx: rnd(-2, 2), vy: rnd(-2.5, -0.5),
-            r: rnd(2.5, 4.5),
-            c: ['#8db600', '#f5b6da', '#c98a58'][i % 3],
-            life: 25
-          });
-        }
-      }
-    }
-  } else {
-    // FIXED: Freely walk around in the house rooms!
-    player.inX = clamp(player.inX + normX * 220 * dt, 80, W - 80);
-    player.inY = clamp(player.inY + normY * 220 * dt, 80, H - 80);
-  }
-
-  updateHUD();
-}
-
-function drawWeather() {
-  if (weather === 'rain') {
-    ctx.strokeStyle = 'rgba(215, 245, 255, 0.45)';
-    ctx.lineWidth = 1.3;
-    for (let i = 0; i < 110; i++) {
-      let x = (i * 97 + performance.now() * 0.23) % W;
-      let y = (i * 67 + performance.now() * 0.85) % H;
-      ctx.beginPath();
-      ctx.moveTo(x, y);
-      ctx.lineTo(x - 7, y + 17);
-      ctx.stroke();
-    }
-  }
-
-  if (weather === 'snow') {
-    ctx.fillStyle = 'rgba(255, 255, 255, 0.85)';
-    for (let i = 0; i < 85; i++) {
-      let x = (i * 73 + Math.sin(performance.now() / 900 + i) * 25) % W;
-      let y = (i * 49 + performance.now() / 50) % H;
-      ctx.beginPath();
-      ctx.arc(x, y, 2 + (i % 3), 0, Math.PI * 2);
-      ctx.fill();
-    }
-  }
-}
-
-function frame(now) {
-  const dt = Math.min(0.05, (now - last) / 1000);
-  last = now;
-
-  update(dt);
-
-  const c = camera();
-  if (scene === 'outside') drawOutside(c.x, c.y);
-  else drawInterior();
-
-  drawWeather();
-  requestAnimationFrame(frame);
-}
-
-function start() {
-  const n = document.getElementById('playerName').value.trim();
-  if (n) player.name = n;
-  else if (saved.name) player.name = saved.name;
-
-  document.getElementById('nameEntry').style.display = 'none';
-  IslandAudio.chime();
-  toast('Welcome to Meadow Drift, ' + player.name + '!');
-  updateHUD();
-  requestAnimationFrame(frame);
-  save();
-}
-
-document.getElementById('startBtn').onclick = start;
-document.getElementById('playerName').addEventListener('keydown', e => {
-  if (e.key === 'Enter') start();
+document.querySelectorAll('[data-pad]').forEach(btn=>{
+ const key=btn.dataset.pad;
+ btn.addEventListener('pointerdown',e=>{e.preventDefault();keyState[key]=true;});
+ btn.addEventListener('pointerup',()=>keyState[key]=false);
+ btn.addEventListener('pointerleave',()=>keyState[key]=false);
 });
 
-if (saved.name) document.getElementById('playerName').value = saved.name;
+document.addEventListener('click',e=>{
+ const btn=e.target.closest('[data-action]');
+ if(!btn)return;
+ const act=btn.dataset.action;
+ if(act==='interact')interact();
+ else if(act==='journal')openJournal();
+ else if(act==='bag')openBag();
+ else if(act==='enterHome')enterHome();
+ else if(act==='market')openMarket();
+ else if(act==='estate')openEstate();
+ else if(act==='openFurniture')openFurniture();
+ else if(act==='noticeBoard')openNoticeBoard();
+ else if(act==='closeModal')closeModal();
+ else if(act==='claimDaily')claimDailyQuest(Number(btn.dataset.index));
+ else if(act==='buyFurniture')buyFurniture(Number(btn.dataset.index));
+ else if(act==='sellResource')sellResource(btn.dataset.resource);
+});
+
+canvas.addEventListener('click',e=>{
+ if(modalOpen||loginOpen)return;
+ const r=canvas.getBoundingClientRect();
+ moveTarget={x:(e.clientX-r.left)*W/r.width,y:(e.clientY-r.top)*H/r.height};
+});
+
+$('loginForm').addEventListener('submit',e=>{
+ e.preventDefault();
+ const name=$('playerName').value.trim();
+ if(name)loadGame(name);
+});
+
+loadGame(localStorage.getItem('meadowDriftDeluxe_last')||'Friend');
+requestAnimationFrame(frame);
 })();
 </script>
 </body>
