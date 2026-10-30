@@ -2,38 +2,52 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>POLICE PURSUIT | Open City</title>
+<meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no">
+<title>POLICE PURSUIT | Arnaw Studios</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@600;800;900&family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
 <style>
 *{box-sizing:border-box}
-body{margin:0;background:#080d16;color:#edf5ff;font-family:Arial,sans-serif}
-header{height:68px;padding:12px 22px;display:flex;align-items:center;justify-content:space-between;background:#0e1725;border-bottom:1px solid #25344a;gap:12px}
-.brand{font-size:20px;font-weight:900;letter-spacing:2px}
-.brand span{color:#ff424f}
-.badge{font-size:11px;color:#7ef5c4;border:1px solid #276650;padding:7px 10px;border-radius:5px}
-main{max-width:1250px;margin:auto;padding:16px}
+body{margin:0;background:#060a11;color:#edf5ff;font-family:'Inter',sans-serif;user-select:none;touch-action:none}
+header{height:64px;padding:12px 24px;display:flex;align-items:center;justify-content:space-between;background:#09101c;border-bottom:1px solid #1b283d}
+.brand{font-family:'Orbitron',sans-serif;font-size:20px;font-weight:900;letter-spacing:2px}
+.brand span{color:#ff3b4b;text-shadow:0 0 10px rgba(255,59,75,0.6)}
+.badge{font-family:'Orbitron',sans-serif;font-size:10px;color:#00f3ff;border:1px solid rgba(0,243,255,0.4);padding:6px 12px;border-radius:20px;background:rgba(0,243,255,0.08);letter-spacing:1px}
+main{max-width:1250px;margin:auto;padding:14px}
 .hud{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin-bottom:12px}
-.panel{background:#111c2c;border:1px solid #25354b;border-radius:9px;padding:12px}
-.label{font-size:10px;letter-spacing:1.5px;color:#8fa4bd;text-transform:uppercase}
-.value{font-size:23px;font-weight:800;margin-top:5px}
-.red{color:#ff5260}.green{color:#64f2b0}.blue{color:#63c9ff}
-#frame{position:relative;border:1px solid #34465e;border-radius:10px;overflow:hidden;background:#202b34}
+.panel{background:#0c1626;border:1px solid #1f3049;border-radius:10px;padding:10px 14px;box-shadow:0 4px 15px rgba(0,0,0,0.4)}
+.label{font-size:10px;letter-spacing:1.5px;color:#7e97b8;text-transform:uppercase;font-weight:600}
+.value{font-family:'Orbitron',sans-serif;font-size:22px;font-weight:800;margin-top:4px}
+.red{color:#ff4757;text-shadow:0 0 10px rgba(255,71,87,0.5)}
+.green{color:#00f5a0;text-shadow:0 0 10px rgba(0,245,160,0.5)}
+.blue{color:#00d2ff;text-shadow:0 0 10px rgba(0,210,255,0.5)}
+#frame{position:relative;border:1px solid #233752;border-radius:12px;overflow:hidden;background:#0d141e;box-shadow:0 10px 30px rgba(0,0,0,0.6)}
 canvas{display:block;width:100%;height:auto;aspect-ratio:16/9}
-#toast{position:absolute;top:16px;left:50%;transform:translateX(-50%);background:#101b2be8;border:1px solid #40546d;border-radius:8px;padding:10px 16px;font-size:13px;white-space:nowrap;pointer-events:none}
-#overlay{position:absolute;inset:0;background:#080d16dd;display:none;align-items:center;justify-content:center;text-align:center;padding:20px}
-#overlay h2{font-size:clamp(30px,6vw,55px);margin:0 0 8px;color:#ff5260}
-#overlay p{color:#b9c9dd}
-button{cursor:pointer;border:0;border-radius:7px;padding:12px 17px;background:#63e6b0;color:#06140f;font-weight:800}
+#toast{position:absolute;top:16px;left:50%;transform:translateX(-50%);background:rgba(12,22,38,0.9);backdrop-filter:blur(8px);border:1px solid rgba(0,243,255,0.3);border-radius:30px;padding:8px 20px;font-size:12px;font-weight:700;white-space:nowrap;pointer-events:none;color:#fff;letter-spacing:1px;box-shadow:0 0 20px rgba(0,0,0,0.5)}
+#overlay{position:absolute;inset:0;background:rgba(6,10,17,0.92);backdrop-filter:blur(10px);display:none;align-items:center;justify-content:center;text-align:center;padding:20px;z-index:20}
+#overlay h2{font-family:'Orbitron',sans-serif;font-size:clamp(32px,6vw,60px);margin:0 0 10px;color:#ff3b4b;text-shadow:0 0 25px rgba(255,59,75,0.7)}
+#overlay p{color:#a9bfdb;font-size:16px;margin-bottom:20px}
+button{cursor:pointer;border:0;border-radius:8px;padding:12px 24px;background:linear-gradient(135deg,#00f3ff,#0066ff);color:#030812;font-family:'Orbitron',sans-serif;font-weight:900;letter-spacing:1px;transition:all .2s;box-shadow:0 0 15px rgba(0,243,255,0.4)}
+button:hover{transform:scale(1.04);box-shadow:0 0 25px rgba(0,243,255,0.7)}
 .controls{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;margin-top:12px}
-.help{font-size:12px;color:#a8b8ce;line-height:2}
-kbd{background:#1a2a3e;border:1px solid #3b5069;border-radius:4px;padding:3px 6px;color:white}
-.meter{height:5px;background:#29384a;border-radius:10px;overflow:hidden;margin-top:8px}
-.meter div{height:100%;width:100%;background:#63e6b0;transition:width .1s}
-footer{text-align:center;padding:18px;color:#637991;font-size:11px}
+.help{font-size:12px;color:#8fa5c2;line-height:1.8}
+kbd{background:#162438;border:1px solid #2d4566;border-radius:5px;padding:3px 7px;color:#00f3ff;font-family:monospace;font-weight:700}
+.meter{height:6px;background:#182638;border-radius:10px;overflow:hidden;margin-top:6px}
+.meter div{height:100%;width:100%;background:#00f5a0;transition:width .1s;box-shadow:0 0 8px currentColor}
+footer{text-align:center;padding:16px;color:#5a718c;font-size:11px;letter-spacing:1px}
+
+/* Mobile Virtual Touch Controls */
+#touchControls{display:none;position:absolute;bottom:15px;left:0;right:0;padding:0 20px;justify-content:space-between;pointer-events:none;z-index:15}
+.touch-btn{width:56px;height:56px;border-radius:50%;background:rgba(12,22,38,0.75);border:2px solid rgba(0,243,255,0.4);color:#00f3ff;display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:bold;pointer-events:auto;backdrop-filter:blur(4px)}
+.touch-btn:active{background:rgba(0,243,255,0.3);transform:scale(.95)}
+@media(max-width:850px){
+ #touchControls{display:flex}
+}
 @media(max-width:600px){
- main{padding:9px}.hud{grid-template-columns:repeat(2,minmax(0,1fr))}
- header{padding:10px}.brand{font-size:16px}
- #toast{font-size:11px;padding:8px}
+ main{padding:8px}.hud{grid-template-columns:repeat(2,minmax(0,1fr))}
+ header{padding:8px 14px}.brand{font-size:16px}
+ #toast{font-size:10px;padding:6px 14px}
 }
 </style>
 </head>
@@ -41,26 +55,26 @@ footer{text-align:center;padding:18px;color:#637991;font-size:11px}
 
 <header>
  <div class="brand">POLICE <span>PURSUIT</span></div>
- <div class="badge">OPEN CITY • BUILD 01</div>
+ <div class="badge">ARNAW STUDIOS • NEXT-GEN V2</div>
 </header>
 
 <main>
  <div class="hud">
   <div class="panel">
-   <div class="label">Escape score</div>
+   <div class="label">Escape Score</div>
    <div class="value blue" id="score">00000</div>
   </div>
   <div class="panel">
-   <div class="label">Pursuit level</div>
+   <div class="label">Pursuit Danger</div>
    <div class="value red" id="wanted">★☆☆☆☆</div>
   </div>
   <div class="panel">
-   <div class="label">Vehicle condition</div>
+   <div class="label">Vehicle Hull</div>
    <div class="value green" id="health">100%</div>
    <div class="meter"><div id="healthbar"></div></div>
   </div>
   <div class="panel">
-   <div class="label">Nitro boost</div>
+   <div class="label">Nitro Boost</div>
    <div class="value blue" id="nitro">100%</div>
    <div class="meter"><div id="nitrobar"></div></div>
   </div>
@@ -68,7 +82,20 @@ footer{text-align:center;padding:18px;color:#637991;font-size:11px}
 
  <div id="frame">
   <canvas id="game" width="1200" height="675"></canvas>
-  <div id="toast">🚔 PURSUIT ACTIVE — FIND THE GREEN GARAGE</div>
+  <div id="toast">🚔 PURSUIT ACTIVE — FOLLOW GPS TO SAFEHOUSE</div>
+  
+  <div id="touchControls">
+   <div style="display:flex;gap:12px">
+    <div class="touch-btn" id="btnLeft">◀</div>
+    <div class="touch-btn" id="btnRight">▶</div>
+   </div>
+   <div style="display:flex;gap:12px">
+    <div class="touch-btn" id="btnDown" style="color:#ff4757;border-color:#ff4757">▼</div>
+    <div class="touch-btn" id="btnUp">▲</div>
+    <div class="touch-btn" id="btnBoost" style="background:rgba(0,243,255,0.2)">⚡</div>
+   </div>
+  </div>
+
   <div id="overlay">
    <div>
     <h2 id="endtitle">BUSTED</h2>
@@ -80,467 +107,671 @@ footer{text-align:center;padding:18px;color:#637991;font-size:11px}
 
  <div class="controls">
   <div class="help">
-   <kbd>W</kbd><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd> Drive &nbsp;
-   <kbd>SPACE</kbd> Nitro &nbsp; <kbd>E</kbd> Exit garage &nbsp; <kbd>R</kbd> Restart<br>
-   Drive into the green GARAGE to lose the police. You can drive out any time, or press E for a quick exit.
+   <kbd>W</kbd><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd> or <kbd>ARROWS</kbd> Drive &nbsp;
+   <kbd>SPACE</kbd> Nitro Boost &nbsp; <kbd>E</kbd> Exit Garage &nbsp; <kbd>R</kbd> Restart<br>
+   Follow the <span style="color:#00f5a0;font-weight:700">green radar compass arrow</span> to escape the police net.
   </div>
   <button id="restart">RESTART GAME ↻</button>
  </div>
 </main>
 
-<footer>POLICE PURSUIT • CITY DIVISION • DRIVE SMART. ESCAPE SMARTER.</footer>
+<footer>ARNAW STUDIOS • JAIPUR • NEXT-GEN GRAPHICS ENGINE</footer>
 
 <script>
 "use strict";
 
-const canvas=document.getElementById("game");
-const ctx=canvas.getContext("2d");
-const W=canvas.width,H=canvas.height;
-const WORLD={w:2600,h:1900};
-const keys={};
+const canvas = document.getElementById("game");
+const ctx = canvas.getContext("2d");
+const W = canvas.width, H = canvas.height;
+const WORLD = { w: 2600, h: 1900 };
+const keys = {};
 
-const garage={x:370,y:350,w:110,h:105};
-const roadsX=[100,600,1100,1600,2100,2550];
-const roadsY=[100,500,900,1300,1800];
+const garage = { x: 370, y: 350, w: 120, h: 110 };
+const roadsX = [100, 600, 1100, 1600, 2100, 2550];
+const roadsY = [100, 500, 900, 1300, 1800];
 
-let player,police,traffic,buildings,particles;
-let score,health,nitro,frame,hidden,capture,gameOver;
-let camera={x:0,y:0};
-let toastTimer=0;
-let lastTime=0;
+let player, police, traffic, buildings, particles, skidmarks;
+let score, health, nitro, frame, hidden, capture, gameOver;
+let camera = { x: 0, y: 0 };
+let screenShake = 0;
+let toastTimer = 0;
+let lastTime = 0;
 
-function rand(a,b){return a+Math.random()*(b-a)}
-function clamp(v,a,b){return Math.max(a,Math.min(b,v))}
+// Simple Web Audio Synthesizer (No external assets required!)
+const AudioFX = {
+ ctx: null,
+ init() {
+  if (!this.ctx) this.ctx = new (window.AudioContext || window.webkitAudioContext)();
+ },
+ playTone(freq, type, duration, vol=0.1) {
+  try {
+   this.init();
+   const osc = this.ctx.createOscillator();
+   const gain = this.ctx.createGain();
+   osc.type = type;
+   osc.frequency.setValueAtTime(freq, this.ctx.currentTime);
+   gain.gain.setValueAtTime(vol, this.ctx.currentTime);
+   gain.gain.exponentialRampToValueAtTime(0.001, this.ctx.currentTime + duration);
+   osc.connect(gain);
+   gain.connect(this.ctx.destination);
+   osc.start();
+   osc.stop(this.ctx.currentTime + duration);
+  } catch(e) {}
+ },
+ crash() { this.playTone(80, "sawtooth", 0.4, 0.25); },
+ boost() { this.playTone(320, "sine", 0.15, 0.08); },
+ safe() { this.playTone(540, "triangle", 0.5, 0.15); }
+};
 
-function reset(){
- player={x:425,y:550,v:0,angle:0,r:17};
- police=[];
- traffic=[];
- particles=[];
- score=0;
- health=100;
- nitro=100;
- frame=0;
- hidden=false;
- capture=0;
- gameOver=false;
- toastTimer=180;
+function rand(a, b) { return a + Math.random() * (b - a); }
+function clamp(v, a, b) { return Math.max(a, Math.min(b, v)); }
 
- for(let i=0;i<4;i++){
+function reset() {
+ player = { x: 425, y: 550, v: 0, angle: 0, r: 16 };
+ police = [];
+ traffic = [];
+ particles = [];
+ skidmarks = [];
+ score = 0;
+ health = 100;
+ nitro = 100;
+ frame = 0;
+ hidden = false;
+ capture = 0;
+ gameOver = false;
+ screenShake = 0;
+ document.getElementById("overlay").style.display = "none";
+
+ for (let i = 0; i < 2; i++) {
   police.push({
-   x:rand(200,1000),y:rand(100,850),
-   angle:0,speed:rand(1.3,1.8),stun:0
+   x: 800 + i * 400,
+   y: 900,
+   angle: 0,
+   speed: rand(1.6, 2.1)
   });
  }
- for(let i=0;i<12;i++)spawnTraffic(true);
-
- camera.x=clamp(player.x-W/2,0,WORLD.w-W);
- camera.y=clamp(player.y-H/2,0,WORLD.h-H);
-
- document.getElementById("overlay").style.display="none";
- message("🚔 PURSUIT ACTIVE — FIND THE GREEN GARAGE",180);
+ for (let i = 0; i < 16; i++) spawnTraffic(true);
 }
 
-function message(text,time=150){
- document.getElementById("toast").textContent=text;
- toastTimer=time;
-}
-
-function spawnTraffic(initial=false){
- const horizontal=Math.random()<.5;
+function spawnTraffic(initial = false) {
+ const horizontal = Math.random() < 0.5;
  traffic.push({
-  x:initial?rand(0,WORLD.w):rand(0,WORLD.w),
-  y:initial?rand(0,WORLD.h):-40,
-  angle:horizontal?Math.PI/2:Math.PI,
-  speed:rand(1,2.3),
+  x: initial ? rand(100, WORLD.w - 100) : (horizontal ? (Math.random() < 0.5 ? 0 : WORLD.w) : roadsX[Math.floor(Math.random()*roadsX.length)]),
+  y: initial ? rand(100, WORLD.h - 100) : (horizontal ? roadsY[Math.floor(Math.random()*roadsY.length)] : (Math.random() < 0.5 ? 0 : WORLD.h)),
+  angle: horizontal ? (Math.random()<0.5 ? Math.PI/2 : -Math.PI/2) : (Math.random()<0.5 ? Math.PI : 0),
+  speed: rand(1.2, 2.2),
   horizontal,
-  color:["#e9b65f","#d6e0e9","#bc8df3","#e66f79","#59cbb4"][Math.floor(Math.random()*5)],
-  hitCooldown:0
+  color: ["#e9b65f", "#d6e0e9", "#bc8df3", "#e66f79", "#00d2ff"][Math.floor(Math.random() * 5)]
  });
 }
 
-function inGarage(){
- return player.x>garage.x &&
-        player.x<garage.x+garage.w &&
-        player.y>garage.y &&
-        player.y<garage.y+garage.h;
+function inGarage() {
+ return player.x > garage.x && player.x < garage.x + garage.w &&
+        player.y > garage.y && player.y < garage.y + garage.h;
 }
 
-function exitGarage(){
- if(!hidden || gameOver) return;
- // Place the car just outside the garage, facing away from the entrance.
- player.x=garage.x+garage.w/2;
- player.y=garage.y+garage.h+38;
- player.angle=Math.PI;
- player.v=0;
- hidden=false;
- capture=0;
- message("🚨 BACK ON THE ROAD — POLICE CAN SPOT YOU AGAIN!",180);
+function exitGarage() {
+ if (!hidden || gameOver) return;
+ player.x = garage.x + garage.w / 2;
+ player.y = garage.y + garage.h + 40;
+ player.angle = Math.PI;
+ player.v = 1.5;
+ hidden = false;
+ capture = 0;
+ message("🚨 BACK ON THE RADAR — HIT THE GAS!", 180);
 }
 
-function dist(a,b){return Math.hypot(a.x-b.x,a.y-b.y)}
-
-function car(x,y,angle,color,policeCar=false,scale=1){
- ctx.save();
- ctx.translate(x,y);
- ctx.rotate(angle);
- ctx.scale(scale,scale);
-
- // Shadow
- ctx.fillStyle="#0006";
- ctx.fillRect(-16,-24,34,51);
-
- // Wheels
- ctx.fillStyle="#10151c";
- ctx.fillRect(-18,-17,6,13);
- ctx.fillRect(12,-17,6,13);
- ctx.fillRect(-18,10,6,13);
- ctx.fillRect(12,10,6,13);
-
- // Body
- roundedRect(-14,-25,28,50,6,color);
-
- // Glass
- roundedRect(-10,-15,20,13,3,"#172e43");
- ctx.fillRect(-10,5,20,8);
-
- // Headlights and rear lights
- ctx.fillStyle="#fff5c4";
- ctx.fillRect(-11,-24,7,3);
- ctx.fillRect(4,-24,7,3);
- ctx.fillStyle="#ff3e50";
- ctx.fillRect(-11,20,7,3);
- ctx.fillRect(4,20,7,3);
-
- if(policeCar){
-  const blue=Math.floor(frame/9)%2===0;
-  ctx.fillStyle=blue?"#378bff":"#ff3149";
-  ctx.fillRect(-12,-4,12,6);
-  ctx.fillStyle=blue?"#ff3149":"#378bff";
-  ctx.fillRect(0,-4,12,6);
- }
- ctx.restore();
+function message(txt, dur = 120) {
+ document.getElementById("toast").textContent = txt;
+ toastTimer = dur;
 }
 
-function roundedRect(x,y,w,h,r,color){
- // Custom rounded rectangle: works even when CanvasRenderingContext2D.roundRect is unavailable.
- const radius=Math.max(0,Math.min(r,Math.abs(w)/2,Math.abs(h)/2));
- ctx.fillStyle=color;
- ctx.beginPath();
- ctx.moveTo(x+radius,y);
- ctx.lineTo(x+w-radius,y);
- ctx.quadraticCurveTo(x+w,y,x+w,y+radius);
- ctx.lineTo(x+w,y+h-radius);
- ctx.quadraticCurveTo(x+w,y+h,x+w-radius,y+h);
- ctx.lineTo(x+radius,y+h);
- ctx.quadraticCurveTo(x,y+h,x,y+h-radius);
- ctx.lineTo(x,y+radius);
- ctx.quadraticCurveTo(x,y,x+radius,y);
- ctx.closePath();
- ctx.fill();
-}
-
-function drawWorld(){
- ctx.fillStyle="#293b36";
- ctx.fillRect(0,0,WORLD.w,WORLD.h);
-
- // Roads
- ctx.fillStyle="#3b424b";
- roadsX.forEach(x=>ctx.fillRect(x-85,0,170,WORLD.h));
- roadsY.forEach(y=>ctx.fillRect(0,y-85,WORLD.w,170));
-
- // Lane markings
- ctx.strokeStyle="#d8d1a1";
- ctx.lineWidth=3;
- ctx.setLineDash([24,24]);
-
- roadsX.forEach(x=>{
-  ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x,WORLD.h);ctx.stroke();
- });
- roadsY.forEach(y=>{
-  ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(WORLD.w,y);ctx.stroke();
- });
- ctx.setLineDash([]);
-
- // Road edges
- ctx.strokeStyle="#747a7d";
- ctx.lineWidth=3;
- roadsX.forEach(x=>{
-  ctx.beginPath();ctx.moveTo(x-80,0);ctx.lineTo(x-80,WORLD.h);ctx.stroke();
-  ctx.beginPath();ctx.moveTo(x+80,0);ctx.lineTo(x+80,WORLD.h);ctx.stroke();
- });
- roadsY.forEach(y=>{
-  ctx.beginPath();ctx.moveTo(0,y-80);ctx.lineTo(WORLD.w,y-80);ctx.stroke();
-  ctx.beginPath();ctx.moveTo(0,y+80);ctx.lineTo(WORLD.w,y+80);ctx.stroke();
- });
-
- // City blocks with green courtyards and buildings
- buildings.forEach(b=>{
-  roundedRect(b.x,b.y,b.w,b.h,8,"#344c40");
-  roundedRect(b.x+8,b.y+8,b.w-16,b.h-16,5,b.color);
-
-  // Windows
-  ctx.fillStyle="#8db6c2";
-  for(let x=b.x+17;x<b.x+b.w-12;x+=25){
-   for(let y=b.y+17;y<b.y+b.h-12;y+=27){
-    ctx.fillRect(x,y,8,10);
-   }
-  }
- });
-
- // Garage marker and building
- roundedRect(garage.x-12,garage.y-12,garage.w+24,garage.h+24,9,"#54d995");
- roundedRect(garage.x,garage.y,garage.w,garage.h,7,"#17382f");
- ctx.fillStyle="#d4ffe6";
- ctx.font="bold 14px Arial";
- ctx.textAlign="center";
- ctx.fillText("SAFE GARAGE",garage.x+garage.w/2,garage.y+25);
-
- // Garage entrance
- ctx.fillStyle="#071b17";
- ctx.fillRect(garage.x+24,garage.y+42,62,63);
- ctx.fillStyle="#50e8a1";
- ctx.fillRect(garage.x+30,garage.y+48,50,5);
- ctx.fillStyle="#caffdf";
- ctx.font="11px Arial";
- ctx.fillText("ENTER HERE",garage.x+55,garage.y+36);
-
- // City signs
- ctx.textAlign="left";
- ctx.fillStyle="#a8bcb1";
- ctx.font="bold 15px Arial";
- ctx.fillText("DOWNTOWN",800,80);
- ctx.fillText("INDUSTRIAL DISTRICT",1650,820);
- ctx.fillText("NORTHSIDE",1150,1750);
-}
-
-function makeBuildings(){
- buildings=[];
- const blocks=[
-  [300,200],[800,200],[1300,200],[1800,200],
-  [300,600],[800,600],[1300,600],[1800,600],
-  [300,1000],[800,1000],[1300,1000],[1800,1000],
-  [300,1400],[800,1400],[1300,1400],[1800,1400],
-  [2300,300],[2300,700],[2300,1100],[2300,1500]
+function makeBuildings() {
+ buildings = [];
+ const blocks = [
+  [300, 200], [800, 200], [1300, 200], [1800, 200],
+  [300, 600], [800, 600], [1300, 600], [1800, 600],
+  [300, 1000], [800, 1000], [1300, 1000], [1800, 1000],
+  [300, 1400], [800, 1400], [1300, 1400], [1800, 1400],
+  [2300, 300], [2300, 700], [2300, 1100], [2300, 1500]
  ];
 
- blocks.forEach(([x,y],i)=>{
-  if(x===300&&y===200)return;
+ blocks.forEach(([x, y], i) => {
+  if (x === 300 && y === 200) return; // Reserve space for garage
   buildings.push({
-   x,y,w:rand(130,200),h:rand(110,150),
-   color:["#52636a","#625b66","#5c6659","#655d50"][i%4]
+   x: x, y: y,
+   w: 190, h: 140,
+   color: ["#1a2433", "#15202e", "#1b2a3d", "#131b26"][i % 4]
   });
  });
 }
 
-function drawMinimap(){
- const mw=150,mh=110,pad=12;
- const x=W-mw-pad,y=pad;
- roundedRect(x,y,mw,mh,7,"#09131de8");
+// Building Collision Check with Bounce
+function checkBuildingCollision(obj) {
+ for (const b of buildings) {
+  if (obj.x + 14 > b.x && obj.x - 14 < b.x + b.w &&
+      obj.y + 20 > b.y && obj.y - 20 < b.y + b.h) {
+   // Push object out to nearest edge
+   const left = Math.abs(obj.x - b.x);
+   const right = Math.abs(obj.x - (b.x + b.w));
+   const top = Math.abs(obj.y - b.y);
+   const bottom = Math.abs(obj.y - (b.y + b.h));
+   const min = Math.min(left, right, top, bottom);
 
- ctx.save();
- ctx.beginPath();
- ctx.rect(x,y,mw,mh);
- ctx.clip();
+   if (min === left) obj.x = b.x - 14;
+   else if (min === right) obj.x = b.x + b.w + 14;
+   else if (min === top) obj.y = b.y - 20;
+   else obj.y = b.y + b.h + 20;
 
- ctx.fillStyle="#263c32";
- ctx.fillRect(x,y,mw,mh);
- ctx.fillStyle="#454f59";
-
- roadsX.forEach(rx=>ctx.fillRect(x+rx/WORLD.w*mw-5,y,10,mh));
- roadsY.forEach(ry=>ctx.fillRect(x,y+ry/WORLD.h*mh-4,mw,8));
-
- ctx.fillStyle="#52f5a6";
- ctx.fillRect(x+garage.x/WORLD.w*mw-2,y+garage.y/WORLD.h*mh-2,6,6);
-
- police.forEach(p=>{
-  ctx.fillStyle="#ff4757";
-  ctx.fillRect(x+p.x/WORLD.w*mw-2,y+p.y/WORLD.h*mh-2,5,5);
- });
-
- ctx.fillStyle="#62dfff";
- ctx.beginPath();
- ctx.arc(x+player.x/WORLD.w*mw,y+player.y/WORLD.h*mh,4,0,Math.PI*2);
- ctx.fill();
- ctx.restore();
+   if (obj === player && Math.abs(obj.v) > 1.2) {
+    screenShake = Math.min(screenShake + 7, 14);
+    health = Math.max(0, health - Math.abs(obj.v) * 2.2);
+    obj.v *= -0.4;
+    AudioFX.crash();
+    for(let k = 0; k < 8; k++) {
+     particles.push({ x: obj.x, y: obj.y, vx: rand(-3,3), vy: rand(-3,3), life: 20, color: "#ffc83b", size: 3 });
+    }
+   }
+   return true;
+  }
+ }
+ return false;
 }
 
-function update(dt){
- if(gameOver)return;
- const step=Math.min(dt/16.67,2);
- frame+=step;
+function update(dt) {
+ if (gameOver) return;
+ const step = Math.min(dt / 16.67, 2);
+ frame += step;
+ if (screenShake > 0) screenShake = Math.max(0, screenShake - 0.5 * step);
 
- const forward=keys.w||keys.W||keys.ArrowUp;
- const backward=keys.s||keys.S||keys.ArrowDown;
- const left=keys.a||keys.A||keys.ArrowLeft;
- const right=keys.d||keys.D||keys.ArrowRight;
- const boost=keys[" "]&&nitro>0&&forward&&!hidden;
+ const forward = keys.w || keys.W || keys.ArrowUp;
+ const backward = keys.s || keys.S || keys.ArrowDown;
+ const left = keys.a || keys.A || keys.ArrowLeft;
+ const right = keys.d || keys.D || keys.ArrowRight;
+ const boost = keys[" "] && nitro > 0 && forward && !hidden;
 
- // Driving remains enabled inside the garage; the safehouse pauses police pursuit, not the game.
- if(forward)player.v=Math.min(player.v+(boost?.15:.075)*step,boost?7:4.5);
- if(backward)player.v=Math.max(player.v-.12*step,-2.5);
- if(!forward&&!backward)player.v*=Math.pow(.985,step);
+ if (forward) player.v = Math.min(player.v + (boost ? 0.18 : 0.085) * step, boost ? 7.5 : 4.8);
+ if (backward) player.v = Math.max(player.v - 0.14 * step, -2.6);
+ if (!forward && !backward) player.v *= Math.pow(0.982, step);
 
- const steering=(Math.abs(player.v)/4.5)*.055*step;
- if(left)player.angle-=steering*Math.sign(player.v||1);
- if(right)player.angle+=steering*Math.sign(player.v||1);
+ const steering = (Math.abs(player.v) / 4.8) * 0.058 * step;
+ if (left) player.angle -= steering * Math.sign(player.v || 1);
+ if (right) player.angle += steering * Math.sign(player.v || 1);
 
- if(boost)nitro=Math.max(0,nitro-.45*step);
- else nitro=Math.min(100,nitro+.12*step);
-
- player.x+=Math.sin(player.angle)*player.v*step;
- player.y-=Math.cos(player.angle)*player.v*step;
-
- // City boundaries
- player.x=clamp(player.x,25,WORLD.w-25);
- player.y=clamp(player.y,25,WORLD.h-25);
-
- const wasHidden=hidden;
- hidden=inGarage();
-
- if(hidden){
-  capture=Math.max(0,capture-.8*step);
-  score+=.1*step;
-  if(!wasHidden)message("🏠 SAFEHOUSE — YOU CAN STILL DRIVE OUT OR PRESS E",240);
- }else if(wasHidden){
-  message("🚨 YOU'RE BACK ON THE RADAR!",150);
+ if (boost) {
+  nitro = Math.max(0, nitro - 0.45 * step);
+  AudioFX.boost();
+  screenShake = Math.max(screenShake, 1.8);
+  // Spawn dual exhaust nitro particles rotated properly
+  const rearOffset = 22;
+  const rearX = player.x - Math.sin(player.angle) * rearOffset;
+  const rearY = player.y + Math.cos(player.angle) * rearOffset;
+  for (let i = 0; i < 2; i++) {
+   particles.push({
+    x: rearX + rand(-4, 4),
+    y: rearY + rand(-4, 4),
+    vx: -Math.sin(player.angle) * rand(2, 5) + rand(-1, 1),
+    vy: Math.cos(player.angle) * rand(2, 5) + rand(-1, 1),
+    life: 25,
+    color: Math.random() > 0.5 ? "#00f3ff" : "#0066ff",
+    size: rand(3, 6)
+   });
+  }
+ } else {
+  nitro = Math.min(100, nitro + 0.15 * step);
  }
 
- // Traffic
- traffic.forEach(t=>{
-  if(t.horizontal)t.x+=t.speed*step;
-  else t.y+=t.speed*step;
+ // Tire Skid Marks when cornering hard
+ if ((left || right) && Math.abs(player.v) > 3.2 && !hidden) {
+  skidmarks.push({
+   x: player.x,
+   y: player.y,
+   angle: player.angle,
+   life: 300
+  });
+  if (skidmarks.length > 180) skidmarks.shift();
+ }
 
-  if(t.x>WORLD.w+50)t.x=-50;
-  if(t.y>WORLD.h+50)t.y=-50;
+ // Low Health Damage Smoke & Sparks
+ if (health < 40) {
+  particles.push({
+   x: player.x + rand(-6, 6),
+   y: player.y + rand(-6, 6),
+   vx: rand(-0.8, 0.8),
+   vy: rand(-1.5, -0.5),
+   life: 35,
+   color: health < 20 ? (Math.random() > 0.4 ? "#ff4757" : "#ffa502") : "#57606f",
+   size: rand(3, 8)
+  });
+ }
 
-  if(!hidden&&Math.hypot(t.x-player.x,t.y-player.y)<27){
-   health=Math.max(0,health-.12*step);
-   player.v*=-.3;
-   t.x=rand(100,WORLD.w-100);
-   t.y=rand(100,WORLD.h-100);
+ player.x += Math.sin(player.angle) * player.v * step;
+ player.y -= Math.cos(player.angle) * player.v * step;
+
+ // Boundary clamp
+ player.x = clamp(player.x, 30, WORLD.w - 30);
+ player.y = clamp(player.y, 30, WORLD.h - 30);
+
+ checkBuildingCollision(player);
+
+ const wasHidden = hidden;
+ hidden = inGarage();
+
+ if (hidden) {
+  capture = Math.max(0, capture - 0.9 * step);
+  score += 0.1 * step;
+  if (!wasHidden) {
+   AudioFX.safe();
+   message("🏠 SAFEHOUSE SECURED — PURSUIT PAUSED (PRESS E TO EXIT)", 240);
+  }
+ } else if (wasHidden) {
+  message("🚨 RADAR ACTIVE — POLICE PURSUIT RESUMED!", 150);
+ }
+
+ // Update Particles
+ for (let i = particles.length - 1; i >= 0; i--) {
+  const p = particles[i];
+  p.x += p.vx * step;
+  p.y += p.vy * step;
+  p.life -= step;
+  if (p.life <= 0) particles.splice(i, 1);
+ }
+
+ // Traffic Movement & Collision
+ traffic.forEach(t => {
+  if (t.horizontal) t.x += t.speed * step;
+  else t.y += t.speed * step;
+
+  if (t.x > WORLD.w + 60) t.x = -60;
+  if (t.y > WORLD.h + 60) t.y = -60;
+
+  if (!hidden && Math.hypot(t.x - player.x, t.y - player.y) < 28) {
+   health = Math.max(0, health - 14);
+   screenShake = 12;
+   player.v *= -0.35;
+   AudioFX.crash();
+   for (let k = 0; k < 12; k++) {
+    particles.push({ x: (t.x+player.x)/2, y: (t.y+player.y)/2, vx: rand(-4,4), vy: rand(-4,4), life: 25, color: "#ffc83b", size: rand(2,5) });
+   }
+   t.x = rand(100, WORLD.w - 100);
+   t.y = rand(100, WORLD.h - 100);
   }
  });
 
  // Police AI
- police.forEach(p=>{
-  if(hidden){
-   // Pause the pursuit while hidden; the police resume chasing when the player leaves.
-   return;
-  }
+ police.forEach(p => {
+  if (hidden) return;
 
-  const dx=player.x-p.x;
-  const dy=player.y-p.y;
-  const d=Math.hypot(dx,dy)||1;
-  const speed=p.speed+Math.min(score/4000,.9);
+  const dx = player.x - p.x;
+  const dy = player.y - p.y;
+  const d = Math.hypot(dx, dy) || 1;
+  const speed = p.speed + Math.min(score / 3500, 1.2);
 
-  const target=Math.atan2(dx,-dy);
-  let diff=((target-p.angle+Math.PI*3)%(Math.PI*2))-Math.PI;
-  p.angle+=clamp(diff,-.045*step,.045*step);
+  const target = Math.atan2(dx, -dy);
+  let diff = ((target - p.angle + Math.PI * 3) % (Math.PI * 2)) - Math.PI;
+  p.angle += clamp(diff, -0.052 * step, 0.052 * step);
 
-  p.x+=Math.sin(p.angle)*speed*step;
-  p.y-=Math.cos(p.angle)*speed*step;
+  p.x += Math.sin(p.angle) * speed * step;
+  p.y -= Math.cos(p.angle) * speed * step;
+  checkBuildingCollision(p);
 
-  if(d<48){
-   capture+=.24*step;
-   health=Math.max(0,health-.025*step);
-  }else{
-   capture=Math.max(0,capture-.09*step);
+  if (d < 46) {
+   capture += 0.28 * step;
+   health = Math.max(0, health - 0.03 * step);
+   screenShake = Math.max(screenShake, 3);
+  } else {
+   capture = Math.max(0, capture - 0.07 * step);
   }
  });
 
- // Gradually increase pressure
- if(score>0&&Math.floor(score)%1800===0&&police.length<7){
-  if(frame%300<step)police.push({
-   x:clamp(player.x+rand(-400,400),50,WORLD.w-50),
-   y:clamp(player.y+rand(-400,400),50,WORLD.h-50),
-   angle:0,speed:rand(1.4,2),stun:0
+ // Escalate police count with score
+ if (score > 1200 && police.length < 5 && Math.floor(score) % 1500 < step * 2) {
+  police.push({
+   x: clamp(player.x + rand(-500, 500), 100, WORLD.w - 100),
+   y: clamp(player.y + rand(-500, 500), 100, WORLD.h - 100),
+   angle: 0,
+   speed: rand(1.8, 2.3)
   });
+  message("🚨 REINFORCEMENTS DISPATCHED!", 150);
  }
 
- score+=step*(hidden?.1:Math.max(.2,Math.abs(player.v)*.15));
+ score += step * (hidden ? 0.1 : Math.max(0.3, Math.abs(player.v) * 0.22));
 
- // Camera follows the player
- camera.x+=(clamp(player.x-W/2,0,WORLD.w-W)-camera.x)*.12;
- camera.y+=(clamp(player.y-H/2,0,WORLD.h-H)-camera.y)*.12;
+ // Camera smoothly follows player with bounds
+ camera.x += (clamp(player.x - W / 2, 0, WORLD.w - W) - camera.x) * 0.14;
+ camera.y += (clamp(player.y - H / 2, 0, WORLD.h - H) - camera.y) * 0.14;
 
- if(health<=0||capture>100){
-  gameOver=true;
-  document.getElementById("endtitle").textContent=capture>100?"BUSTED":"VEHICLE DISABLED";
-  document.getElementById("endtext").textContent="Escape score: "+Math.floor(score);
-  document.getElementById("overlay").style.display="flex";
+ if (health <= 0 || capture >= 100) {
+  gameOver = true;
+  document.getElementById("endtitle").textContent = capture >= 100 ? "BUSTED" : "VEHICLE WRECKED";
+  document.getElementById("endtext").textContent = "Total Escape Score: " + Math.floor(score);
+  document.getElementById("overlay").style.display = "flex";
  }
 }
 
-function draw(){
- ctx.clearRect(0,0,W,H);
+function draw() {
+ ctx.clearRect(0, 0, W, H);
  ctx.save();
- ctx.translate(-camera.x,-camera.y);
+
+ // Apply Screen Shake
+ if (screenShake > 0) {
+  ctx.translate(rand(-screenShake, screenShake), rand(-screenShake, screenShake));
+ }
+ ctx.translate(-camera.x, -camera.y);
 
  drawWorld();
 
- traffic.forEach(t=>car(t.x,t.y,t.angle,t.color,false,.85));
-
- police.forEach(p=>{
-  car(p.x,p.y,p.angle,"#edf2f7",true);
+ // Draw Skidmarks
+ ctx.strokeStyle = "rgba(10, 15, 22, 0.4)";
+ ctx.lineWidth = 6;
+ skidmarks.forEach(sm => {
+  ctx.save();
+  ctx.translate(sm.x, sm.y);
+  ctx.rotate(sm.angle);
+  ctx.strokeRect(-10, -6, 20, 12);
+  ctx.restore();
  });
 
+ // Draw Traffic
+ traffic.forEach(t => car(t.x, t.y, t.angle, t.color, false, 0.88));
+
+ // Draw Police with Sirens
+ police.forEach(p => car(p.x, p.y, p.angle, "#ffffff", true));
+
+ // Draw Player with Headlight Cones
  ctx.save();
- if(hidden)ctx.globalAlpha=.55;
- car(player.x,player.y,player.angle,"#19d9ff");
+ if (hidden) ctx.globalAlpha = 0.55;
+ car(player.x, player.y, player.angle, "#00f3ff", false, 1, true);
  ctx.restore();
 
- if(keys[" "]&&nitro>0&&!hidden){
-  for(let i=0;i<3;i++){
-   ctx.fillStyle=i%2?"#ffae45":"#58dcff";
-   ctx.beginPath();
-   ctx.arc(
-    player.x+rand(-5,5),
-    player.y+rand(20,35),
-    rand(2,5),0,Math.PI*2
-   );
-   ctx.fill();
-  }
+ // Draw Particles
+ particles.forEach(p => {
+  ctx.fillStyle = p.color;
+  ctx.beginPath();
+  ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+  ctx.fill();
+ });
+
+ ctx.restore();
+
+ // Danger Vignette on Edge of Screen
+ if (capture > 30) {
+  const alpha = Math.min((capture - 30) / 70, 0.5);
+  const grad = ctx.createRadialGradient(W/2, H/2, H/3, W/2, H/2, W/1.2);
+  grad.addColorStop(0, "transparent");
+  grad.addColorStop(1, `rgba(255, 30, 50, ${alpha})`);
+  ctx.fillStyle = grad;
+  ctx.fillRect(0, 0, W, H);
+ }
+
+ drawMinimap();
+ drawGPSArrow();
+
+ // Update HUD Panels
+ document.getElementById("score").textContent = String(Math.floor(score)).padStart(5, "0");
+ document.getElementById("health").textContent = Math.ceil(health) + "%";
+ document.getElementById("healthbar").style.width = health + "%";
+ document.getElementById("healthbar").style.background = health < 30 ? "#ff4757" : "#00f5a0";
+ document.getElementById("nitro").textContent = Math.floor(nitro) + "%";
+ document.getElementById("nitrobar").style.width = nitro + "%";
+
+ const stars = hidden ? 0 : Math.min(5, 1 + Math.floor(capture / 20) + Math.floor(score / 3500));
+ document.getElementById("wanted").textContent = "★".repeat(stars) + "☆".repeat(5 - stars);
+
+ if (toastTimer > 0) toastTimer--;
+ else document.getElementById("toast").textContent =
+  hidden ? "SAFEHOUSE SECURE" : capture > 50 ? "🚨 CRITICAL RISK — EVADE COPS!" : "PURSUIT ACTIVE";
+}
+
+function car(x, y, angle, color, isPolice = false, scale = 1, isPlayer = false) {
+ ctx.save();
+ ctx.translate(x, y);
+ ctx.rotate(angle);
+ ctx.scale(scale, scale);
+
+ // Dynamic Headlight Cones (shining forward)
+ if (isPlayer || isPolice) {
+  const lightGrad = ctx.createRadialGradient(0, -25, 5, 0, -110, 85);
+  lightGrad.addColorStop(0, isPolice ? "rgba(255,255,255,0.4)" : "rgba(0,243,255,0.35)");
+  lightGrad.addColorStop(1, "rgba(0,0,0,0)");
+  ctx.fillStyle = lightGrad;
+  ctx.beginPath();
+  ctx.moveTo(-10, -20);
+  ctx.lineTo(-45, -110);
+  ctx.lineTo(45, -110);
+  ctx.lineTo(10, -20);
+  ctx.closePath();
+  ctx.fill();
+ }
+
+ // Car Shadow
+ ctx.fillStyle = "rgba(0,0,0,0.45)";
+ ctx.fillRect(-17, -24, 34, 52);
+
+ // Wheels
+ ctx.fillStyle = "#0c1117";
+ ctx.fillRect(-18, -18, 5, 12);
+ ctx.fillRect(13, -18, 5, 12);
+ ctx.fillRect(-18, 10, 5, 12);
+ ctx.fillRect(13, 10, 5, 12);
+
+ // Body with Neon Accent
+ ctx.fillStyle = color;
+ roundedRect(-14, -26, 28, 52, 6);
+
+ // Windshield & Roof
+ ctx.fillStyle = "#09121d";
+ roundedRect(-10, -15, 20, 14, 3);
+ ctx.fillRect(-9, 5, 18, 8);
+
+ // Headlights & Taillights
+ ctx.fillStyle = "#fff";
+ ctx.fillRect(-12, -26, 7, 3);
+ ctx.fillRect(5, -26, 7, 3);
+ ctx.fillStyle = "#ff3344";
+ ctx.fillRect(-11, 23, 6, 3);
+ ctx.fillRect(5, 23, 6, 3);
+
+ // Police Flashing Siren Glow
+ if (isPolice) {
+  const blue = Math.floor(frame / 6) % 2 === 0;
+  // Siren light flash on car roof
+  ctx.fillStyle = blue ? "#0066ff" : "#ff2233";
+  ctx.fillRect(-12, -4, 11, 6);
+  ctx.fillStyle = blue ? "#ff2233" : "#0066ff";
+  ctx.fillRect(1, -4, 11, 6);
+
+  // Large Dynamic Siren Halo on Ground
+  const sirenHalo = ctx.createRadialGradient(0, 0, 10, 0, 0, 85);
+  sirenHalo.addColorStop(0, blue ? "rgba(0,102,255,0.45)" : "rgba(255,34,51,0.45)");
+  sirenHalo.addColorStop(1, "rgba(0,0,0,0)");
+  ctx.fillStyle = sirenHalo;
+  ctx.beginPath();
+  ctx.arc(0, 0, 85, 0, Math.PI * 2);
+  ctx.fill();
  }
 
  ctx.restore();
-
- drawMinimap();
-
- document.getElementById("score").textContent=String(Math.floor(score)).padStart(5,"0");
- document.getElementById("health").textContent=Math.ceil(health)+"%";
- document.getElementById("healthbar").style.width=health+"%";
- document.getElementById("healthbar").style.background=health<30?"#ff4757":"#63e6b0";
- document.getElementById("nitro").textContent=Math.floor(nitro)+"%";
- document.getElementById("nitrobar").style.width=nitro+"%";
-
- const stars=hidden?0:Math.min(5,1+Math.floor(capture/20)+Math.floor(score/4000));
- document.getElementById("wanted").textContent="★".repeat(stars)+"☆".repeat(5-stars);
-
- if(toastTimer>0)toastTimer--;
- else document.getElementById("toast").textContent=
-  hidden?"SAFEHOUSE SECURE":capture>45?"🚨 HIGH RISK — KEEP MOVING":"PURSUIT ACTIVE";
 }
 
-function loop(now){
- const dt=lastTime?Math.min(now-lastTime,40):16.67;
- lastTime=now;
+function roundedRect(x, y, w, h, r) {
+ const radius = Math.min(r, Math.abs(w)/2, Math.abs(h)/2);
+ ctx.beginPath();
+ ctx.moveTo(x + radius, y);
+ ctx.lineTo(x + w - radius, y);
+ ctx.quadraticCurveTo(x + w, y, x + w, y + radius);
+ ctx.lineTo(x + w, y + h - radius);
+ ctx.quadraticCurveTo(x + w, y + h, x + w - radius, y + h);
+ ctx.lineTo(x + radius, y + h);
+ ctx.quadraticCurveTo(x, y + h, x, y + h - radius);
+ ctx.lineTo(x, y + radius);
+ ctx.quadraticCurveTo(x, y, x + radius, y);
+ ctx.closePath();
+ ctx.fill();
+}
+
+function drawWorld() {
+ // Dark asphalt background
+ ctx.fillStyle = "#121922";
+ ctx.fillRect(0, 0, WORLD.w, WORLD.h);
+
+ // Roads with subtle curb borders
+ ctx.fillStyle = "#1a232f";
+ roadsX.forEach(x => ctx.fillRect(x - 90, 0, 180, WORLD.h));
+ roadsY.forEach(y => ctx.fillRect(0, y - 90, WORLD.w, 180));
+
+ // Neon Street Markings
+ ctx.strokeStyle = "rgba(0, 243, 255, 0.25)";
+ ctx.lineWidth = 3;
+ ctx.setLineDash([26, 26]);
+ roadsX.forEach(x => {
+  ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, WORLD.h); ctx.stroke();
+ });
+ roadsY.forEach(y => {
+  ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(WORLD.w, y); ctx.stroke();
+ });
+ ctx.setLineDash([]);
+
+ // Buildings with Roof Edge Shading
+ buildings.forEach(b => {
+  ctx.fillStyle = "rgba(0,0,0,0.5)";
+  ctx.fillRect(b.x + 8, b.y + 8, b.w, b.h); // Cast Shadow
+  ctx.fillStyle = b.color;
+  roundedRect(b.x, b.y, b.w, b.h, 8);
+
+  // Lit Windows
+  ctx.fillStyle = "rgba(0, 243, 255, 0.4)";
+  for (let wx = b.x + 18; wx < b.x + b.w - 14; wx += 28) {
+   for (let wy = b.y + 18; wy < b.y + b.h - 14; wy += 28) {
+    if ((wx + wy) % 3 === 0) ctx.fillRect(wx, wy, 9, 11);
+   }
+  }
+ });
+
+ // Garage / Safehouse with Neon Glow
+ const garageGlow = ctx.createRadialGradient(garage.x + garage.w/2, garage.y + garage.h/2, 20, garage.x + garage.w/2, garage.y + garage.h/2, 130);
+ garageGlow.addColorStop(0, "rgba(0, 245, 160, 0.35)");
+ garageGlow.addColorStop(1, "transparent");
+ ctx.fillStyle = garageGlow;
+ ctx.fillRect(garage.x - 30, garage.y - 30, garage.w + 60, garage.h + 60);
+
+ ctx.fillStyle = "#0c2b20";
+ roundedRect(garage.x, garage.y, garage.w, garage.h, 10);
+ ctx.strokeStyle = "#00f5a0";
+ ctx.lineWidth = 2;
+ ctx.stroke();
+
+ ctx.fillStyle = "#00f5a0";
+ ctx.font = "bold 13px 'Orbitron', sans-serif";
+ ctx.textAlign = "center";
+ ctx.fillText("SAFEHOUSE", garage.x + garage.w / 2, garage.y + 26);
+
+ // Garage Bay Entrance
+ ctx.fillStyle = "#04110c";
+ ctx.fillRect(garage.x + 25, garage.y + 40, garage.w - 50, garage.h - 40);
+ ctx.fillStyle = "#00f5a0";
+ ctx.fillRect(garage.x + 30, garage.y + 45, garage.w - 60, 4);
+}
+
+// GPS Radar Arrow Pointing Toward Garage
+function drawGPSArrow() {
+ if (hidden) return;
+ const dx = (garage.x + garage.w/2) - player.x;
+ const dy = (garage.y + garage.h/2) - player.y;
+ const dist = Math.hypot(dx, dy);
+ if (dist < 180) return; // Hide when very close
+
+ const angle = Math.atan2(dy, dx);
+ const arrowRadius = 60;
+ const cx = W / 2 + Math.cos(angle) * arrowRadius;
+ const cy = H / 2 + Math.sin(angle) * arrowRadius;
+
+ ctx.save();
+ ctx.translate(cx, cy);
+ ctx.rotate(angle);
+ ctx.fillStyle = "#00f5a0";
+ ctx.shadowColor = "#00f5a0";
+ ctx.shadowBlur = 10;
+ ctx.beginPath();
+ ctx.moveTo(12, 0);
+ ctx.lineTo(-8, -8);
+ ctx.lineTo(-4, 0);
+ ctx.lineTo(-8, 8);
+ ctx.closePath();
+ ctx.fill();
+ ctx.restore();
+}
+
+function drawMinimap() {
+ const mw = 160, mh = 115, pad = 14;
+ const x = W - mw - pad, y = pad;
+
+ ctx.save();
+ ctx.fillStyle = "rgba(6, 12, 20, 0.85)";
+ roundedRect(x, y, mw, mh, 10);
+ ctx.strokeStyle = "#1e324d";
+ ctx.lineWidth = 1;
+ ctx.stroke();
+
+ ctx.beginPath();
+ ctx.rect(x, y, mw, mh);
+ ctx.clip();
+
+ // Roads
+ ctx.fillStyle = "#1c2b3d";
+ roadsX.forEach(rx => ctx.fillRect(x + (rx / WORLD.w) * mw - 4, y, 8, mh));
+ roadsY.forEach(ry => ctx.fillRect(x, y + (ry / WORLD.h) * mh - 4, mw, 8));
+
+ // Garage Beacon
+ ctx.fillStyle = "#00f5a0";
+ ctx.fillRect(x + (garage.x / WORLD.w) * mw - 3, y + (garage.y / WORLD.h) * mh - 3, 7, 7);
+
+ // Police Blips
+ police.forEach(p => {
+  ctx.fillStyle = "#ff3b4b";
+  ctx.fillRect(x + (p.x / WORLD.w) * mw - 3, y + (p.y / WORLD.h) * mh - 3, 6, 6);
+ });
+
+ // Player Blip
+ ctx.fillStyle = "#00f3ff";
+ ctx.beginPath();
+ ctx.arc(x + (player.x / WORLD.w) * mw, y + (player.y / WORLD.h) * mh, 4.5, 0, Math.PI * 2);
+ ctx.fill();
+ ctx.restore();
+}
+
+function loop(now) {
+ const dt = lastTime ? Math.min(now - lastTime, 40) : 16.67;
+ lastTime = now;
  update(dt);
  draw();
  requestAnimationFrame(loop);
 }
 
-window.addEventListener("keydown",e=>{
- if(["ArrowUp","ArrowDown","ArrowLeft","ArrowRight"," "].includes(e.key))e.preventDefault();
- keys[e.key]=true;
- if(e.key.toLowerCase()==="r")reset();
- if(e.key.toLowerCase()==="e")exitGarage();
-});
-window.addEventListener("keyup",e=>keys[e.key]=false);
-window.addEventListener("blur",()=>Object.keys(keys).forEach(k=>keys[k]=false));
+// Touch control binds
+const bindTouch = (id, key) => {
+ const el = document.getElementById(id);
+ if (!el) return;
+ el.addEventListener("touchstart", (e) => { e.preventDefault(); keys[key] = true; });
+ el.addEventListener("touchend", (e) => { e.preventDefault(); keys[key] = false; });
+};
+bindTouch("btnUp", "ArrowUp");
+bindTouch("btnDown", "ArrowDown");
+bindTouch("btnLeft", "ArrowLeft");
+bindTouch("btnRight", "ArrowRight");
+bindTouch("btnBoost", " ");
 
-document.getElementById("restart").addEventListener("click",reset);
-document.getElementById("again").addEventListener("click",reset);
+window.addEventListener("keydown", e => {
+ if (["ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight", " "].includes(e.key)) e.preventDefault();
+ keys[e.key] = true;
+ if (e.key.toLowerCase() === "r") reset();
+ if (e.key.toLowerCase() === "e") exitGarage();
+});
+window.addEventListener("keyup", e => keys[e.key] = false);
+window.addEventListener("blur", () => Object.keys(keys).forEach(k => keys[k] = false));
+
+document.getElementById("restart").addEventListener("click", reset);
+document.getElementById("again").addEventListener("click", reset);
 
 makeBuildings();
 reset();
