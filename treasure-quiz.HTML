@@ -3,827 +3,1050 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Meadow Drift — Island Life</title>
+<title>Treasure Quiz | Arnaw Studios</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@600;800;900&family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+
 <style>
-:root{--ink:#203c34;--deep:#193b32;--panel:#285648;--panel2:#326b57;--mint:#c9f1cc;--cream:#fff8e9;--gold:#f5d78a;--line:#ffffff24;--muted:#d5e8d8}
-*{box-sizing:border-box}
-body{margin:0;background:radial-gradient(circle at 15% 0%,#315f4e,#142e29 62%);color:var(--cream);font-family:Inter,ui-rounded,"Trebuchet MS",Arial,sans-serif;min-height:100vh}
-button,input{font:inherit}
-button{border:0;cursor:pointer;touch-action:manipulation}
-button:focus-visible,input:focus-visible{outline:3px solid #ffe08b;outline-offset:2px}
-.topbar{display:flex;align-items:center;justify-content:space-between;gap:14px;padding:14px clamp(12px,3vw,30px);background:#15382f;border-bottom:1px solid #ffffff20;box-shadow:0 5px 22px #0002;flex-wrap:wrap}
-.brand{display:flex;align-items:center;gap:11px}.brand-mark{width:43px;height:43px;border-radius:15px;background:linear-gradient(145deg,#b8ebac,#f4d78b);display:grid;place-items:center;font-size:25px;box-shadow:inset 0 2px 5px #fff8}.brand h1{font-size:clamp(19px,3vw,27px);margin:0;letter-spacing:.5px}.brand small{display:block;color:#b8d7c3;font-size:11px;letter-spacing:2px;margin-top:2px}
-.hud{display:flex;gap:8px;flex-wrap:wrap;align-items:center}.stat{background:#ffffff12;border:1px solid #ffffff16;border-radius:12px;padding:8px 11px;font-size:13px;min-width:75px}.stat b{color:#fff2b7;margin-left:3px}.save-state{font-size:11px;color:#c6e7cf;padding:0 5px}
-.page{width:min(1440px,100%);margin:auto;padding:16px;display:grid;grid-template-columns:minmax(0,1fr) 335px;gap:15px;align-items:start}
-.game-column{min-width:0}.game-frame{background:#193d34;padding:9px;border-radius:20px;border:1px solid #ffffff25;box-shadow:0 18px 50px #071b164d}.canvas-wrap{position:relative;overflow:hidden;border-radius:13px;background:#83c9d1}.canvas-wrap canvas{width:100%;height:auto;display:block;aspect-ratio:960/620;touch-action:pan-y}
-.canvas-tag{position:absolute;left:13px;top:12px;border-radius:999px;padding:7px 11px;background:#173b32db;border:1px solid #ffffff35;font-size:12px;color:#f8ffe9;pointer-events:none}.canvas-help{position:absolute;right:12px;top:12px;background:#173b32d9;border:1px solid #ffffff30;border-radius:10px;padding:7px 10px;font-size:11px;color:#f5ffe9;pointer-events:none}
-.game-footer{display:flex;justify-content:space-between;gap:10px;align-items:center;padding:10px 5px 2px;flex-wrap:wrap}.game-footer p{margin:0;color:#c3dfcb;font-size:12px}.action-row{display:flex;gap:7px;flex-wrap:wrap}.primary,.secondary,.soft{border-radius:11px;padding:10px 13px;font-weight:800;font-size:13px;transition:transform .12s,filter .12s}.primary{background:linear-gradient(145deg,#d5f3b8,#a6dfaa);color:#1c4637}.secondary{background:#f4d88f;color:#47391e}.soft{background:#ffffff16;color:#f5ffe9;border:1px solid #ffffff27}.primary:hover,.secondary:hover,.soft:hover{filter:brightness(1.07);transform:translateY(-1px)}
-.controls{display:flex;gap:12px;align-items:center;justify-content:center;margin-top:12px;flex-wrap:wrap}.dpad{display:grid;grid-template-columns:47px 47px 47px;grid-template-rows:42px 42px 42px;gap:4px}.pad{background:#ffffff18;color:#faffed;border:1px solid #ffffff30;border-radius:11px;font-size:18px;font-weight:bold;user-select:none}.pad[data-key="up"]{grid-column:2;grid-row:1}.pad[data-key="left"]{grid-column:1;grid-row:2}.pad[data-key="down"]{grid-column:2;grid-row:2}.pad[data-key="right"]{grid-column:3;grid-row:2}.act-pad{height:88px;min-width:88px;border-radius:50%;background:linear-gradient(145deg,#f4d98e,#eab95f);color:#45371e;font-weight:900;box-shadow:0 5px 0 #b88b42;font-size:14px}.control-note{font-size:11px;color:#b9d8c4;max-width:180px;line-height:1.45}
-.sidebar{display:flex;flex-direction:column;gap:11px;min-width:0}.card{background:linear-gradient(145deg,#2a5b49,#214b3e);border:1px solid #ffffff20;border-radius:16px;padding:14px;box-shadow:0 7px 20px #051d1730}.card h2{font-size:15px;margin:0 0 11px;display:flex;align-items:center;gap:7px;color:#e7f8d9}.card .sub{font-size:11px;color:#b9d7c1;margin:-5px 0 10px}.message-box{min-height:80px;border-radius:12px;background:#143d32a8;padding:12px;font-size:13px;line-height:1.5;color:#f4f8e9;border:1px solid #ffffff12}.speaker{display:block;color:#f6dc91;font-weight:900;margin-bottom:4px}.quest-list{display:flex;flex-direction:column;gap:7px;max-height:260px;overflow:auto;padding-right:2px}.quest{padding:9px 10px;border-radius:11px;background:#ffffff0d;border:1px solid #ffffff15;font-size:12px}.quest-top{display:flex;justify-content:space-between;gap:8px;font-weight:800;color:#f6f3dc}.quest-desc{color:#c6dfca;margin-top:4px;line-height:1.4}.bar{height:6px;border-radius:8px;background:#102f27;margin-top:7px;overflow:hidden}.bar span{height:100%;display:block;background:linear-gradient(90deg,#97e296,#ffe185);border-radius:8px}.shop-grid{display:grid;grid-template-columns:1fr 1fr;gap:7px}.shop-btn{padding:10px 8px;border-radius:12px;background:#ffffff14;border:1px solid #ffffff20;color:#f8fceb;font-size:12px;font-weight:700;display:flex;flex-direction:column;align-items:center;gap:3px}.shop-btn span{font-size:18px}.badge{background:#f3d789;color:#352c16;padding:2px 7px;border-radius:999px;font-size:10px;font-weight:900}
-.modal-layer{position:fixed;inset:0;background:#051713b3;display:none;align-items:center;justify-content:center;padding:16px;z-index:90;backdrop-filter:blur(3px)}.modal-layer.show{display:flex}.modal{width:min(560px,100%);max-height:88vh;background:linear-gradient(160deg,#245443,#1a3e33);border:1px solid #ffffff30;border-radius:20px;box-shadow:0 25px 60px #02110ea6;display:flex;flex-direction:column;overflow:hidden}.modal-head{display:flex;justify-content:space-between;align-items:center;padding:14px 18px;border-bottom:1px solid #ffffff1a}.modal-head h3{margin:0;font-size:18px;color:#f8ecd2}.close-btn{background:#ffffff17;border-radius:50%;width:33px;height:33px;font-size:18px;color:#fff;display:grid;place-items:center}.modal-body{padding:16px 18px;overflow:auto;display:flex;flex-direction:column;gap:12px;font-size:13px;line-height:1.5}.list-card{background:#ffffff0d;border:1px solid #ffffff14;border-radius:12px;padding:11px 13px;display:flex;justify-content:space-between;gap:10px;align-items:center}.chip{background:#ffffff12;padding:4px 8px;border-radius:8px;font-size:11px;font-weight:bold;color:#fce49b}
-.login-layer{position:fixed;inset:0;background:#102d26f2;display:none;align-items:center;justify-content:center;padding:16px;z-index:99}.login-layer.show{display:flex}.login-card{width:min(440px,100%);background:linear-gradient(160deg,#245242,#173a30);border:1px solid #ffffff35;border-radius:22px;padding:26px;box-shadow:0 30px 70px #020c09;text-align:center}.login-card h2{margin:0 0 6px;font-size:25px;color:#fae8bf}.login-card p{margin:0 0 16px;color:#c0dec9;font-size:13px;line-height:1.4}.name-input{width:100%;padding:13px 15px;border-radius:12px;border:1px solid #ffffff40;background:#ffffff15;color:#fff;font-size:16px;margin-bottom:12px}.name-input::placeholder{color:#bddcc4}.start-btn{width:100%;padding:13px;border-radius:12px;font-weight:900;background:linear-gradient(145deg,#d2f3b3,#99db9c);color:#194032;font-size:15px}
-@media(max-width:980px){.page{grid-template-columns:minmax(0,1fr) 300px}}@media(max-width:760px){.page{grid-template-columns:1fr;padding:10px}.sidebar{display:grid;grid-template-columns:1fr 1fr}.sidebar .wide{grid-column:1/-1}.topbar{padding:11px}.stat{min-width:auto;padding:7px 9px}.canvas-help{display:none}}@media(max-width:480px){.sidebar{grid-template-columns:1fr}.sidebar .wide{grid-column:auto}.shop-grid{grid-template-columns:1fr}.brand small{letter-spacing:1px}.game-footer{align-items:flex-start}.control-note{max-width:125px}}
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  font-family: 'Inter', sans-serif;
+  color: white;
+  background: radial-gradient(circle at 50% 10%, #172747 0%, #080d1a 60%, #03060d 100%);
+  overflow-x: hidden;
+  user-select: none;
+}
+
+/* Background Particle Canvas */
+#confettiCanvas {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 100;
+}
+
+header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 6%;
+  background: rgba(10, 16, 30, 0.75);
+  backdrop-filter: blur(14px);
+  border-bottom: 1px solid rgba(255, 215, 0, 0.2);
+  position: sticky;
+  top: 0;
+  z-index: 50;
+}
+
+.logo {
+  font-family: 'Orbitron', sans-serif;
+  font-size: clamp(18px, 4vw, 24px);
+  font-weight: 900;
+  letter-spacing: 1.5px;
+  color: #ffdc4a;
+  text-shadow: 0 0 15px rgba(255, 220, 74, 0.6);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.logo span {
+  color: #00f3ff;
+  text-shadow: 0 0 15px rgba(0, 243, 255, 0.6);
+}
+
+.stats {
+  display: flex;
+  gap: 12px;
+}
+
+.stat {
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  padding: 8px 14px;
+  border-radius: 20px;
+  font-size: 13px;
+  font-weight: 700;
+  backdrop-filter: blur(8px);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.stat b {
+  color: #ffd93d;
+  font-family: 'Orbitron', sans-serif;
+}
+
+main {
+  width: min(920px, 92%);
+  margin: 30px auto 50px;
+}
+
+.panel {
+  background: rgba(17, 27, 49, 0.75);
+  backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 215, 0, 0.25);
+  border-radius: 26px;
+  padding: clamp(20px, 4vw, 36px);
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  position: relative;
+  overflow: hidden;
+}
+
+.panel::before {
+  content: '';
+  position: absolute;
+  top: -100px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 300px;
+  height: 200px;
+  background: radial-gradient(circle, rgba(255, 215, 0, 0.15), transparent 70%);
+  pointer-events: none;
+}
+
+h1 {
+  font-family: 'Orbitron', sans-serif;
+  font-size: clamp(28px, 5.5vw, 44px);
+  font-weight: 900;
+  margin: 12px 0;
+  line-height: 1.2;
+}
+
+h2 {
+  font-family: 'Orbitron', sans-serif;
+  margin-top: 0;
+}
+
+.muted {
+  color: #a6b9da;
+  line-height: 1.6;
+  font-size: 15px;
+}
+
+.badge-tag {
+  display: inline-block;
+  color: #ffdc4a;
+  background: rgba(255, 220, 74, 0.12);
+  border: 1px solid rgba(255, 220, 74, 0.35);
+  padding: 5px 12px;
+  border-radius: 20px;
+  font-size: 11px;
+  font-family: 'Orbitron', sans-serif;
+  letter-spacing: 1.5px;
+  font-weight: 800;
+}
+
+button {
+  cursor: pointer;
+  font-family: 'Inter', sans-serif;
+  font-weight: 700;
+  font-size: 15px;
+  border: none;
+  transition: all 0.2s;
+  user-select: none;
+}
+button:active {
+  transform: scale(0.97);
+}
+
+.primary {
+  background: linear-gradient(135deg, #ffd000, #ff8800);
+  color: #120b02;
+  border-radius: 14px;
+  padding: 14px 26px;
+  font-family: 'Orbitron', sans-serif;
+  font-weight: 900;
+  box-shadow: 0 6px 20px rgba(255, 170, 0, 0.4);
+  letter-spacing: 0.5px;
+}
+.primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 28px rgba(255, 170, 0, 0.6);
+}
+
+.secondary {
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: white;
+  border-radius: 12px;
+  padding: 12px 18px;
+}
+.secondary:hover {
+  background: rgba(255, 255, 255, 0.15);
+  transform: translateY(-2px);
+}
+
+.level-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 12px;
+  margin-top: 24px;
+}
+
+.level {
+  min-height: 86px;
+  background: rgba(25, 38, 64, 0.7);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  color: white;
+  border-radius: 16px;
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.25s;
+}
+.level:hover:not(.locked) {
+  transform: translateY(-4px);
+  border-color: #ffd700;
+  box-shadow: 0 8px 24px rgba(255, 215, 0, 0.3);
+}
+
+.level.unlocked {
+  border-color: rgba(0, 243, 255, 0.5);
+  background: rgba(14, 52, 78, 0.8);
+  box-shadow: 0 4px 15px rgba(0, 243, 255, 0.15);
+}
+
+.level.completed {
+  background: rgba(16, 75, 52, 0.8);
+  border-color: #00f5a0;
+  box-shadow: 0 4px 15px rgba(0, 245, 160, 0.2);
+}
+
+.level.locked {
+  opacity: 0.35;
+  cursor: not-allowed;
+  filter: grayscale(0.8);
+}
+
+.level small {
+  display: block;
+  margin-top: 5px;
+  font-size: 11px;
+  color: #c4d4f2;
+}
+
+.topline {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  align-items: center;
+  margin-bottom: 14px;
+}
+
+.progress-track {
+  height: 8px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 20px;
+  overflow: hidden;
+  margin: 14px 0 24px;
+}
+
+.progress-bar {
+  height: 100%;
+  width: 0%;
+  background: linear-gradient(90deg, #00f3ff, #ffd700);
+  transition: width 0.35s ease-out;
+  box-shadow: 0 0 12px rgba(255, 215, 0, 0.6);
+}
+
+.category {
+  color: #00f3ff;
+  font-size: 12px;
+  letter-spacing: 2px;
+  font-weight: 800;
+  font-family: 'Orbitron', sans-serif;
+  text-transform: uppercase;
+}
+
+.question {
+  font-size: clamp(20px, 3.8vw, 28px);
+  font-weight: 700;
+  line-height: 1.35;
+  margin: 16px 0 24px;
+}
+
+.answers {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.answer {
+  background: rgba(26, 40, 68, 0.8);
+  border: 2px solid rgba(64, 88, 134, 0.6);
+  color: white;
+  text-align: left;
+  padding: 16px 20px;
+  border-radius: 16px;
+  min-height: 64px;
+  font-size: 15px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  transition: all 0.2s;
+}
+.answer:hover:not(:disabled) {
+  border-color: #00f3ff;
+  background: rgba(20, 55, 90, 0.85);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(0, 243, 255, 0.25);
+}
+
+.answer.correct {
+  background: rgba(16, 92, 60, 0.9) !important;
+  border-color: #00f5a0 !important;
+  box-shadow: 0 0 20px rgba(0, 245, 160, 0.5);
+}
+
+.answer.wrong {
+  background: rgba(110, 28, 48, 0.9) !important;
+  border-color: #ff4757 !important;
+  box-shadow: 0 0 20px rgba(255, 71, 87, 0.5);
+}
+
+.answer:disabled {
+  cursor: default;
+  transform: none;
+}
+
+.feedback {
+  min-height: 32px;
+  margin: 18px 0;
+  font-weight: 800;
+  font-size: 16px;
+  letter-spacing: 0.5px;
+}
+
+.actions {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.hidden {
+  display: none !important;
+}
+
+.center {
+  text-align: center;
+}
+
+.big-score {
+  font-family: 'Orbitron', sans-serif;
+  font-size: clamp(48px, 10vw, 72px);
+  font-weight: 900;
+  color: #ffd700;
+  text-shadow: 0 0 30px rgba(255, 215, 0, 0.6);
+  margin: 10px 0;
+}
+
+/* Animated Golden Treasure Chest */
+.chest-container {
+  margin: 20px auto;
+  width: 140px;
+  height: 120px;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 80px;
+  animation: chestBounce 2s infinite ease-in-out;
+}
+
+@keyframes chestBounce {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-10px); }
+}
+
+/* Streak Combo Badge */
+#streakBadge {
+  display: none;
+  background: linear-gradient(135deg, #ff4757, #ff9f43);
+  color: white;
+  padding: 4px 10px;
+  border-radius: 12px;
+  font-family: 'Orbitron', sans-serif;
+  font-size: 11px;
+  font-weight: 900;
+  box-shadow: 0 0 12px rgba(255, 71, 87, 0.6);
+}
+
+footer {
+  text-align: center;
+  color: #647596;
+  padding: 24px;
+  font-size: 12px;
+  letter-spacing: 1px;
+}
+
+@media(max-width: 600px) {
+  .level-grid {
+    grid-template-columns: repeat(4, 1fr);
+    gap: 8px;
+  }
+  .answers {
+    grid-template-columns: 1fr;
+  }
+}
 </style>
 </head>
+
 <body>
 
-<header class="topbar">
-  <div class="brand">
-    <div class="brand-mark">🌿</div>
-    <div>
-      <h1>Meadow Drift</h1>
-      <small>DELUXE EDITION • ARNAW STUDIOS</small>
-    </div>
-  </div>
-  <div class="hud">
-    <div class="stat">Day <b id="dayCount">1</b></div>
-    <div class="stat"><span id="clockEmoji">☀️</span> <b id="clockText">08:00</b></div>
-    <div class="stat"><span id="weatherEmoji">🌤️</span> <b id="weatherText">Sunny</b></div>
-    <div class="stat">🪙 <b id="coinCount">15</b></div>
-    <div class="stat">⚡ <b id="energyCount">100</b>/100</div>
-    <div class="save-state" id="saveState">● Synced</div>
+<canvas id="confettiCanvas"></canvas>
+
+<header>
+  <div class="logo">💎 TREASURE <span>QUIZ</span></div>
+  <div class="stats">
+    <div class="stat"><span id="streakBadge">🔥 2X COMBO</span></div>
+    <div class="stat">🪙 Coins: <b id="headerScore">0</b></div>
+    <div class="stat">🗝️ Vaults: <b id="headerLevels">0/20</b></div>
   </div>
 </header>
 
-<main class="page">
-  <section class="game-column">
-    <div class="game-frame">
-      <div class="canvas-wrap">
-        <canvas id="gameCanvas" width="960" height="620"></canvas>
-        <div class="canvas-tag" id="locationTag">📍 Meadow Square</div>
-        <div class="canvas-help">WASD / Click to move · E: Interact · Space: Action</div>
-      </div>
-      <div class="game-footer">
-        <div class="action-row">
-          <button class="primary" data-action="interact">ACT / Talk (E)</button>
-          <button class="secondary" data-action="journal">Quests (M)</button>
-          <button class="soft" data-action="bag">Bag (I)</button>
-          <button class="soft" data-action="enterHome" id="homeQuickBtn">Enter Home</button>
-          <button class="soft" data-action="menu">Settings</button>
-        </div>
-        <p id="subHint">Walk near an islander, shop or plant to interact.</p>
-      </div>
+<main>
+
+  <!-- Home Section -->
+  <section id="home" class="panel">
+    <div class="badge-tag">ANCIENT RIDDLES & KNOWLEDGE</div>
+    <h1>Unlock The Vault.<br><span style="color:#ffd700">Claim The Treasure.</span></h1>
+    <p class="muted">
+      20 ancient treasure vaults. 100 mind-bending questions.
+      Solve the riddles, avoid traps, open locked chests, and collect precious golden coins!
+    </p>
+
+    <div style="margin: 20px 0; font-size: 14px; color: #c4d7f5; line-height: 2;">
+      <p>💎 <b>5 questions</b> per treasure vault</p>
+      <p>🪙 <b>+10 coins</b> for every correct answer (with streak combos!)</p>
+      <p>💡 <b>Hints & 50:50 Lifeline</b> to crack tricky riddles</p>
+      <p>💾 Progress automatically saved on this device</p>
     </div>
 
-    <div class="controls">
-      <div class="dpad">
-        <button class="pad" data-pad="up" data-key="up">▲</button>
-        <button class="pad" data-pad="left" data-key="left">◀</button>
-        <button class="pad" data-pad="down" data-key="down">▼</button>
-        <button class="pad" data-pad="right" data-key="right">▶</button>
+    <button class="primary" onclick="showLevels()">EXPLORE VAULTS 🗝️</button>
+  </section>
+
+  <!-- Level Grid Section -->
+  <section id="levels" class="panel hidden">
+    <div class="topline">
+      <div>
+        <div class="category">TREASURE MAP</div>
+        <h2 style="margin:4px 0 0">Select a Vault</h2>
       </div>
-      <button class="act-pad" data-action="interact">ACT<br><small style="font-size:10px">E</small></button>
-      <div class="control-note">Touch buttons, tap anywhere on the meadow, or use WASD / Arrow keys.</div>
+      <button class="secondary" onclick="showHome()">← Back Home</button>
+    </div>
+
+    <div class="level-grid" id="levelGrid"></div>
+
+    <div style="margin-top:28px;text-align:center">
+      <button class="secondary" style="font-size:12px;color:#ff8b9d;border-color:rgba(255,71,87,0.3)" onclick="resetGame()">↻ Reset All Progress</button>
     </div>
   </section>
 
-  <aside class="sidebar">
-    <div class="card wide">
-      <h2>💬 Island Dialogue</h2>
-      <div class="message-box" id="speakerBox">
-        <span class="speaker" id="speakerName">Sunny Meadow</span>
-        <span id="speakerText">Welcome to Meadow Island! Stroll along the path, meet neighbours and collect timber and berries.</span>
+  <!-- Active Game Screen -->
+  <section id="game" class="panel hidden">
+    <div class="topline">
+      <div>
+        <div class="category" id="levelLabel">VAULT 1</div>
+        <h2 id="levelTitle" style="margin:4px 0 0">Nature & Geography</h2>
+      </div>
+      <div class="stat">
+        ⭐ Level: <b id="gameScore">0</b>/50
       </div>
     </div>
 
-    <div class="card">
-      <h2>📜 Active Quests <span class="badge" id="activeQuestCount">0</span></h2>
-      <div class="sub">Complete tasks for neighbours to earn coins & friendship!</div>
-      <div class="quest-list" id="sidebarQuestList"></div>
+    <div class="progress-track">
+      <div class="progress-bar" id="progressBar"></div>
     </div>
 
-    <div class="card">
-      <h2>🏪 Island Services</h2>
-      <div class="shop-grid">
-        <button class="shop-btn" data-action="noticeBoard"><span>📌</span>Notice Board</button>
-        <button class="shop-btn" data-action="market"><span>🛒</span>Market</button>
-        <button class="shop-btn" data-action="estate"><span>🏡</span>Estate Agency</button>
-        <button class="shop-btn" data-action="openFurniture"><span>🛋️</span>Furniture</button>
-      </div>
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+      <div style="font-size:13px;color:#8fa7cc;font-weight:700" id="questionCount">Question 1 of 5</div>
+      <div class="category" id="category">GEOGRAPHY</div>
     </div>
 
-    <div class="card">
-      <h2>ℹ️ Controls & Tips</h2>
-      <div style="font-size:12px;color:#c0ded0;line-height:1.6">
-        • <b>E / Space:</b> Talk, harvest & enter houses<br>
-        • <b>Sleep at night:</b> Restores full energy & advances day<br>
-        • <b>Ravi the Trader:</b> Arrives every 3rd day at the dock!<br>
-        • <b>1,000,000 Homes:</b> Discover unique house IDs at the agency!
+    <div class="question" id="question">Loading treasure riddle...</div>
+
+    <div class="answers" id="answers"></div>
+
+    <div class="feedback" id="feedback"></div>
+
+    <div class="actions">
+      <div style="display:flex;gap:10px">
+        <button class="secondary" id="hintBtn" onclick="showHint()">💡 Hint</button>
+        <button class="secondary" id="fiftyBtn" onclick="useFiftyFifty()">✂️ 50:50</button>
+      </div>
+      <div style="display:flex;gap:10px">
+        <button class="secondary" onclick="showLevels()">Map</button>
+        <button class="primary hidden" id="nextBtn" onclick="nextQuestion()">Next Riddle →</button>
       </div>
     </div>
-  </aside>
+  </section>
+
+  <!-- Result Screen -->
+  <section id="result" class="panel center hidden">
+    <div class="chest-container" id="chestAnim">👑</div>
+    <div class="badge-tag">VAULT UNLOCKED</div>
+    <h1 id="resultTitle">TREASURE CLAIMED!</h1>
+    <div class="big-score" id="resultScore">50/50</div>
+    <p class="muted" id="resultMessage" style="max-width:560px;margin:10px auto 26px">You unlocked the ancient vault!</p>
+
+    <div style="display:flex;justify-content:center;gap:14px;flex-wrap:wrap">
+      <button class="secondary" onclick="showLevels()">← Treasure Map</button>
+      <button class="primary" id="continueBtn" onclick="continueGame()">Next Vault →</button>
+    </div>
+  </section>
+
 </main>
 
-<!-- Modals -->
-<div class="modal-layer" id="modalLayer">
-  <div class="modal">
-    <div class="modal-head">
-      <h3 id="modalTitle">Notice</h3>
-      <button class="close-btn" data-action="closeModal">✕</button>
-    </div>
-    <div class="modal-body" id="modalBody"></div>
-  </div>
-</div>
-
-<!-- Login Form -->
-<div class="login-layer" id="loginLayer">
-  <div class="login-card">
-    <h2>Welcome to Meadow Drift 🌿</h2>
-    <p>Enter your character name to start your peaceful island life.</p>
-    <form id="loginForm">
-      <input class="name-input" id="playerName" placeholder="Your name (e.g. Robin)" maxlength="18" required autofocus>
-      <button class="start-btn" type="submit">Begin Adventure</button>
-    </form>
-  </div>
-</div>
+<footer>ARNAW STUDIOS • TREASURE QUIZ ENGINE</footer>
 
 <script>
-(()=>{
-'use strict';
+"use strict";
 
-const canvas=document.getElementById('gameCanvas');
-const ctx=canvas.getContext('2d');
-const W=960,H=620;
-const $=id=>document.getElementById(id);
-const keyState={up:false,down:false,left:false,right:false};
-
-// Cozy Web Audio Synthesizer
-const SoundFX = {
+// Pure Web Audio Synthesizer
+const AudioFX = {
   ctx: null,
   init() {
     if (!this.ctx) this.ctx = new (window.AudioContext || window.webkitAudioContext)();
   },
-  play(f, t, d, v=0.08) {
+  tone(freq, type, duration, vol=0.1, slide=0) {
     try {
       this.init();
-      const o = this.ctx.createOscillator(), g = this.ctx.createGain();
-      o.type = t;
-      o.frequency.setValueAtTime(f, this.ctx.currentTime);
-      g.gain.setValueAtTime(v, this.ctx.currentTime);
-      g.gain.exponentialRampToValueAtTime(0.0001, this.ctx.currentTime + d);
-      o.connect(g);
-      g.connect(this.ctx.destination);
-      o.start();
-      o.stop(this.ctx.currentTime + d);
+      const osc = this.ctx.createOscillator();
+      const gain = this.ctx.createGain();
+      osc.type = type;
+      osc.frequency.setValueAtTime(freq, this.ctx.currentTime);
+      if (slide !== 0) {
+        osc.frequency.exponentialRampToValueAtTime(Math.max(20, freq + slide), this.ctx.currentTime + duration);
+      }
+      gain.gain.setValueAtTime(vol, this.ctx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.0001, this.ctx.currentTime + duration);
+      osc.connect(gain);
+      gain.connect(this.ctx.destination);
+      osc.start();
+      osc.stop(this.ctx.currentTime + duration);
     } catch(e) {}
   },
-  talk() { this.play(587, 'sine', 0.15, 0.07); },
-  coin() {
-    this.play(987, 'sine', 0.08, 0.1);
-    setTimeout(() => this.play(1318, 'sine', 0.2, 0.1), 70);
+  correct() {
+    this.tone(659, "sine", 0.1, 0.12);
+    setTimeout(() => this.tone(880, "sine", 0.25, 0.12), 80);
   },
-  harvest() {
-    this.play(523, 'triangle', 0.12, 0.08);
-    setTimeout(() => this.play(659, 'triangle', 0.15, 0.08), 60);
+  wrong() {
+    this.tone(180, "sawtooth", 0.25, 0.15, -60);
   },
-  door() {
-    this.play(349, 'triangle', 0.25, 0.07);
-    setTimeout(() => this.play(440, 'sine', 0.35, 0.07), 100);
+  click() {
+    this.tone(400, "triangle", 0.05, 0.06);
   },
-  quest() {
-    [523, 659, 784, 1046].forEach((f, i) => setTimeout(() => this.play(f, 'triangle', 0.22, 0.09), i * 110));
+  chest() {
+    [523, 659, 784, 1046, 1318].forEach((f, i) => {
+      setTimeout(() => this.tone(f, "triangle", 0.2, 0.12), i * 90);
+    });
   }
 };
 
-const particles = [];
-function addSparkle(x, y, color='#ffe066', count=6) {
+// Canvas Confetti & Coin Particles
+const canvas = document.getElementById("confettiCanvas");
+const ctx = canvas.getContext("2d");
+let confetti = [];
+
+function resizeCanvas() {
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+}
+window.addEventListener("resize", resizeCanvas);
+resizeCanvas();
+
+function spawnConfetti(count = 45) {
   for (let i = 0; i < count; i++) {
-    particles.push({
-      x, y,
-      vx: (Math.random() - 0.5) * 3,
-      vy: (Math.random() - 0.5) * 3 - 1,
-      r: Math.random() * 3 + 2,
-      c: color,
-      life: 25
+    confetti.push({
+      x: window.innerWidth / 2,
+      y: window.innerHeight / 2,
+      vx: (Math.random() - 0.5) * 16,
+      vy: (Math.random() - 0.7) * 18,
+      r: Math.random() * 5 + 3,
+      color: ['#ffd700', '#ff4757', '#00f3ff', '#00f5a0', '#ffffff'][Math.floor(Math.random() * 5)],
+      life: 70
     });
   }
 }
 
-let player={x:480,y:350,speed:3.2,face:1,bob:0};
-let inside=false,modalOpen=false,loginOpen=false,lastFrame=0,saveTimer=0,lastLocationText='';
-let moveTarget=null,targetInteract=false;
-
-const SAVE_KEY='meadowDriftDeluxe_save';
-
-const furnitureCatalog=[
- {name:'Cozy Armchair',cost:25,icon:'🛋️'},
- {name:'Oak Dining Table',cost:45,icon:'🍽️'},
- {name:'Vintage Bookshelf',cost:60,icon:'📚'},
- {name:'Brass Floor Lamp',cost:30,icon:'💡'},
- {name:'Potted Monstera',cost:20,icon:'🪴'},
- {name:'Feather Bed',cost:75,icon:'🛏️'},
- {name:'Retro TV',cost:65,icon:'📺'},
- {name:'Cast Iron Stove',cost:55,icon:'🍳'}
-];
-
-const citizens=[
- {id:'luna',name:'Luna',x:290,y:250,color:'#d48eb3',hair:'#463022',role:'Botanist',line:'The meadows smell sweetest after morning dew!'},
- {id:'milo',name:'Milo',x:610,y:245,color:'#6aa9d2',hair:'#7a4726',role:'Carpenter',line:'Looking for quality timber? The big oaks to the west are sturdy.'},
- {id:'ava',name:'Ava',x:330,y:430,color:'#e5a95d',hair:'#2b231d',role:'Baker',line:'Fresh berry pies require sweet forest berries!'},
- {id:'noah',name:'Noah',x:680,y:425,color:'#7ebd7e',hair:'#382b20',role:'Fisher',line:'The sea carries gifts from all around the archipelago.'},
- {id:'oliver',name:'Oliver',x:210,y:355,color:'#a68ed4',hair:'#5b4034',role:'Historian',line:'Every house on this island has a story going back generations.'},
- {id:'emma',name:'Emma',x:765,y:350,color:'#e58c77',hair:'#262426',role:'Florist',line:'Fresh blossoms brighten up any home interior!'},
- {id:'bram',name:'Bram',x:480,y:140,color:'#8ba895',hair:'#4f3a2b',role:'Mayor',line:'Welcome to our community! Make yourself at home.'},
- {id:'piper',name:'Piper',x:530,y:385,color:'#d47878',hair:'#2d231e',role:'Courier',line:'Check the Notice Board daily for fresh requests!'}
-];
-
-const travellingTrader={name:'Ravi',x:690,y:230,color:'#e0a553',hair:'#2d2015'};
-
-const resourceNodes=[
- {id:'tree',name:'Oak Tree',x:160,y:450,resource:'wood',icon:'🪵',label:'Chop Wood'},
- {id:'berries',name:'Berry Bush',x:810,y:460,resource:'berries',icon:'🫐',label:'Pick Berries'},
- {id:'flowers',name:'Wildflower Meadow',x:240,y:170,resource:'flowers',icon:'🌷',label:'Pick Flowers'}
-];
-
-function defaultGame(){
- return {
-  name:'Friend',day:1,coins:20,energy:100,clockMinutes:480,worldMinutes:0,
-  weather:'sunny',weatherNextChange:260,
-  inventory:{wood:2,berries:3,flowers:1},
-  furnitureOwned:['Cozy Armchair','Potted Monstera'],
-  placedFurniture:[{name:'Cozy Armchair',x:280,y:280},{name:'Potted Monstera',x:680,y:260}],
-  quests:[
-   {id:'q1',citizenId:'milo',title:'Timber for Milo',desc:'Gather 3 wood logs for the workshop.',req:{wood:3},reward:25,done:false},
-   {id:'q2',citizenId:'ava',title:'Pie Ingredients',desc:'Collect 4 wild berries for Ava.',req:{berries:4},reward:30,done:false}
-  ],
-  dailyQuests:[
-   {title:'Daily Walk',desc:'Harvest 2 wildflowers today.',req:{flowers:2},reward:18,claimed:false}
-  ],
-  customHome:{number:104,name:'Meadow Villa',color:'#f7e4be'}
- };
-}
-
-let game=defaultGame();
-
-function safeNumber(v, fallback){return typeof v==='number'&&!isNaN(v)?v:fallback;}
-
-function loadGame(name){
- try{
-  const raw=localStorage.getItem(SAVE_KEY);
-  if(raw){
-   const s=JSON.parse(raw);
-   game=Object.assign(defaultGame(),s);
-   if(name)game.name=name;
-  } else if(name){
-   game.name=name;
+function updateParticles() {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  for (let i = confetti.length - 1; i >= 0; i--) {
+    const p = confetti[i];
+    p.x += p.vx;
+    p.y += p.vy;
+    p.vy += 0.45; // gravity
+    p.life--;
+    ctx.fillStyle = p.color;
+    ctx.beginPath();
+    ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+    ctx.fill();
+    if (p.life <= 0) confetti.splice(i, 1);
   }
- }catch(e){game=defaultGame();}
- loginOpen=false;
- $('loginLayer').classList.remove('show');
- updateUI();
+  requestAnimationFrame(updateParticles);
 }
+requestAnimationFrame(updateParticles);
 
-function saveGame(){
- try{
-  localStorage.setItem(SAVE_KEY,JSON.stringify(game));
-  localStorage.setItem('meadowDriftDeluxe_last',game.name);
-  $('saveState').textContent='● Synced';
- }catch(e){}
-}
+const levels = [
+{
+title:"General Knowledge",
+questions:[
+["What is the capital of France?",["Rome","Paris","Madrid","Berlin"],1,"It is famous for the Eiffel Tower."],
+["How many days are in a leap year?",["364","365","366","367"],2,"February has one extra day."],
+["Which is the largest ocean?",["Atlantic","Indian","Arctic","Pacific"],3,"It covers the largest area of Earth."],
+["How many colours are traditionally named in a rainbow?",["5","6","7","8"],2,"Remember VIBGYOR."],
+["Which animal is known as the ship of the desert?",["Horse","Camel","Elephant","Donkey"],1,"It can travel across deserts."]
+]},
+{
+title:"Space Explorer",
+questions:[
+["Which planet is called the Red Planet?",["Venus","Mars","Jupiter","Mercury"],1,"Its surface contains iron-rich dust."],
+["What is at the centre of our solar system?",["Earth","Moon","Sun","Mars"],2,"Earth revolves around it."],
+["Which is the largest planet?",["Earth","Saturn","Jupiter","Neptune"],2,"It is a gas giant."],
+["What is Earth's natural satellite?",["Sun","Moon","Mars","Venus"],1,"We can see it at night."],
+["Which planet is famous for its rings?",["Saturn","Mercury","Earth","Mars"],0,"Its rings are made of ice and rock."]
+]},
+{
+title:"Science Lab",
+questions:[
+["What gas do humans need for respiration?",["Carbon dioxide","Oxygen","Helium","Hydrogen"],1,"We breathe it from the air."],
+["Which organ pumps blood?",["Lungs","Brain","Heart","Kidney"],2,"It beats continuously."],
+["What is H₂O commonly called?",["Salt","Water","Oxygen","Sugar"],1,"You drink it every day."],
+["Which force pulls objects towards Earth?",["Friction","Magnetism","Gravity","Electricity"],2,"It keeps us on the ground."],
+["Which part of a plant absorbs most water?",["Flower","Roots","Fruit","Petals"],1,"It grows underground."]
+]},
+{
+title:"Geography",
+questions:[
+["Which line divides Earth into Northern and Southern Hemispheres?",["Equator","Prime Meridian","Tropic of Cancer","Arctic Circle"],0,"It is at 0° latitude."],
+["What is the capital of India?",["Mumbai","Jaipur","New Delhi","Kolkata"],2,"It is in the National Capital Territory."],
+["Which is the largest continent?",["Africa","Asia","Europe","Australia"],1,"India is part of it."],
+["Which is the highest mountain above sea level?",["K2","Kilimanjaro","Mount Everest","Denali"],2,"It lies in the Himalayas."],
+["What is a large area of flat land called?",["Valley","Plain","Island","Plateau"],1,"It has relatively level ground."]
+]},
+{
+title:"Mathematics",
+questions:[
+["What is 12 × 8?",["86","96","108","88"],1,"12 times 4 is 48."],
+["What is 25% of 200?",["25","40","50","75"],2,"A quarter of 200."],
+["What is 144 ÷ 12?",["10","11","12","14"],2,"12 multiplied by 12 equals 144."],
+["What is 3/4 as a percentage?",["25%","50%","75%","80%"],2,"Convert the fraction to hundredths."],
+["What is the perimeter of a square with side 6 cm?",["12 cm","18 cm","24 cm","36 cm"],2,"A square has four equal sides."]
+]},
+{
+title:"Animal Kingdom",
+questions:[
+["Which is the fastest land animal?",["Lion","Cheetah","Horse","Tiger"],1,"It has incredible sprint speed."],
+["What is a baby frog called?",["Cub","Calf","Tadpole","Chick"],2,"It lives in water before becoming an adult."],
+["Which mammal can fly?",["Bat","Penguin","Ostrich","Chicken"],0,"It uses wings to fly at night."],
+["What do pandas mainly eat?",["Fish","Bamboo","Grass only","Insects"],1,"This plant makes up most of their diet."],
+["Which animal has a trunk?",["Giraffe","Elephant","Rhino","Hippo"],1,"It uses its long trunk to grab things."]
+]},
+{
+title:"History Heroes",
+questions:[
+["Who was the first Mughal emperor in India?",["Akbar","Babur","Shah Jahan","Aurangzeb"],1,"He founded the Mughal Empire in India."],
+["Who built the Taj Mahal?",["Akbar","Babur","Shah Jahan","Humayun"],2,"He built it in memory of Mumtaz Mahal."],
+["Who was known as the Iron Man of India?",["Sardar Vallabhbhai Patel","Jawaharlal Nehru","Subhas Chandra Bose","B. R. Ambedkar"],0,"He played a major role in integrating princely states."],
+["Who was the first Prime Minister of India?",["Mahatma Gandhi","Rajendra Prasad","Jawaharlal Nehru","Sardar Patel"],2,"He served after independence."],
+["In which year did India gain independence?",["1942","1945","1947","1950"],2,"It happened on 15 August."]
+]},
+{
+title:"English Expert",
+questions:[
+["What is the plural of 'child'?",["Childs","Children","Childes","Childrens"],1,"It is an irregular plural."],
+["Which word is an adjective?",["Quickly","Beautiful","Running","Under"],1,"It describes a noun."],
+["What is the opposite of 'ancient'?",["Old","Historic","Modern","Past"],2,"It means belonging to the present or recent times."],
+["Which is a synonym for 'happy'?",["Joyful","Angry","Tired","Worried"],0,"It means feeling pleasure."],
+["Which punctuation mark ends a question?",["Full stop","Comma","Question mark","Colon"],2,"It looks like this: ?"]
+]},
+{
+title:"Computer Genius",
+questions:[
+["What does CPU stand for?",["Central Processing Unit","Computer Power Utility","Central Program User","Control Processing User"],0,"It is often called the computer's brain."],
+["Which device is used to type text?",["Monitor","Keyboard","Speaker","Printer"],1,"It has letters and number keys."],
+["What does HTML help create?",["Web pages","Car engines","Food recipes only","Electric circuits"],0,"It is a markup language used on the web."],
+["Which of these is an input device?",["Monitor","Printer","Mouse","Speaker"],2,"You move it to control the pointer."],
+["What does URL identify?",["A web address","A keyboard key","A battery type","A file size"],0,"You see it in the browser's address bar."]
+]},
+{
+title:"Football Fever",
+questions:[
+["How many players does a team normally have on the pitch?",["9","10","11","12"],2,"This includes the goalkeeper."],
+["What does FIFA govern?",["Cricket","Football","Tennis","Basketball"],1,"It is the international football governing body."],
+["How long is a standard football match, excluding added time?",["60 minutes","80 minutes","90 minutes","100 minutes"],2,"It has two equal halves."],
+["Which player can use hands inside their own penalty area?",["Striker","Goalkeeper","Defender","Midfielder"],1,"This player protects the goal."],
+["What colour card means a player is sent off?",["Blue","Green","Yellow","Red"],3,"It is the strongest standard disciplinary card."]
+]},
+{
+title:"World Capitals",
+questions:[
+["What is the capital of Japan?",["Kyoto","Tokyo","Osaka","Seoul"],1,"It is one of the world's largest urban areas."],
+["What is the capital of Australia?",["Sydney","Melbourne","Canberra","Perth"],2,"It is not Sydney."],
+["What is the capital of Egypt?",["Cairo","Alexandria","Nairobi","Rabat"],0,"It lies beside the Nile."],
+["What is the capital of Italy?",["Venice","Milan","Rome","Naples"],2,"It is home to the Colosseum."],
+["What is the capital of Canada?",["Toronto","Vancouver","Ottawa","Montreal"],2,"It is in Ontario."]
+]},
+{
+title:"Nature & Earth",
+questions:[
+["What process do plants use to make food?",["Respiration","Photosynthesis","Digestion","Evaporation"],1,"Plants use sunlight in this process."],
+["Which layer protects Earth from much harmful ultraviolet radiation?",["Ozone layer","Inner core","Mantle","Crust"],0,"It is found in the stratosphere."],
+["What is molten rock beneath Earth's surface called?",["Lava","Magma","Sand","Steam"],1,"It is called lava after reaching the surface."],
+["What is the changing of liquid water into vapour called?",["Condensation","Freezing","Evaporation","Melting"],2,"Heat helps this process happen."],
+["Which is a renewable energy source?",["Coal","Petrol","Solar energy","Natural gas"],2,"It comes from sunlight."]
+]},
+{
+title:"Brain Teasers",
+questions:[
+["What has keys but cannot open locks?",["A map","A piano","A door","A box"],1,"It makes music."],
+["What number comes next: 2, 4, 6, 8, ...?",["9","10","11","12"],1,"Add two each time."],
+["How many months have 28 days?",["1","2","6","12"],3,"Every month has at least 28 days."],
+["Which is heavier: 1 kg of iron or 1 kg of cotton?",["Iron","Cotton","Both weigh the same","Cannot tell"],2,"Both have the same mass."],
+["If you have three apples and take away two, how many do you have?",["1","2","3","5"],1,"Count the apples you took."]
+]},
+{
+title:"Amazing Inventions",
+questions:[
+["Who is commonly credited with inventing the telephone?",["Alexander Graham Bell","Thomas Edison","Isaac Newton","Galileo"],0,"His name is closely associated with early telephone patents."],
+["Which invention helps us see distant objects in space?",["Microscope","Telescope","Periscope","Thermometer"],1,"Astronomers use it to observe stars."],
+["Which device measures temperature?",["Barometer","Thermometer","Compass","Ruler"],1,"It commonly shows degrees."],
+["Who developed the theory of relativity?",["Newton","Einstein","Darwin","Tesla"],1,"His surname begins with E."],
+["Which invention is used to take photographs?",["Camera","Compass","Microscope","Calculator"],0,"It captures images."]
+]},
+{
+title:"Space Mission",
+questions:[
+["What is the name of our galaxy?",["Andromeda","Milky Way","Whirlpool","Sombrero"],1,"Our solar system is inside it."],
+["Which planet is closest to the Sun?",["Venus","Earth","Mercury","Mars"],2,"It is the smallest of the eight planets."],
+["What is an astronaut?",["A deep-sea diver","A space traveller","A mountain climber","A pilot only"],1,"They travel beyond Earth's atmosphere."],
+["What force keeps planets orbiting the Sun?",["Gravity","Sound","Friction","Wind"],0,"It attracts objects with mass."],
+["Which was the first artificial satellite in space?",["Apollo 11","Sputnik 1","Voyager 1","Hubble"],1,"The Soviet Union launched it in 1957."]
+]},
+{
+title:"Literature Legends",
+questions:[
+["Who wrote 'The Jungle Book'?",["Rudyard Kipling","Charles Dickens","J. R. R. Tolkien","Roald Dahl"],0,"He was a British author born in India."],
+["Who wrote 'Romeo and Juliet'?",["William Wordsworth","William Shakespeare","Robert Frost","Jane Austen"],1,"He was a famous English playwright."],
+["Who wrote 'The Road Not Taken'?",["Robert Frost","W. B. Yeats","William Blake","John Keats"],0,"His surname means a cold morning."],
+["What is a character in a story?",["The setting","A person or being in the story","The title only","The final page"],1,"They take part in the events."],
+["What is a synonym?",["A word with a similar meaning","An opposite word","A punctuation mark","A paragraph"],0,"For example, 'happy' and 'joyful'."]
+]},
+{
+title:"Human Body",
+questions:[
+["Which organ controls most body activities?",["Heart","Brain","Liver","Lungs"],1,"It is protected by the skull."],
+["How many bones are typically in an adult human body?",["106","206","306","406"],1,"The number is just over two hundred."],
+["Which organs help us breathe?",["Kidneys","Lungs","Stomach","Intestines"],1,"They take in oxygen."],
+["Which blood cells help fight infections?",["White blood cells","Red blood cells","Platelets","None"],0,"They are part of the immune system."],
+["Which nutrient is the body's main quick energy source?",["Carbohydrates","Vitamins","Water","Minerals"],0,"Bread and rice are rich in them."]
+]},
+{
+title:"Maths Champion",
+questions:[
+["What is the square of 15?",["125","200","225","250"],2,"Multiply 15 by 15."],
+["What is 7³?",["49","147","343","512"],2,"Multiply 7 by itself three times."],
+["What is the HCF of 12 and 18?",["2","3","6","9"],2,"Find the largest number dividing both."],
+["What is 0.75 as a fraction in simplest form?",["1/2","2/3","3/4","4/5"],2,"Write it as 75/100 and simplify."],
+["A triangle's angles add up to how many degrees?",["90°","180°","270°","360°"],1,"It is half the total angles around a point."]
+]},
+{
+title:"Mixed Challenge",
+questions:[
+["Which language is commonly used to style web pages?",["HTML","CSS","SQL","Python only"],1,"It controls colours, layout, and appearance."],
+["Which is the largest hot desert in the world?",["Gobi","Sahara","Thar","Kahari"],1,"It is in North Africa."],
+["What is the chemical symbol for gold?",["Ag","Gd","Au","Go"],2,"Its symbol comes from the Latin name aurum."],
+["Which instrument measures atmospheric pressure?",["Thermometer","Barometer","Hygrometer","Compass"],1,"Meteorologists use it to help study weather."],
+["What is the smallest prime number?",["0","1","2","3"],2,"It is the only even prime number."]
+]},
+{
+title:"Grandmaster Finale",
+questions:[
+["Which number is a prime number?",["21","27","29","33"],2,"It has exactly two positive factors."],
+["Which continent contains the Amazon rainforest?",["Africa","Asia","South America","Europe"],2,"The rainforest is largely in Brazil."],
+["What is the chemical symbol for sodium?",["S","So","Na","N"],2,"It comes from the Latin word natrium."],
+["Which part of a cell contains most of its genetic material?",["Nucleus","Cell wall","Cytoplasm","Membrane"],0,"It acts as the cell's control centre in many cells."],
+["What is the binary representation of decimal 5?",["100","101","110","111"],1,"It is four plus one in binary place values."]
+]}
+];
 
-function updateUI(){
- $('dayCount').textContent=game.day;
- const h=Math.floor(game.clockMinutes/60),m=Math.floor(game.clockMinutes%60);
- $('clockText').textContent=`${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}`;
- $('clockEmoji').textContent=h>=6&&h<18?'☀️':'🌙';
- $('weatherText').textContent=game.weather.charAt(0).toUpperCase()+game.weather.slice(1);
- $('weatherEmoji').textContent=game.weather==='sunny'?'☀️':game.weather==='rainy'?'🌧️':'🌤️';
- $('coinCount').textContent=game.coins;
- $('energyCount').textContent=Math.round(game.energy);
-
- const qList=$('sidebarQuestList');
- qList.innerHTML='';
- let count=0;
- game.quests.forEach(q=>{
-  if(q.done)return;
-  count++;
-  const div=document.createElement('div');
-  div.className='quest';
-  const resKey=Object.keys(q.req)[0];
-  const cur=game.inventory[resKey]||0,max=q.req[resKey];
-  div.innerHTML=`<div class="quest-top"><span>${q.title}</span><span style="color:#f7df94">+${q.reward}🪙</span></div>
-  <div class="quest-desc">${q.desc} (${cur}/${max})</div>
-  <div class="bar"><span style="width:${Math.min(100,(cur/max)*100)}%"></span></div>`;
-  qList.appendChild(div);
- });
- $('activeQuestCount').textContent=count;
-}
-
-function advanceWorldClock(dt){
- game.clockMinutes=(game.clockMinutes+dt*0.5)%1440;
- game.worldMinutes+=dt*0.5;
- if(game.worldMinutes>=game.weatherNextChange){
-  game.weatherNextChange=game.worldMinutes+200+Math.random()*300;
-  game.weather=['sunny','cloudy','rainy'][Math.floor(Math.random()*3)];
- }
- updateUI();
-}
-
-function traderIsHere(){
- return game.day%3===0;
-}
-
-function getNearby(){
- if(inside)return null;
- for(const c of citizens){
-  if(Math.hypot(player.x-c.x,player.y-c.y)<48)return {kind:'citizen',data:c,label:c.name};
- }
- if(traderIsHere()&&Math.hypot(player.x-travellingTrader.x,player.y-travellingTrader.y)<52){
-  return {kind:'trader',data:travellingTrader,label:'Ravi the Trader'};
- }
- for(const r of resourceNodes){
-  if(Math.hypot(player.x-r.x,player.y-r.y)<54)return {kind:'resource',data:r,label:r.name};
- }
- if(Math.hypot(player.x-180,player.y-190)<70)return {kind:'landmark',data:{action:'market'},label:'Meadow Market'};
- if(Math.hypot(player.x-480,player.y-185)<70)return {kind:'landmark',data:{action:'estate'},label:'Estate Office'};
- if(Math.hypot(player.x-780,player.y-190)<70)return {kind:'landmark',data:{action:'enterHome'},label:'Your Villa'};
- if(Math.hypot(player.x-480,player.y-480)<55)return {kind:'landmark',data:{action:'noticeBoard'},label:'Notice Board'};
- return null;
-}
-
-function harvestResource(node){
- SoundFX.harvest(); addSparkle(player.x, player.y, "#95e06c", 8);
- if(game.energy<5){
-  showMessage('Exhausted','You need to rest! Sleep at home to replenish your energy.');
-  return;
- }
- game.energy=Math.max(0,game.energy-5);
- game.inventory[node.resource]=(game.inventory[node.resource]||0)+1;
- showMessage(node.name,`Harvested 1 ${node.resource}! Checked your bag.`);
- updateUI();
- saveGame();
-}
-
-function completeQuest(q){
- SoundFX.quest(); addSparkle(player.x, player.y, "#ffd700", 12);
- q.done=true;
- game.coins+=q.reward;
- showMessage('Quest Complete!',`Completed "${q.title}" and earned ${q.reward} coins!`);
- updateUI();
- saveGame();
-}
-
-function talkToCitizen(c){
- SoundFX.talk();
- const q=game.quests.find(q=>q.citizenId===c.id&&!q.done);
- if(q){
-  const resKey=Object.keys(q.req)[0];
-  if((game.inventory[resKey]||0)>=q.req[resKey]){
-   game.inventory[resKey]-=q.req[resKey];
-   completeQuest(q);
-   return;
-  }
- }
- showMessage(`${c.name} (${c.role})`,c.line);
-}
-
-function talkToTrader(){
- SoundFX.talk();
- showModal('Ravi the Travelling Trader','<div class="quest"><b>Rare Exotic Decor</b><div class="quest-desc">Ravi sails between islands bringing unique furnishings!</div></div><div class="shop-grid"><button class="shop-btn" data-action="buyFurniture" data-index="6"><span>📺</span>Retro TV (65🪙)</button><button class="shop-btn" data-action="buyFurniture" data-index="7"><span>🍳</span>Cast Iron Stove (55🪙)</button></div>');
-}
-
-function showMessage(speaker,text){
- $('speakerName').textContent=speaker;
- $('speakerText').textContent=text;
-}
-
-function showModal(title,html){
- modalOpen=true;
- $('modalTitle').textContent=title;
- $('modalBody').innerHTML=html;
- $('modalLayer').classList.add('show');
-}
-
-function closeModal(){
- modalOpen=false;
- $('modalLayer').classList.remove('show');
-}
-
-function openMarket(){
- let html='<p>Trade raw island resources for gleaming coins!</p>';
- ['wood','berries','flowers'].forEach(r=>{
-  const count=game.inventory[r]||0;
-  const price=r==='wood'?8:r==='berries'?6:10;
-  html+=`<div class="list-card"><div><b>${r.toUpperCase()}</b> <span class="chip">Own: ${count}</span></div>
-  <button class="primary" data-action="sellResource" data-resource="${r}" ${count<=0?'disabled':''}>Sell for ${price}🪙</button></div>`;
- });
- showModal('🛒 Meadow Island Market',html);
-}
-
-function sellResource(r){
- const price=r==='wood'?8:r==='berries'?6:10;
- if((game.inventory[r]||0)>0){
-  game.inventory[r]--;
-  game.coins+=price;
-  SoundFX.coin();
-  openMarket();
-  updateUI();
-  saveGame();
- }
-}
-
-function openEstate(){
- let html=`<p>Your current house: <b>${game.customHome.name}</b> (No. ${game.customHome.number})</p>
- <p>Discover 1 of 1,000,000 procedural island homes!</p>
- <div style="display:flex;gap:8px;margin-bottom:12px">
-   <input type="number" id="houseSearch" min="1" max="1000000" placeholder="House # (1 - 1000000)" style="flex:1;padding:8px;border-radius:8px;border:1px solid #ffffff40;background:#ffffff15;color:#fff">
-   <button class="primary" onclick="searchHouse()">Search</button>
- </div>
- <div id="houseResult"></div>`;
- showModal('🏡 Island Estate Agency',html);
-}
-
-window.searchHouse=()=>{
- const num=Number($('houseSearch').value);
- if(num>=1&&num<=1000000){
-  const names=['Meadow Haven','Seaside Villa','Clover Cottage','Pine Lodge','Sunburst Manor','Breeze Villa'];
-  const name=names[num%names.length]+' #'+num;
-  $('houseResult').innerHTML=`<div class="list-card"><div><b>${name}</b><br><small>Cost: 50🪙</small></div><button class="secondary" onclick="purchaseHouse(${num},'${name}')">Purchase Title</button></div>`;
- }
+let saved = {
+  score: 0,
+  completed: [],
+  best: {}
 };
 
-window.purchaseHouse=(num,name)=>{
- if(game.coins>=50){
-  game.coins-=50;
-  game.customHome={number:num,name:name};
-  SoundFX.coin();
-  showMessage('Estate Office',`Congratulations! You are now the proud owner of ${name}!`);
-  closeModal();
-  updateUI();
-  saveGame();
- } else {
-  alert('You need 50 coins to purchase this home title!');
- }
-};
+try {
+  const raw = localStorage.getItem("treasure_quiz_save");
+  if (raw) saved = Object.assign(saved, JSON.parse(raw));
+} catch(e) {}
 
-function openFurniture(){
- let html='<div class="shop-grid">';
- furnitureCatalog.forEach((f,i)=>{
-  const owned=game.furnitureOwned.includes(f.name);
-  html+=`<div class="shop-btn"><span>${f.icon}</span><b>${f.name}</b><span class="chip">${owned?'OWNED':f.cost+'🪙'}</span>
-  <button class="primary" style="margin-top:6px;padding:5px 8px;font-size:11px" data-action="buyFurniture" data-index="${i}" ${owned||game.coins<f.cost?'disabled':''}>Buy</button></div>`;
- });
- html+='</div>';
- showModal('🛋️ Island Furniture Studio',html);
+function saveSaved() {
+  try {
+    localStorage.setItem("treasure_quiz_save", JSON.stringify(saved));
+  } catch(e) {}
 }
 
-function buyFurniture(idx){
- const item=furnitureCatalog[idx];
- if(item&&game.coins>=item.cost&&!game.furnitureOwned.includes(item.name)){
-  game.coins-=item.cost;
-  game.furnitureOwned.push(item.name);
-  game.placedFurniture.push({name:item.name,x:300+(idx*45)%300,y:250+(idx*35)%200});
-  SoundFX.coin();
-  openFurniture();
-  updateUI();
-  saveGame();
- }
+let currentLevel = 0;
+let questionIndex = 0;
+let levelScore = 0;
+let answered = false;
+let hintUsed = false;
+let fiftyUsed = false;
+let streak = 0;
+
+function updateHeader() {
+  document.getElementById("headerScore").textContent = saved.score;
+  document.getElementById("headerLevels").textContent =
+    saved.completed.length + "/20";
 }
 
-function openNoticeBoard(){
- let html='<p>Daily island requests from town hall:</p>';
- game.dailyQuests.forEach((dq,i)=>{
-  html+=`<div class="list-card"><div><b>${dq.title}</b><div style="font-size:11px;color:#c0ded0">${dq.desc}</div></div>
-  <button class="primary" data-action="claimDaily" data-index="${i}" ${dq.claimed?'disabled':''}>${dq.claimed?'CLAIMED':'+'+dq.reward+'🪙'}</button></div>`;
- });
- showModal('📌 Island Notice Board',html);
+function hideAll() {
+  document.getElementById("home").classList.add("hidden");
+  document.getElementById("levels").classList.add("hidden");
+  document.getElementById("game").classList.add("hidden");
+  document.getElementById("result").classList.add("hidden");
 }
 
-function claimDailyQuest(idx){
- const dq=game.dailyQuests[idx];
- if(dq&&!dq.claimed){
-  dq.claimed=true;
-  game.coins+=dq.reward;
-  SoundFX.quest();
-  openNoticeBoard();
-  updateUI();
-  saveGame();
- }
+function showHome() {
+  hideAll();
+  AudioFX.click();
+  document.getElementById("home").classList.remove("hidden");
 }
 
-function openBag(){
- let html='<div class="shop-grid">';
- ['wood','berries','flowers'].forEach(r=>{
-  html+=`<div class="shop-btn"><span>${r==='wood'?'🪵':r==='berries'?'🫐':'🌷'}</span><b>${r.toUpperCase()}</b><span class="chip">${game.inventory[r]||0} in Bag</span></div>`;
- });
- html+='</div>';
- showModal('🎒 Inventory Backpack',html);
+function showLevels() {
+  hideAll();
+  AudioFX.click();
+  document.getElementById("levels").classList.remove("hidden");
+
+  const grid = document.getElementById("levelGrid");
+  grid.innerHTML = "";
+
+  levels.forEach((lvl, i) => {
+    const btn = document.createElement("button");
+    const completed = saved.completed.includes(i);
+    const unlocked = i === 0 || saved.completed.includes(i - 1);
+
+    btn.className = "level " + (completed ? "completed" : unlocked ? "unlocked" : "locked");
+
+    const icon = completed ? "🏆" : unlocked ? "🗝️" : "🔒";
+    btn.innerHTML = "<div style='font-size:20px'>" + icon + "</div>" +
+      "<div style='font-family:Orbitron;font-weight:800;font-size:12px;margin-top:4px'>Vault " + (i + 1) + "</div>" +
+      "<small>" + (completed ? "★ Cleared" : unlocked ? "5 Riddles" : "Locked") + "</small>";
+
+    if (unlocked) btn.onclick = () => startLevel(i);
+    grid.appendChild(btn);
+  });
 }
 
-function openJournal(){
- let html='<p>Active and past goals across Meadow Drift:</p>';
- game.quests.forEach(q=>{
-  html+=`<div class="quest"><div class="quest-top"><span>${q.title}</span><span>${q.done?'✅ COMPLETE':'+'+q.reward+'🪙'}</span></div><div class="quest-desc">${q.desc}</div></div>`;
- });
- showModal('📜 Quest Journal',html);
+function startLevel(i) {
+  if (i > 0 && !saved.completed.includes(i - 1)) return;
+
+  AudioFX.click();
+  currentLevel = i;
+  questionIndex = 0;
+  levelScore = 0;
+  answered = false;
+  hintUsed = false;
+  fiftyUsed = false;
+  streak = 0;
+
+  hideAll();
+  document.getElementById("game").classList.remove("hidden");
+
+  document.getElementById("levelLabel").textContent = "VAULT " + (i + 1);
+  document.getElementById("levelTitle").textContent = levels[i].title;
+
+  renderQuestion();
 }
 
-function enterHome(){
- SoundFX.door();
- inside=true;
- player.x=480;player.y=480;
- $('homeQuickBtn').textContent='Exit Home';
- $('locationTag').textContent='🏠 '+game.customHome.name;
- showMessage('Home Sweet Home','Press E near bed to sleep & restore energy, or re-arrange your furniture.');
-}
+function renderQuestion() {
+  const q = levels[currentLevel].questions[questionIndex];
 
-function exitHome(){
- SoundFX.door();
- inside=false;
- player.x=780;player.y=240;
- $('homeQuickBtn').textContent='Enter Home';
- $('locationTag').textContent='📍 Meadow Square';
-}
+  answered = false;
+  hintUsed = false;
+  fiftyUsed = false;
 
-function interact(){
- if(modalOpen){closeModal();return;}
- if(inside){
-  if(player.y>510){exitHome();return;}
-  if(Math.hypot(player.x-750,player.y-220)<80){
-   // Sleep in bed
-   game.day++;
-   game.energy=100;
-   game.clockMinutes=480;
-   SoundFX.quest();
-   showMessage('Restful Sleep',`Good morning! Day ${game.day} begins on Meadow Drift with 100% energy.`);
-   updateUI();
-   saveGame();
-   return;
-  }
-  showMessage('Interior','Decorate your 4-room villa or rest on the bed.');
-  return;
- }
- const n=getNearby();
- if(!n){showMessage('Meadow Island','Nothing to interact with right here. Stroll around!');return;}
- if(n.kind==='citizen')talkToCitizen(n.data);
- else if(n.kind==='trader')talkToTrader();
- else if(n.kind==='resource')harvestResource(n.data);
- else if(n.kind==='landmark'){
-  if(n.data.action==='enterHome')enterHome();
-  else if(n.data.action==='market')openMarket();
-  else if(n.data.action==='estate')openEstate();
-  else if(n.data.action==='noticeBoard')openNoticeBoard();
- }
-}
+  document.getElementById("questionCount").textContent =
+    "Riddle " + (questionIndex + 1) + " of 5";
 
-// Drawing Island and Environment
-function drawWater(t){
- ctx.fillStyle='#72c4d0';ctx.fillRect(0,0,W,H);
- for(let row=0;row<9;row++){
-  const y=25+row*72+(Math.sin(t*.0006+row)*5);
-  ctx.strokeStyle='rgba(236,255,239,.23)';ctx.lineWidth=2;ctx.beginPath();
-  for(let x=-20;x<=W+20;x+=8){const yy=y+Math.sin(x*.022+t*.0012+row)*4;if(x===-20)ctx.moveTo(x,yy);else ctx.lineTo(x,yy);}ctx.stroke();
- }
- for(let i=0;i<22;i++){const x=(i*137+Math.sin(t*.0003+i)*23)%W;const y=(i*83+30)%H;ctx.fillStyle='rgba(255,255,255,.12)';ctx.beginPath();ctx.ellipse(x,y,10,3,-.2,0,Math.PI*2);ctx.fill();}
-}
+  document.getElementById("progressBar").style.width =
+    (questionIndex / 5 * 100) + "%";
 
-function islandPath(){ctx.beginPath();ctx.moveTo(82,100);ctx.bezierCurveTo(165,40,335,48,435,70);ctx.bezierCurveTo(580,28,770,58,867,115);ctx.bezierCurveTo(942,165,934,360,884,472);ctx.bezierCurveTo(838,570,690,585,553,565);ctx.bezierCurveTo(405,602,198,565,104,500);ctx.bezierCurveTo(26,444,30,230,82,100);ctx.closePath();}
+  document.getElementById("category").textContent = levels[currentLevel].title;
+  document.getElementById("question").textContent = q[0];
 
-function drawIsland(){
- const wave = Math.sin(performance.now() * 0.003) * 4;
- ctx.save();
- islandPath();ctx.lineWidth=37+wave;ctx.strokeStyle='rgba(255,255,255,0.45)';ctx.stroke();
- islandPath();ctx.lineWidth=27;ctx.strokeStyle='#e8d59b';ctx.stroke();
- ctx.fillStyle='#91c978';ctx.fill();ctx.lineWidth=4;ctx.strokeStyle='#5d9e67';ctx.stroke();
- ctx.restore();
+  document.getElementById("feedback").textContent = "";
+  document.getElementById("nextBtn").classList.add("hidden");
+  document.getElementById("gameScore").textContent = levelScore;
 
- // Grass tufts
- for(let i=0;i<85;i++){const x=75+(i*97)%810,y=92+(i*53)%450;const nx=(x-480)/445,ny=(y-315)/285;if(nx*nx+ny*ny<.92){ctx.strokeStyle=i%3?'#74b66b':'#a8d77e';ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(x,y);ctx.lineTo(x+3,y-6);ctx.moveTo(x+4,y);ctx.lineTo(x+7,y-5);ctx.stroke();}}
- // Cobblestone trails
- ctx.lineCap='round';ctx.lineJoin='round';ctx.strokeStyle='#d8c58f';ctx.lineWidth=42;ctx.beginPath();ctx.moveTo(180,290);ctx.bezierCurveTo(310,285,350,305,480,305);ctx.bezierCurveTo(615,305,700,285,780,290);ctx.stroke();
- ctx.beginPath();ctx.moveTo(480,210);ctx.bezierCurveTo(480,275,470,350,480,500);ctx.stroke();
- ctx.strokeStyle='#f0dfb5';ctx.lineWidth=3;ctx.setLineDash([8,12]);ctx.beginPath();ctx.moveTo(180,290);ctx.bezierCurveTo(310,285,350,305,480,305);ctx.bezierCurveTo(615,305,700,285,780,290);ctx.stroke();ctx.setLineDash([]);
- // Pond
- ctx.fillStyle='#69bdc5';ctx.beginPath();ctx.ellipse(720,330,62,35,-.2,0,Math.PI*2);ctx.fill();ctx.strokeStyle='#d8d18c';ctx.lineWidth=6;ctx.stroke();
- ctx.fillStyle='#d0e8ad';ctx.beginPath();ctx.ellipse(715,325,26,8,-.2,0,Math.PI*2);ctx.fill();
- // Flowers
- for(let i=0;i<27;i++){const x=90+(i*149)%780,y=100+(i*71)%445;ctx.fillStyle=['#f5c6d6','#fff0a5','#e7c4f0'][i%3];ctx.beginPath();ctx.arc(x,y,3,0,Math.PI*2);ctx.fill();ctx.fillStyle='#e3b85b';ctx.beginPath();ctx.arc(x,y,1.3,0,Math.PI*2);ctx.fill();}
-}
-
-function drawTree(x,y,scale=1){
- const sway = Math.sin(performance.now() * 0.002 + x * 0.05) * 3 * scale;
- ctx.fillStyle='#0002';ctx.beginPath();ctx.ellipse(x,y+13,28*scale,8*scale,0,0,Math.PI*2);ctx.fill();
- ctx.fillStyle='#875a3b';ctx.fillRect(x-5*scale,y-25*scale,10*scale,38*scale);
- [[-15,-30,22,'#4f995c'],[10,-34,24,'#65aa61'],[-1,-53,22,'#78b96a'],[-25,-43,16,'#5ca35f']].forEach(a=>{
-  ctx.fillStyle=a[3];ctx.beginPath();ctx.arc(x+(a[0]+sway)*scale,y+a[1]*scale,a[2]*scale,0,Math.PI*2);ctx.fill();
- });
-}
-
-function drawBuilding(kind,x,y){
- ctx.fillStyle='#0002';ctx.beginPath();ctx.ellipse(x,y+28,73,17,0,0,Math.PI*2);ctx.fill();
- if(kind==='market'){
-  ctx.fillStyle='#e9d7ad';ctx.fillRect(x-56,y-5,112,47);ctx.fillStyle='#a86c48';ctx.fillRect(x-61,y-8,122,9);
-  ctx.fillStyle='#fff1d3';ctx.fillRect(x-51,y+4,102,33);
-  ctx.fillStyle='#d78a61';ctx.fillRect(x-52,y-29,104,25);
-  for(let i=0;i<5;i++){ctx.fillStyle=i%2?'#f2d89b':'#cf715d';ctx.fillRect(x-52+i*21,y-29,10,24);}
-  ctx.fillStyle='#76523b';ctx.fillRect(x-15,y+7,30,29);
-  ctx.font='bold 12px Arial';ctx.fillStyle='#fff';ctx.textAlign='center';ctx.fillText('MARKET',x,y-38);ctx.textAlign='left';
- }else if(kind==='estateOffice'){
-  ctx.fillStyle='#f1e9d4';ctx.fillRect(x-60,y-27,120,66);ctx.fillStyle='#5e927f';ctx.fillRect(x-66,y-34,132,12);
-  ctx.fillStyle='#9accc0';ctx.fillRect(x-47,y-15,27,29);ctx.fillRect(x+20,y-15,27,29);ctx.fillStyle='#fff2ce';ctx.fillRect(x-12,y+2,24,37);
-  ctx.font='bold 12px Arial';ctx.fillStyle='#fff';ctx.textAlign='center';ctx.fillText('ESTATE OFFICE',x,y-44);ctx.textAlign='left';
- }else if(kind==='home'){
-  ctx.fillStyle='#f6e2bd';ctx.fillRect(x-62,y-25,124,64);ctx.fillStyle='#b85e4a';ctx.fillRect(x-68,y-32,136,12);
-  ctx.fillStyle='#7a4c33';ctx.fillRect(x-14,y+3,28,36);
-  ctx.fillStyle='#bce7ea';ctx.fillRect(x-48,y-12,24,24);ctx.fillRect(x+24,y-12,24,24);
-  ctx.font='bold 12px Arial';ctx.fillStyle='#fff';ctx.textAlign='center';ctx.fillText(game.customHome.name,x,y-42);ctx.textAlign='left';
- }
-}
-
-function drawPerson(x,y,name,color,hair,isPlayer=false,bob=0,hasQuest=false){
- const lift=Math.sin(bob)*2;
- ctx.fillStyle='#0002';ctx.beginPath();ctx.ellipse(x,y+5,15,6,0,0,Math.PI*2);ctx.fill();
- ctx.fillStyle=isPlayer?'#355eab':color;ctx.beginPath();ctx.roundRect(x-10,y-22+lift,20,23,7);ctx.fill();
- ctx.fillStyle='#f3c9a5';ctx.beginPath();ctx.arc(x,y-31+lift,9,0,Math.PI*2);ctx.fill();
- ctx.fillStyle=hair;ctx.beginPath();ctx.arc(x,y-35+lift,9,Math.PI,Math.PI*2);ctx.fill();ctx.fillRect(x-9,y-35+lift,4,8);
- if(isPlayer){ctx.fillStyle='#f1d57c';ctx.fillRect(x-8,y-48+lift,16,5);ctx.fillRect(x-5,y-54+lift,10,7);}
- ctx.font='bold 12px Arial';ctx.textAlign='center';ctx.lineWidth=3;ctx.strokeStyle='#f1f4d8';ctx.strokeText(name,x,y-57+lift);ctx.fillStyle='#284a38';ctx.fillText(name,x,y-57+lift);
- if(hasQuest){ctx.fillStyle='#f5dc8e';ctx.beginPath();ctx.arc(x+14,y-48+lift,9,0,Math.PI*2);ctx.fill();ctx.fillStyle='#3b4a31';ctx.font='bold 11px Arial';ctx.fillText('!',x+14,y-44+lift);}
- ctx.textAlign='left';
-}
-
-function drawTimeLighting(){
- const hour=Math.floor(game.clockMinutes/60);
- if(hour>=20||hour<5){ctx.fillStyle='rgba(15,25,55,.36)';ctx.fillRect(0,0,W,H);}
- else if(hour>=17&&hour<20){ctx.fillStyle='rgba(255,140,70,.14)';ctx.fillRect(0,0,W,H);}
- else if(hour>=5&&hour<8){ctx.fillStyle='rgba(255,210,130,.10)';ctx.fillRect(0,0,W,H);}
-}
-
-function drawWeather(t){
- if(game.weather==='sunny')return;
- if(game.weather==='cloudy'){
-  ctx.fillStyle='rgba(68,85,91,.10)';ctx.fillRect(0,0,W,H);
-  for(let i=0;i<5;i++){const x=(i*225+((t*.012)%180)-90);const y=58+(i%2)*26;ctx.fillStyle='rgba(241,247,245,.50)';ctx.beginPath();ctx.arc(x,y,24,0,Math.PI*2);ctx.arc(x+25,y-8,29,0,Math.PI*2);ctx.arc(x+53,y,23,0,Math.PI*2);ctx.fill();}
-  return;
- }
- ctx.fillStyle='rgba(39,61,81,.19)';ctx.fillRect(0,0,W,H);
- for(let i=0;i<100;i++){
-  const x=(i*97+(t*.34))%(W+40)-20;const y=(i*59+(t*.72))%(H+50)-25;
-  ctx.strokeStyle='rgba(222,241,255,.62)';ctx.lineWidth=1.4;ctx.beginPath();ctx.moveTo(x,y);ctx.lineTo(x-5,y+15);ctx.stroke();
- }
-}
-
-function drawHouse(t){
- ctx.fillStyle='#d8c49a';ctx.fillRect(0,0,W,H);
- ctx.fillStyle='#f3e7ca';ctx.fillRect(48,40,864,540);
- ctx.fillStyle='#b17e59';ctx.fillRect(48,40,864,28);ctx.fillRect(48,40,24,540);ctx.fillRect(888,40,24,540);ctx.fillRect(48,556,864,24);
- ctx.fillStyle='#d6b78a';ctx.fillRect(72,68,816,488);
- for(let y=115;y<540;y+=70){ctx.strokeStyle='#c9a477';ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(75,y);ctx.lineTo(885,y);ctx.stroke();}
-
- // Bed
- ctx.fillStyle='#835f49';ctx.fillRect(700,160,110,95);
- ctx.fillStyle='#f4eedb';ctx.fillRect(706,168,98,80);
- ctx.fillStyle='#d87a6c';ctx.fillRect(712,174,40,26);
-
- // Rug
- ctx.fillStyle='#7aa893';ctx.beginPath();ctx.ellipse(480,310,90,55,0,0,Math.PI*2);ctx.fill();
-
- // Placed furniture items
- game.placedFurniture.forEach(f=>{
-  ctx.fillStyle='#2c4c3b';ctx.font='bold 14px Arial';
-  ctx.fillText(f.name==='Cozy Armchair'?'🛋️':f.name==='Vintage Bookshelf'?'📚':f.name==='Potted Monstera'?'🪴':f.name==='Retro TV'?'📺':'🪑',f.x,f.y);
- });
-
- drawPerson(player.x,player.y,game.name,'#355eab','#463b35',true,player.bob,false);
-}
-
-function drawWorld(t){
- drawWater(t);drawIsland();
- drawTree(80,160,.65);drawTree(890,145,.75);drawTree(880,540,.8);drawTree(95,540,.65);
- drawBuilding('market',180,190);drawBuilding('estateOffice',480,185);drawBuilding('home',780,190);
-
- if(traderIsHere()){
-  ctx.fillStyle='#8b6746';ctx.fillRect(646,168,88,48);
-  ctx.fillStyle='#f1d69b';ctx.fillRect(652,175,76,35);
-  ctx.font='bold 11px Arial';ctx.fillStyle='#fff';ctx.fillText('RAVI TRADER',655,160);
-  drawPerson(travellingTrader.x,travellingTrader.y,travellingTrader.name,travellingTrader.color,travellingTrader.hair,false,t*.005,true);
- }
-
- // Notice Board
- ctx.fillStyle='#8c613f';ctx.fillRect(458,465,44,31);ctx.fillStyle='#e7d6a5';ctx.fillRect(462,468,36,21);ctx.fillStyle='#6b4933';ctx.font='bold 9px Arial';ctx.textAlign='center';ctx.fillText('NEWS',480,481);ctx.textAlign='left';
-
- // Resource Nodes
- resourceNodes.forEach(rn=>{
-  if(rn.id==='tree')drawTree(rn.x,rn.y,1.1);
-  else if(rn.id==='berries'){
-   ctx.fillStyle='#4f995c';ctx.beginPath();ctx.arc(rn.x,rn.y,22,0,Math.PI*2);ctx.fill();
-   for(let i=0;i<7;i++){ctx.fillStyle='#5c35b5';ctx.beginPath();ctx.arc(rn.x-10+(i*4)%20,rn.y-10+(i*5)%20,4,0,Math.PI*2);ctx.fill();}
+  // Streak Multiplier Display
+  const streakBadge = document.getElementById("streakBadge");
+  if (streak >= 2) {
+    streakBadge.style.display = "inline-block";
+    streakBadge.textContent = "🔥 " + streak + "X STREAK!";
   } else {
-   for(let i=0;i<8;i++){ctx.fillStyle=['#ff6b8b','#ffd166','#06d6a0'][i%3];ctx.beginPath();ctx.arc(rn.x-12+i*5,rn.y-6+(i%2)*10,5,0,Math.PI*2);ctx.fill();}
+    streakBadge.style.display = "none";
   }
- });
 
- citizens.forEach(c=>{
-  const q=game.quests.find(q=>q.citizenId===c.id);
-  drawPerson(c.x,c.y,c.name,c.color,c.hair,false,t*.004+c.x*.03,!!(!q||!q.done));
- });
+  const box = document.getElementById("answers");
+  box.innerHTML = "";
 
- drawPerson(player.x,player.y,game.name||'YOU','#355eab','#463b35',true,player.bob,false);
-
- if(!inside)drawWeather(t);
- for (let i = particles.length - 1; i >= 0; i--) {
-   const p = particles[i];
-   ctx.fillStyle = p.c;
-   ctx.beginPath(); ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2); ctx.fill();
-   p.x += p.vx; p.y += p.vy; p.life--;
-   if (p.life <= 0) particles.splice(i, 1);
- }
- drawTimeLighting();
-
- const n=getNearby();
- if(n){
-  ctx.strokeStyle='rgba(255,247,190,.85)';ctx.lineWidth=2;ctx.setLineDash([5,5]);
-  ctx.beginPath();ctx.arc(player.x,player.y-15,34,0,Math.PI*2);ctx.stroke();ctx.setLineDash([]);
- }
+  q[1].forEach((answer, index) => {
+    const btn = document.createElement("button");
+    btn.className = "answer";
+    btn.innerHTML = "<span style='color:#00f3ff;margin-right:10px;font-family:Orbitron'>" + String.fromCharCode(65 + index) + "</span> " + answer;
+    btn.onclick = () => selectAnswer(index, btn);
+    box.appendChild(btn);
+  });
 }
 
-function draw(t){
- if(inside)drawHouse(t);
- else drawWorld(t);
+function selectAnswer(index, button) {
+  if (answered) return;
+  answered = true;
+
+  const q = levels[currentLevel].questions[questionIndex];
+  const buttons = [...document.querySelectorAll(".answer")];
+  const feedback = document.getElementById("feedback");
+
+  buttons.forEach(b => b.disabled = true);
+
+  if (index === q[2]) {
+    button.classList.add("correct");
+    streak++;
+    const bonus = streak >= 3 ? 15 : 10;
+    feedback.innerHTML = "💎 <b>CORRECT!</b> +" + bonus + " Coins " + (streak >= 3 ? "(Streak Bonus!)" : "");
+    feedback.style.color = "#00f5a0";
+    levelScore += 10;
+    saved.score += bonus;
+    AudioFX.correct();
+    spawnConfetti(25);
+    saveSaved();
+    updateHeader();
+    document.getElementById("gameScore").textContent = levelScore;
+  } else {
+    button.classList.add("wrong");
+    buttons[q[2]].classList.add("correct");
+    streak = 0;
+    feedback.innerHTML = "❌ <b>TRAP TRIGGERED!</b> Correct answer was: " + q[1][q[2]];
+    feedback.style.color = "#ff4757";
+    AudioFX.wrong();
+  }
+
+  document.getElementById("progressBar").style.width =
+    ((questionIndex + 1) / 5 * 100) + "%";
+
+  const next = document.getElementById("nextBtn");
+  next.textContent = questionIndex === 4 ? "Open Treasure Vault 🏆" : "Next Riddle →";
+  next.classList.remove("hidden");
 }
 
-function updateMovement(dt){
- if(modalOpen||loginOpen)return;
- let dx=(keyState.right?1:0)-(keyState.left?1:0);
- let dy=(keyState.down?1:0)-(keyState.up?1:0);
- if(dx||dy){moveTarget=null;targetInteract=false;}
- else if(moveTarget){
-  dx=moveTarget.x-player.x;dy=moveTarget.y-player.y;
-  const dist=Math.hypot(dx,dy);
-  if(dist<5){moveTarget=null;if(targetInteract){targetInteract=false;interact();}return;}
-  dx/=dist;dy/=dist;
- } else return;
+function showHint() {
+  const feedback = document.getElementById("feedback");
+  if (answered) return;
 
- const len=Math.hypot(dx,dy)||1;
- dx/=len;dy/=len;
- const spd=player.speed*dt;
- player.x=Math.max(50,Math.min(W-50,player.x+dx*spd));
- player.y=Math.max(80,Math.min(H-60,player.y+dy*spd));
- player.bob+=dt*0.22;
+  const q = levels[currentLevel].questions[questionIndex];
+  hintUsed = true;
+  AudioFX.click();
+  feedback.innerHTML = "💡 <b>HINT:</b> " + q[3];
+  feedback.style.color = "#ffd700";
 }
 
-function frame(t){
- const dt=lastFrame?Math.min((t-lastFrame)/16.667,2):1;
- lastFrame=t;
- advanceWorldClock(dt);
- updateMovement(dt);
- draw(t);
- requestAnimationFrame(frame);
+function useFiftyFifty() {
+  if (answered || fiftyUsed) return;
+  fiftyUsed = true;
+  AudioFX.click();
+
+  const q = levels[currentLevel].questions[questionIndex];
+  const buttons = [...document.querySelectorAll(".answer")];
+  const wrongIndices = [0, 1, 2, 3].filter(i => i !== q[2]);
+
+  // Shuffle and hide 2 wrong answers
+  wrongIndices.sort(() => Math.random() - 0.5);
+  buttons[wrongIndices[0]].style.visibility = "hidden";
+  buttons[wrongIndices[1]].style.visibility = "hidden";
+
+  document.getElementById("feedback").textContent = "✂️ 50:50 Used: Two incorrect choices removed!";
+  document.getElementById("feedback").style.color = "#00f3ff";
 }
 
-// Event Listeners
-const keyMap={w:'up',arrowup:'up',s:'down',arrowdown:'down',a:'left',arrowleft:'left',d:'right',arrowright:'right'};
-document.addEventListener('keydown',e=>{
- const k=e.key.toLowerCase();
- if(keyMap[k]){keyState[keyMap[k]]=true;e.preventDefault();}
- if((k==='e'||k==='enter')&&!e.repeat){e.preventDefault();interact();}
- if(k==='m'&&!e.repeat){e.preventDefault();openJournal();}
- if(k==='i'&&!e.repeat){e.preventDefault();openBag();}
-});
-document.addEventListener('keyup',e=>{
- const k=e.key.toLowerCase();if(keyMap[k])keyState[keyMap[k]]=false;
-});
+function nextQuestion() {
+  if (!answered) return;
+  AudioFX.click();
 
-document.querySelectorAll('[data-pad]').forEach(btn=>{
- const key=btn.dataset.pad;
- btn.addEventListener('pointerdown',e=>{e.preventDefault();keyState[key]=true;});
- btn.addEventListener('pointerup',()=>keyState[key]=false);
- btn.addEventListener('pointerleave',()=>keyState[key]=false);
-});
+  if (questionIndex < 4) {
+    questionIndex++;
+    renderQuestion();
+  } else {
+    finishLevel();
+  }
+}
 
-document.addEventListener('click',e=>{
- const btn=e.target.closest('[data-action]');
- if(!btn)return;
- const act=btn.dataset.action;
- if(act==='interact')interact();
- else if(act==='journal')openJournal();
- else if(act==='bag')openBag();
- else if(act==='enterHome')enterHome();
- else if(act==='market')openMarket();
- else if(act==='estate')openEstate();
- else if(act==='openFurniture')openFurniture();
- else if(act==='noticeBoard')openNoticeBoard();
- else if(act==='closeModal')closeModal();
- else if(act==='claimDaily')claimDailyQuest(Number(btn.dataset.index));
- else if(act==='buyFurniture')buyFurniture(Number(btn.dataset.index));
- else if(act==='sellResource')sellResource(btn.dataset.resource);
-});
+function finishLevel() {
+  if (!saved.completed.includes(currentLevel)) {
+    saved.completed.push(currentLevel);
+  }
 
-canvas.addEventListener('click',e=>{
- if(modalOpen||loginOpen)return;
- const r=canvas.getBoundingClientRect();
- moveTarget={x:(e.clientX-r.left)*W/r.width,y:(e.clientY-r.top)*H/r.height};
-});
+  saved.best[currentLevel] = Math.max(saved.best[currentLevel] || 0, levelScore);
+  saveSaved();
+  updateHeader();
 
-$('loginForm').addEventListener('submit',e=>{
- e.preventDefault();
- const name=$('playerName').value.trim();
- if(name)loadGame(name);
-});
+  hideAll();
+  AudioFX.chest();
+  spawnConfetti(70);
 
-loadGame(localStorage.getItem('meadowDriftDeluxe_last')||'Friend');
-requestAnimationFrame(frame);
-})();
+  document.getElementById("result").classList.remove("hidden");
+  document.getElementById("resultScore").textContent = levelScore + "/50";
+
+  const perfect = levelScore === 50;
+  const last = currentLevel === 19;
+
+  document.getElementById("chestAnim").textContent = perfect ? "👑" : "💎";
+  document.getElementById("resultTitle").textContent =
+    last ? "GRAND TREASURE MASTER!" :
+    perfect ? "PERFECT VAULT CRACKED!" :
+    levelScore >= 30 ? "VAULT UNLOCKED!" : "CHEST RETRIEVED!";
+
+  document.getElementById("resultMessage").textContent =
+    (perfect ? "All 5 riddles solved without a single mistake! " :
+    "You successfully cracked the vault combinations! ") +
+    (last ? "You conquered all 20 ancient vaults and 100 riddles!" :
+    "The next vault on your treasure map is now unlocked.") +
+    " Total coins: " + saved.score + " 🪙.";
+
+  document.getElementById("continueBtn").textContent =
+    last ? "Explore Map ↻" : "Next Vault →";
+}
+
+function continueGame() {
+  AudioFX.click();
+  if (currentLevel === 19) {
+    showLevels();
+    return;
+  }
+  startLevel(currentLevel + 1);
+}
+
+function resetGame() {
+  if (!confirm("Reset all unlocked vaults and coins? This cannot be undone.")) return;
+  saved = { score: 0, completed: [], best: {} };
+  saveSaved();
+  updateHeader();
+  showHome();
+}
+
+updateHeader();
+showHome();
 </script>
+
 </body>
 </html>
