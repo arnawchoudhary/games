@@ -1,0 +1,809 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>QUIZ MASTER — 20 Levels</title>
+
+<style>
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  font-family: Arial, sans-serif;
+  color: white;
+  background: radial-gradient(circle at top, #203a70, #080d1c 70%);
+}
+
+button {
+  cursor: pointer;
+  font-weight: bold;
+  font-size: 16px;
+  border: none;
+  transition: 0.2s;
+}
+
+button:hover {
+  transform: translateY(-2px);
+  filter: brightness(1.15);
+}
+
+header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 18px 6%;
+  border-bottom: 1px solid #ffffff22;
+}
+
+.logo {
+  font-size: 23px;
+  font-weight: 900;
+  color: #59e8ff;
+}
+
+.stats {
+  display: flex;
+  gap: 12px;
+}
+
+.stat {
+  background: #ffffff12;
+  padding: 10px 14px;
+  border-radius: 12px;
+  font-size: 14px;
+}
+
+main {
+  width: min(900px, 92%);
+  margin: 35px auto;
+}
+
+.panel {
+  background: #111b32;
+  border: 1px solid #ffffff20;
+  border-radius: 22px;
+  padding: 28px;
+  box-shadow: 0 15px 50px #0005;
+}
+
+h1 {
+  font-size: clamp(30px, 6vw, 48px);
+  margin: 10px 0;
+}
+
+h2 {
+  margin-top: 0;
+}
+
+.muted {
+  color: #aab8d5;
+  line-height: 1.6;
+}
+
+.primary {
+  background: linear-gradient(120deg, #00c9ff, #6366f1);
+  color: white;
+  border-radius: 12px;
+  padding: 14px 22px;
+}
+
+.secondary {
+  background: #253454;
+  color: white;
+  border-radius: 10px;
+  padding: 11px 16px;
+}
+
+.level-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 12px;
+  margin-top: 24px;
+}
+
+.level {
+  min-height: 82px;
+  background: #202d49;
+  border: 1px solid #ffffff20;
+  color: white;
+  border-radius: 14px;
+}
+
+.level.unlocked {
+  border-color: #35d9ff;
+  background: #153a53;
+}
+
+.level.completed {
+  background: #15563f;
+  border-color: #3be49b;
+}
+
+.level.locked {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.level small {
+  display: block;
+  margin-top: 6px;
+  font-size: 11px;
+  color: #c4d3ef;
+}
+
+.topline {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  align-items: center;
+  margin-bottom: 18px;
+}
+
+.progress-track {
+  height: 9px;
+  background: #ffffff18;
+  border-radius: 20px;
+  overflow: hidden;
+  margin: 15px 0 25px;
+}
+
+.progress-bar {
+  height: 100%;
+  width: 0%;
+  background: linear-gradient(90deg, #00c9ff, #52ffa8);
+  transition: width 0.3s;
+}
+
+.category {
+  color: #5be5ff;
+  font-size: 13px;
+  letter-spacing: 2px;
+  font-weight: bold;
+  text-transform: uppercase;
+}
+
+.question {
+  font-size: clamp(21px, 4vw, 30px);
+  line-height: 1.35;
+  margin: 16px 0 24px;
+}
+
+.answers {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.answer {
+  background: #202e4c;
+  border: 2px solid #344363;
+  color: white;
+  text-align: left;
+  padding: 17px;
+  border-radius: 13px;
+  min-height: 60px;
+}
+
+.answer.correct {
+  background: #14583f;
+  border-color: #3ce5a0;
+}
+
+.answer.wrong {
+  background: #652b39;
+  border-color: #ff637d;
+}
+
+.answer:disabled {
+  cursor: default;
+  transform: none;
+}
+
+.feedback {
+  min-height: 30px;
+  margin: 18px 0;
+  font-weight: bold;
+}
+
+.actions {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.hidden {
+  display: none !important;
+}
+
+.center {
+  text-align: center;
+}
+
+.big-score {
+  font-size: 64px;
+  font-weight: 900;
+  color: #5be5ff;
+}
+
+footer {
+  text-align: center;
+  color: #7585a5;
+  padding: 20px;
+  font-size: 12px;
+}
+
+@media(max-width: 550px) {
+  header {
+    padding: 15px 4%;
+  }
+
+  .logo {
+    font-size: 17px;
+  }
+
+  .stat {
+    padding: 8px;
+    font-size: 12px;
+  }
+
+  .panel {
+    padding: 19px;
+  }
+
+  .level-grid {
+    grid-template-columns: repeat(4, 1fr);
+    gap: 8px;
+  }
+
+  .level {
+    min-height: 70px;
+  }
+
+  .answers {
+    grid-template-columns: 1fr;
+  }
+}
+</style>
+</head>
+
+<body>
+
+<header>
+  <div class="logo">⚡ QUIZ MASTER</div>
+  <div class="stats">
+    <div class="stat">⭐ Score: <b id="headerScore">0</b></div>
+    <div class="stat">🏆 Levels: <b id="headerLevels">0/20</b></div>
+  </div>
+</header>
+
+<main>
+
+  <section id="home" class="panel">
+    <div class="category">THE ULTIMATE CHALLENGE</div>
+    <h1>Think fast.<br>Play smart.</h1>
+    <p class="muted">
+      20 levels. 100 questions. Four possible answers.
+      Choose wisely, earn points, and unlock every level.
+    </p>
+
+    <p>🎯 5 questions per level</p>
+    <p>⚡ 10 points for every correct answer</p>
+    <p>🔓 Complete a level to unlock the next one</p>
+    <p>💾 Your progress saves automatically in this browser</p>
+
+    <button class="primary" onclick="showLevels()">
+      PLAY NOW ▶
+    </button>
+
+    <button class="secondary" onclick="resetGame()" style="margin-left:8px">
+      Reset Progress
+    </button>
+  </section>
+
+  <section id="levelScreen" class="panel hidden">
+    <div class="topline">
+      <div>
+        <div class="category">SELECT YOUR CHALLENGE</div>
+        <h2>Choose a level</h2>
+      </div>
+      <button class="secondary" onclick="showHome()">Home</button>
+    </div>
+
+    <p class="muted">Complete a level to unlock the next challenge.</p>
+    <div id="levelGrid" class="level-grid"></div>
+  </section>
+
+  <section id="game" class="panel hidden">
+    <div class="topline">
+      <div>
+        <div class="category" id="levelLabel">LEVEL 1</div>
+        <h2 id="levelTitle">General Knowledge</h2>
+      </div>
+      <button class="secondary" onclick="showLevels()">✕ Exit</button>
+    </div>
+
+    <div class="topline">
+      <span id="questionCount">Question 1 of 5</span>
+      <span>⭐ <b id="gameScore">0</b></span>
+    </div>
+
+    <div class="progress-track">
+      <div id="progressBar" class="progress-bar"></div>
+    </div>
+
+    <div id="category" class="category"></div>
+    <div id="question" class="question"></div>
+    <div id="answers" class="answers"></div>
+
+    <div id="feedback" class="feedback"></div>
+
+    <div class="actions">
+      <button class="secondary" onclick="showHint()">💡 Hint</button>
+      <button id="nextBtn" class="primary hidden" onclick="nextQuestion()">
+        Next Question →
+      </button>
+    </div>
+  </section>
+
+  <section id="result" class="panel center hidden">
+    <div class="category">LEVEL COMPLETE</div>
+    <h1 id="resultTitle">Excellent work!</h1>
+    <div class="big-score" id="resultScore">50/50</div>
+    <p id="resultMessage" class="muted"></p>
+    <button id="continueBtn" class="primary" onclick="continueGame()">
+      Continue →
+    </button>
+    <button class="secondary" onclick="showLevels()" style="margin-left:8px">
+      Level Map
+    </button>
+  </section>
+
+</main>
+
+<footer>QUIZ MASTER • 20 LEVELS • 100 QUESTIONS</footer>
+
+<script>
+const levels = [
+{
+title:"General Knowledge",
+questions:[
+["What is the capital of France?",["Rome","Paris","Madrid","Berlin"],1,"It is famous for the Eiffel Tower."],
+["How many days are in a leap year?",["364","365","366","367"],2,"February has one extra day."],
+["Which is the largest ocean?",["Atlantic","Indian","Arctic","Pacific"],3,"It covers the largest area of Earth."],
+["How many colours are traditionally named in a rainbow?",["5","6","7","8"],2,"Remember VIBGYOR."],
+["Which animal is known as the ship of the desert?",["Horse","Camel","Elephant","Donkey"],1,"It can travel across deserts."]
+]},
+{
+title:"Space Explorer",
+questions:[
+["Which planet is called the Red Planet?",["Venus","Mars","Jupiter","Mercury"],1,"Its surface contains iron-rich dust."],
+["What is at the centre of our solar system?",["Earth","Moon","Sun","Mars"],2,"Earth revolves around it."],
+["Which is the largest planet?",["Earth","Saturn","Jupiter","Neptune"],2,"It is a gas giant."],
+["What is Earth's natural satellite?",["Sun","Moon","Mars","Venus"],1,"We can see it at night."],
+["Which planet is famous for its rings?",["Saturn","Mercury","Earth","Mars"],0,"Its rings are made of ice and rock."]
+]},
+{
+title:"Science Lab",
+questions:[
+["What gas do humans need for respiration?",["Carbon dioxide","Oxygen","Helium","Hydrogen"],1,"We breathe it from the air."],
+["Which organ pumps blood?",["Lungs","Brain","Heart","Kidney"],2,"It beats continuously."],
+["What is H₂O commonly called?",["Salt","Water","Oxygen","Sugar"],1,"You drink it every day."],
+["Which force pulls objects towards Earth?",["Friction","Magnetism","Gravity","Electricity"],2,"It keeps us on the ground."],
+["Which part of a plant absorbs most water?",["Flower","Roots","Fruit","Petals"],1,"It grows underground."]
+]},
+{
+title:"Geography",
+questions:[
+["Which line divides Earth into Northern and Southern Hemispheres?",["Equator","Prime Meridian","Tropic of Cancer","Arctic Circle"],0,"It is at 0° latitude."],
+["What is the capital of India?",["Mumbai","Jaipur","New Delhi","Kolkata"],2,"It is in the National Capital Territory."],
+["Which is the largest continent?",["Africa","Asia","Europe","Australia"],1,"India is part of it."],
+["Which is the highest mountain above sea level?",["K2","Kilimanjaro","Mount Everest","Denali"],2,"It lies in the Himalayas."],
+["What is a large area of flat land called?",["Valley","Plain","Island","Plateau"],1,"It has relatively level ground."]
+]},
+{
+title:"Mathematics",
+questions:[
+["What is 12 × 8?",["86","96","108","88"],1,"12 times 4 is 48."],
+["What is 25% of 200?",["25","40","50","75"],2,"A quarter of 200."],
+["What is 144 ÷ 12?",["10","11","12","14"],2,"12 multiplied by 12 equals 144."],
+["What is 3/4 as a percentage?",["25%","50%","75%","80%"],2,"Convert the fraction to hundredths."],
+["What is the perimeter of a square with side 6 cm?",["12 cm","18 cm","24 cm","36 cm"],2,"A square has four equal sides."]
+]},
+{
+title:"Animal Kingdom",
+questions:[
+["Which is the fastest land animal?",["Lion","Cheetah","Horse","Tiger"],1,"It has incredible sprint speed."],
+["What is a baby frog called?",["Cub","Calf","Tadpole","Chick"],2,"It lives in water before becoming an adult."],
+["Which mammal can fly?",["Bat","Penguin","Ostrich","Chicken"],0,"It uses wings to fly at night."],
+["What do pandas mainly eat?",["Fish","Bamboo","Grass only","Insects"],1,"This plant makes up most of their diet."],
+["Which animal has a trunk?",["Giraffe","Elephant","Rhino","Hippo"],1,"It uses its long trunk to grab things."]
+]},
+{
+title:"History Heroes",
+questions:[
+["Who was the first Mughal emperor in India?",["Akbar","Babur","Shah Jahan","Aurangzeb"],1,"He founded the Mughal Empire in India."],
+["Who built the Taj Mahal?",["Akbar","Babur","Shah Jahan","Humayun"],2,"He built it in memory of Mumtaz Mahal."],
+["Who was known as the Iron Man of India?",["Sardar Vallabhbhai Patel","Jawaharlal Nehru","Subhas Chandra Bose","B. R. Ambedkar"],0,"He played a major role in integrating princely states."],
+["Who was the first Prime Minister of India?",["Mahatma Gandhi","Rajendra Prasad","Jawaharlal Nehru","Sardar Patel"],2,"He served after independence."],
+["In which year did India gain independence?",["1942","1945","1947","1950"],2,"It happened on 15 August."]
+]},
+{
+title:"English Expert",
+questions:[
+["What is the plural of 'child'?",["Childs","Children","Childes","Childrens"],1,"It is an irregular plural."],
+["Which word is an adjective?",["Quickly","Beautiful","Running","Under"],1,"It describes a noun."],
+["What is the opposite of 'ancient'?",["Old","Historic","Modern","Past"],2,"It means belonging to the present or recent times."],
+["Which is a synonym for 'happy'?",["Joyful","Angry","Tired","Worried"],0,"It means feeling pleasure."],
+["Which punctuation mark ends a question?",["Full stop","Comma","Question mark","Colon"],2,"It looks like this: ?"]
+]},
+{
+title:"Computer Genius",
+questions:[
+["What does CPU stand for?",["Central Processing Unit","Computer Power Utility","Central Program User","Control Processing User"],0,"It is often called the computer's brain."],
+["Which device is used to type text?",["Monitor","Keyboard","Speaker","Printer"],1,"It has letters and number keys."],
+["What does HTML help create?",["Web pages","Car engines","Food recipes only","Electric circuits"],0,"It is a markup language used on the web."],
+["Which of these is an input device?",["Monitor","Printer","Mouse","Speaker"],2,"You move it to control the pointer."],
+["What does URL identify?",["A web address","A keyboard key","A battery type","A file size"],0,"You see it in the browser's address bar."]
+]},
+{
+title:"Football Fever",
+questions:[
+["How many players does a team normally have on the pitch?",["9","10","11","12"],2,"This includes the goalkeeper."],
+["What does FIFA govern?",["Cricket","Football","Tennis","Basketball"],1,"It is the international football governing body."],
+["How long is a standard football match, excluding added time?",["60 minutes","80 minutes","90 minutes","100 minutes"],2,"It has two equal halves."],
+["Which player can use hands inside their own penalty area?",["Striker","Goalkeeper","Defender","Midfielder"],1,"This player protects the goal."],
+["What colour card means a player is sent off?",["Blue","Green","Yellow","Red"],3,"It is the strongest standard disciplinary card."]
+]},
+{
+title:"World Capitals",
+questions:[
+["What is the capital of Japan?",["Kyoto","Tokyo","Osaka","Seoul"],1,"It is one of the world's largest urban areas."],
+["What is the capital of Australia?",["Sydney","Melbourne","Canberra","Perth"],2,"It is not Sydney."],
+["What is the capital of Egypt?",["Cairo","Alexandria","Nairobi","Rabat"],0,"It lies beside the Nile."],
+["What is the capital of Italy?",["Venice","Milan","Rome","Naples"],2,"It is home to the Colosseum."],
+["What is the capital of Canada?",["Toronto","Vancouver","Ottawa","Montreal"],2,"It is in Ontario."]
+]},
+{
+title:"Nature & Earth",
+questions:[
+["What process do plants use to make food?",["Respiration","Photosynthesis","Digestion","Evaporation"],1,"Plants use sunlight in this process."],
+["Which layer protects Earth from much harmful ultraviolet radiation?",["Ozone layer","Inner core","Mantle","Crust"],0,"It is found in the stratosphere."],
+["What is molten rock beneath Earth's surface called?",["Lava","Magma","Sand","Steam"],1,"It is called lava after reaching the surface."],
+["What is the changing of liquid water into vapour called?",["Condensation","Freezing","Evaporation","Melting"],2,"Heat helps this process happen."],
+["Which is a renewable energy source?",["Coal","Petrol","Solar energy","Natural gas"],2,"It comes from sunlight."]
+]},
+{
+title:"Brain Teasers",
+questions:[
+["What has keys but cannot open locks?",["A map","A piano","A door","A box"],1,"It makes music."],
+["What number comes next: 2, 4, 6, 8, ...?",["9","10","11","12"],1,"Add two each time."],
+["How many months have 28 days?",["1","2","6","12"],3,"Every month has at least 28 days."],
+["Which is heavier: 1 kg of iron or 1 kg of cotton?",["Iron","Cotton","Both weigh the same","Cannot tell"],2,"Both have the same mass."],
+["If you have three apples and take away two, how many do you have?",["1","2","3","5"],1,"Count the apples you took."]
+]},
+{
+title:"Amazing Inventions",
+questions:[
+["Who is commonly credited with inventing the telephone?",["Alexander Graham Bell","Thomas Edison","Isaac Newton","Galileo"],0,"His name is closely associated with early telephone patents."],
+["Which invention helps us see distant objects in space?",["Microscope","Telescope","Periscope","Thermometer"],1,"Astronomers use it to observe stars."],
+["Which device measures temperature?",["Barometer","Thermometer","Compass","Ruler"],1,"It commonly shows degrees."],
+["Who developed the theory of relativity?",["Newton","Einstein","Darwin","Tesla"],1,"His surname begins with E."],
+["Which invention is used to take photographs?",["Camera","Compass","Microscope","Calculator"],0,"It captures images."]
+]},
+{
+title:"Space Mission",
+questions:[
+["What is the name of our galaxy?",["Andromeda","Milky Way","Whirlpool","Sombrero"],1,"Our solar system is inside it."],
+["Which planet is closest to the Sun?",["Venus","Earth","Mercury","Mars"],2,"It is the smallest of the eight planets."],
+["What is an astronaut?",["A deep-sea diver","A space traveller","A mountain climber","A pilot only"],1,"They travel beyond Earth's atmosphere."],
+["What force keeps planets orbiting the Sun?",["Gravity","Sound","Friction","Wind"],0,"It attracts objects with mass."],
+["Which was the first artificial satellite in space?",["Apollo 11","Sputnik 1","Voyager 1","Hubble"],1,"The Soviet Union launched it in 1957."]
+]},
+{
+title:"Literature Legends",
+questions:[
+["Who wrote 'The Jungle Book'?",["Rudyard Kipling","Charles Dickens","J. R. R. Tolkien","Roald Dahl"],0,"He was a British author born in India."],
+["Who wrote 'Romeo and Juliet'?",["William Wordsworth","William Shakespeare","Robert Frost","Jane Austen"],1,"He was a famous English playwright."],
+["Who wrote 'The Road Not Taken'?",["Robert Frost","W. B. Yeats","William Blake","John Keats"],0,"His surname means a cold morning."],
+["What is a character in a story?",["The setting","A person or being in the story","The title only","The final page"],1,"They take part in the events."],
+["What is a synonym?",["A word with a similar meaning","An opposite word","A punctuation mark","A paragraph"],0,"For example, 'happy' and 'joyful'."]
+]},
+{
+title:"Human Body",
+questions:[
+["Which organ controls most body activities?",["Heart","Brain","Liver","Lungs"],1,"It is protected by the skull."],
+["How many bones are typically in an adult human body?",["106","206","306","406"],1,"The number is just over two hundred."],
+["Which organs help us breathe?",["Kidneys","Lungs","Stomach","Intestines"],1,"They take in oxygen."],
+["Which blood cells help fight infections?",["White blood cells","Red blood cells","Platelets","None"],0,"They are part of the immune system."],
+["Which nutrient is the body's main quick energy source?",["Carbohydrates","Vitamins","Water","Minerals"],0,"Bread and rice are rich in them."]
+]},
+{
+title:"Maths Champion",
+questions:[
+["What is the square of 15?",["125","200","225","250"],2,"Multiply 15 by 15."],
+["What is 7³?",["49","147","343","512"],2,"Multiply 7 by itself three times."],
+["What is the HCF of 12 and 18?",["2","3","6","9"],2,"Find the largest number dividing both."],
+["What is 0.75 as a fraction in simplest form?",["1/2","2/3","3/4","4/5"],2,"Write it as 75/100 and simplify."],
+["A triangle's angles add up to how many degrees?",["90°","180°","270°","360°"],1,"It is half the total angles around a point."]
+]},
+{
+title:"Mixed Challenge",
+questions:[
+["Which language is commonly used to style web pages?",["HTML","CSS","SQL","Python only"],1,"It controls colours, layout, and appearance."],
+["Which is the largest hot desert in the world?",["Gobi","Sahara","Thar","Kalahari"],1,"It is in North Africa."],
+["What is the chemical symbol for gold?",["Ag","Gd","Au","Go"],2,"Its symbol comes from the Latin name aurum."],
+["Which instrument measures atmospheric pressure?",["Thermometer","Barometer","Hygrometer","Compass"],1,"Meteorologists use it to help study weather."],
+["What is the smallest prime number?",["0","1","2","3"],2,"It is the only even prime number."]
+]},
+{
+title:"Grandmaster Finale",
+questions:[
+["Which number is a prime number?",["21","27","29","33"],2,"It has exactly two positive factors."],
+["Which continent contains the Amazon rainforest?",["Africa","Asia","South America","Europe"],2,"The rainforest is largely in Brazil."],
+["What is the chemical symbol for sodium?",["S","So","Na","N"],2,"It comes from the Latin word natrium."],
+["Which part of a cell contains most of its genetic material?",["Nucleus","Cell wall","Cytoplasm","Membrane"],0,"It acts as the cell's control centre in many cells."],
+["What is the binary representation of decimal 5?",["100","101","110","111"],1,"It is four plus one in binary place values."]
+]}
+];
+
+const STORAGE_KEY = "quizMaster20ProgressV1";
+
+let saved = loadSaved();
+let currentLevel = 0;
+let questionIndex = 0;
+let levelScore = 0;
+let answered = false;
+let hintUsed = false;
+
+function loadSaved() {
+  try {
+    const data = JSON.parse(localStorage.getItem(STORAGE_KEY));
+    if (data && Array.isArray(data.completed) &&
+        Number.isFinite(data.score)) {
+      return data;
+    }
+  } catch (e) {}
+
+  return { score: 0, completed: [], best: {} };
+}
+
+function saveSaved() {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(saved));
+}
+
+function updateHeader() {
+  document.getElementById("headerScore").textContent = saved.score;
+  document.getElementById("headerLevels").textContent =
+    saved.completed.length + "/20";
+}
+
+function hideAll() {
+  ["home", "levelScreen", "game", "result"].forEach(id => {
+    document.getElementById(id).classList.add("hidden");
+  });
+}
+
+function showHome() {
+  hideAll();
+  document.getElementById("home").classList.remove("hidden");
+  updateHeader();
+}
+
+function showLevels() {
+  hideAll();
+  document.getElementById("levelScreen").classList.remove("hidden");
+  drawLevels();
+}
+
+function drawLevels() {
+  const grid = document.getElementById("levelGrid");
+  grid.innerHTML = "";
+
+  levels.forEach((level, i) => {
+    const unlocked = i === 0 || saved.completed.includes(i - 1);
+    const completed = saved.completed.includes(i);
+
+    const btn = document.createElement("button");
+    btn.className = "level " +
+      (completed ? "completed" : unlocked ? "unlocked" : "locked");
+
+    btn.disabled = !unlocked;
+    btn.innerHTML =
+      (completed ? "🏆" : unlocked ? "🎯" : "🔒") +
+      "<br>LEVEL " + (i + 1) +
+      "<small>" + (completed ? "Completed" :
+        unlocked ? "5 Questions" : "Locked") + "</small>";
+
+    btn.onclick = () => startLevel(i);
+    grid.appendChild(btn);
+  });
+}
+
+function startLevel(i) {
+  if (i > 0 && !saved.completed.includes(i - 1)) return;
+
+  currentLevel = i;
+  questionIndex = 0;
+  levelScore = 0;
+  answered = false;
+  hintUsed = false;
+
+  hideAll();
+  document.getElementById("game").classList.remove("hidden");
+
+  document.getElementById("levelLabel").textContent =
+    "LEVEL " + (i + 1);
+  document.getElementById("levelTitle").textContent = levels[i].title;
+
+  renderQuestion();
+}
+
+function renderQuestion() {
+  const q = levels[currentLevel].questions[questionIndex];
+
+  answered = false;
+  hintUsed = false;
+
+  document.getElementById("questionCount").textContent =
+    "Question " + (questionIndex + 1) + " of 5";
+
+  document.getElementById("progressBar").style.width =
+    (questionIndex / 5 * 100) + "%";
+
+  document.getElementById("category").textContent =
+    levels[currentLevel].title;
+
+  document.getElementById("question").textContent = q[0];
+
+  document.getElementById("feedback").textContent = "";
+  document.getElementById("nextBtn").classList.add("hidden");
+  document.getElementById("gameScore").textContent = levelScore;
+
+  const box = document.getElementById("answers");
+  box.innerHTML = "";
+
+  q[1].forEach((answer, index) => {
+    const btn = document.createElement("button");
+    btn.className = "answer";
+    btn.textContent = String.fromCharCode(65 + index) + ". " + answer;
+    btn.onclick = () => selectAnswer(index, btn);
+    box.appendChild(btn);
+  });
+}
+
+function selectAnswer(index, button) {
+  if (answered) return;
+
+  answered = true;
+
+  const q = levels[currentLevel].questions[questionIndex];
+  const buttons = [...document.querySelectorAll(".answer")];
+  const feedback = document.getElementById("feedback");
+
+  buttons.forEach(b => b.disabled = true);
+
+  if (index === q[2]) {
+    button.classList.add("correct");
+    feedback.textContent = "✅ Correct! +10 points";
+    feedback.style.color = "#52ffa8";
+    levelScore += 10;
+    saved.score += 10;
+    saveSaved();
+    updateHeader();
+    document.getElementById("gameScore").textContent = levelScore;
+  } else {
+    button.classList.add("wrong");
+    buttons[q[2]].classList.add("correct");
+    feedback.textContent =
+      "❌ Not quite! Correct answer: " + q[1][q[2]];
+    feedback.style.color = "#ff8b9d";
+  }
+
+  document.getElementById("progressBar").style.width =
+    ((questionIndex + 1) / 5 * 100) + "%";
+
+  const next = document.getElementById("nextBtn");
+  next.textContent = questionIndex === 4 ? "Finish Level 🏆" : "Next Question →";
+  next.classList.remove("hidden");
+}
+
+function showHint() {
+  const feedback = document.getElementById("feedback");
+
+  if (answered) {
+    feedback.textContent = "Answer the next question to keep going!";
+    return;
+  }
+
+  const q = levels[currentLevel].questions[questionIndex];
+
+  if (hintUsed) {
+    feedback.textContent = "💡 Hint: " + q[3];
+    return;
+  }
+
+  hintUsed = true;
+  feedback.textContent = "💡 Hint: " + q[3];
+  feedback.style.color = "#ffd166";
+}
+
+function nextQuestion() {
+  if (!answered) return;
+
+  if (questionIndex < 4) {
+    questionIndex++;
+    renderQuestion();
+  } else {
+    finishLevel();
+  }
+}
+
+function finishLevel() {
+  if (!saved.completed.includes(currentLevel)) {
+    saved.completed.push(currentLevel);
+  }
+
+  saved.best[currentLevel] = Math.max(
+    saved.best[currentLevel] || 0,
+    levelScore
+  );
+
+  saveSaved();
+  updateHeader();
+
+  hideAll();
+  document.getElementById("result").classList.remove("hidden");
+
+  document.getElementById("resultScore").textContent =
+    levelScore + "/50";
+
+  const perfect = levelScore === 50;
+  const last = currentLevel === 19;
+
+  document.getElementById("resultTitle").textContent =
+    last ? "🏆 GRANDMASTER!" :
+    perfect ? "🔥 PERFECT SCORE!" :
+    levelScore >= 30 ? "🎉 Great Work!" : "💪 Level Complete!";
+
+  document.getElementById("resultMessage").textContent =
+    (perfect ? "Every answer was correct! " :
+    "You completed all five questions! ") +
+    (last ? "You conquered all 20 levels and 100 questions!" :
+    "Your next level is now unlocked.") +
+    " Total score: " + saved.score + ".";
+
+  document.getElementById("continueBtn").textContent =
+    last ? "Play Again ↻" : "Next Level →";
+}
+
+function continueGame() {
+  if (currentLevel === 19) {
+    showLevels();
+    return;
+  }
+
+  startLevel(currentLevel + 1);
+}
+
+function resetGame() {
+  if (!confirm("Reset all scores and unlocks? This cannot be undone.")) {
+    return;
+  }
+
+  saved = { score: 0, completed: [], best: {} };
+  saveSaved();
+  updateHeader();
+  showHome();
+}
+
+updateHeader();
+showHome();
+</script>
+
+</body>
+</html>

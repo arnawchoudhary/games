@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>🏎️ Racing Legends</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;background:#10151c;color:white;font-family:Arial;text-align:center}
+header{padding:12px;background:#202c3a;border-bottom:3px solid #ffcc42}
+h1{margin:0;color:#ffcc42}
+#stats{display:flex;justify-content:center;gap:18px;flex-wrap:wrap;padding:12px;font-weight:bold}
+canvas{display:block;width:min(96vw,480px);height:auto;margin:auto;border:3px solid #8b9bac;touch-action:none}
+button{background:#ffcc42;border:0;border-radius:10px;padding:12px 20px;margin:8px;font-weight:bold;cursor:pointer}
+p{font-size:14px;color:#d4deea}
+</style>
+</head>
+<body>
+<header><h1>🏎️ RACING LEGENDS</h1>RACE • DODGE • COLLECT • WIN</header>
+<div id="stats">
+<div>🏆 Score: <span id="score">0</span></div>
+<div>🪙 Coins: <span id="coins">0</span></div>
+<div>⚡ Nitro: <span id="nitro">100</span>%</div>
+<div>🚗 Speed: <span id="speed">1</span></div>
+</div>
+<canvas id="game" width="480" height="620"></canvas>
+<button onclick="start()">▶ START / RESTART</button>
+<p>⬅️ ➡️ Move · A/D Move · SPACE Nitro · Collect coins · Avoid traffic!</p>
+<script>
+const c=document.getElementById('game'),ctx=c.getContext('2d');
+const $=id=>document.getElementById(id);
+let keys={},car,traffic=[],coinsOnRoad=[],particles=[];
+let score=0,coins=0,nitro=100,speed=4,playing=false,frame=0,roadLine=0,spawn=0;
+let pointer=null;
+function start(){
+car={x:240,y:510,w:34,h:58};
+traffic=[];coinsOnRoad=[];particles=[];
+score=0;coins=0;nitro=100;speed=4;frame=0;roadLine=0;spawn=0;playing=true;
+updateHUD();
+}
+function updateHUD(){
+$('score').textContent=score;
+$('coins').textContent=coins;
+$('nitro').textContent=Math.round(nitro);
+$('speed').textContent=(speed/4).toFixed(1);
+}
+onkeydown=e=>{keys[e.key.toLowerCase()]=true;if(e.code==='Space')e.preventDefault();if(!playing&&e.key==='Enter')start()};
+onkeyup=e=>keys[e.key.toLowerCase()]=false;
+c.onpointerdown=e=>{pointer=true;movePointer(e)};
+c.onpointermove=e=>{if(pointer)movePointer(e)};
+c.onpointerup=()=>pointer=false;
+c.onpointercancel=()=>pointer=false;
+function movePointer(e){
+let r=c.getBoundingClientRect();
+car.x=(e.clientX-r.left)*480/r.width;
+}
+function spawnTraffic(){
+let lane=[145,240,335][Math.floor(Math.random()*3)];
+traffic.push({x:lane,y:-80,w:35,h:58,color:['#e84c4c','#54a6ff','#ffae42','#b17cff'][Math.floor(Math.random()*4)],v:Math.random()*1.4+.5});
+}
+function spawnCoin(){
+coinsOnRoad.push({x:[145,240,335][Math.floor(Math.random()*3)],y:-20,r:11});
+}
+function overlap(a,b){
+return Math.abs(a.x-b.x)<(a.w+b.w)/2-3&&Math.abs(a.y-b.y)<(a.h+b.h)/2-3;
+}
+function drawCar(x,y,color,player=false){
+ctx.save();ctx.translate(x,y);
+ctx.fillStyle='#111';ctx.fillRect(-20,-22,8,18);ctx.fillRect(12,-22,8,18);ctx.fillRect(-20,12,8,18);ctx.fillRect(12,12,8,18);
+ctx.fillStyle=color;ctx.fillRect(-17,-29,34,58);
+ctx.fillStyle='#bdefff';ctx.fillRect(-12,-18,24,14);
+ctx.fillStyle='#202a39';ctx.fillRect(-12,5,24,12);
+ctx.fillStyle=player?'#fff3a3':'#ffaaaa';ctx.fillRect(-13,-27,8,4);ctx.fillRect(5,-27,8,4);
+ctx.restore();
+}
+function update(){
+if(!playing)return;
+frame++;score++;
+speed=4+Math.min(score/400,5);
+let move=keys[' ']&&nitro>0;
+if(move){nitro=Math.max(0,nitro-0.7)}else nitro=Math.min(100,nitro+0.15);
+let v=move?speed*1.9:speed;
+roadLine=(roadLine+v)%70;
+if(keys.arrowleft||keys.a)car.x-=6;
+if(keys.arrowright||keys.d)car.x+=6;
+car.x=Math.max(115,Math.min(365,car.x));
+if(++spawn>Math.max(20,58-Math.floor(score/300))){spawn=0;spawnTraffic();if(Math.random()<.25)spawnCoin()}
+traffic.forEach(t=>t.y+=v+t.v);
+coinsOnRoad.forEach(k=>k.y+=v);
+for(let i=traffic.length-1;i>=0;i--){
+let t=traffic[i];
+if(overlap(car,t)){playing=false;break}
+if(t.y>680)traffic.splice(i,1);
+}
+for(let i=coinsOnRoad.length-1;i>=0;i--){
+let k=coinsOnRoad[i];
+if(Math.abs(car.x-k.x)<28&&Math.abs(car.y-k.y)<35){coins++;score+=50;coinsOnRoad.splice(i,1)}
+else if(k.y>650)coinsOnRoad.splice(i,1);
+}
+updateHUD();
+}
+function draw(){
+ctx.clearRect(0,0,480,620);
+ctx.fillStyle='#28743b';ctx.fillRect(0,0,480,620);
+ctx.fillStyle='#383d46';ctx.fillRect(90,0,300,620);
+ctx.fillStyle='#e8e8e8';
+ctx.fillRect(97,0,4,620);ctx.fillRect(379,0,4,620);
+ctx.fillStyle='#f8dc68';
+for(let y=-70;y<650;y+=70){ctx.fillRect(188,y+roadLine,5,35);ctx.fillRect(288,y+roadLine,5,35)}
+// roadside decorations
+for(let y=-20;y<650;y+=95){
+let yy=(y+roadLine*1.5)%670;
+ctx.fillStyle='#65d66f';ctx.beginPath();ctx.arc(48,yy,12,0,7);ctx.fill();
+ctx.beginPath();ctx.arc(430,yy+35,12,0,7);ctx.fill();
+}
+traffic.forEach(t=>drawCar(t.x,t.y,t.color));
+coinsOnRoad.forEach(k=>{
+ctx.fillStyle='#ffdf42';ctx.beginPath();ctx.arc(k.x,k.y,k.r,0,7);ctx.fill();
+ctx.fillStyle='#a86c00';ctx.font='bold 13px Arial';ctx.textAlign='center';ctx.fillText('$',k.x,k.y+5);
+});
+if(car)drawCar(car.x,car.y,'#20a8ff',true);
+if(!playing){
+ctx.fillStyle='#000b';ctx.fillRect(0,0,480,620);
+ctx.textAlign='center';ctx.fillStyle='#ffdc57';ctx.font='bold 34px Arial';ctx.fillText('RACING LEGENDS',240,255);
+ctx.fillStyle='white';ctx.font='20px Arial';ctx.fillText('Score: '+score,240,305);
+ctx.font='17px Arial';ctx.fillText('Press START to race again!',240,345);
+ctx.textAlign='left';
+}
+}
+function loop(){update();draw();requestAnimationFrame(loop)}
+start();playing=false;loop();
+</script>
+</body>
+</html>

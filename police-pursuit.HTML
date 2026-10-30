@@ -1,0 +1,550 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>POLICE PURSUIT | Open City</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;background:#080d16;color:#edf5ff;font-family:Arial,sans-serif}
+header{height:68px;padding:12px 22px;display:flex;align-items:center;justify-content:space-between;background:#0e1725;border-bottom:1px solid #25344a;gap:12px}
+.brand{font-size:20px;font-weight:900;letter-spacing:2px}
+.brand span{color:#ff424f}
+.badge{font-size:11px;color:#7ef5c4;border:1px solid #276650;padding:7px 10px;border-radius:5px}
+main{max-width:1250px;margin:auto;padding:16px}
+.hud{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin-bottom:12px}
+.panel{background:#111c2c;border:1px solid #25354b;border-radius:9px;padding:12px}
+.label{font-size:10px;letter-spacing:1.5px;color:#8fa4bd;text-transform:uppercase}
+.value{font-size:23px;font-weight:800;margin-top:5px}
+.red{color:#ff5260}.green{color:#64f2b0}.blue{color:#63c9ff}
+#frame{position:relative;border:1px solid #34465e;border-radius:10px;overflow:hidden;background:#202b34}
+canvas{display:block;width:100%;height:auto;aspect-ratio:16/9}
+#toast{position:absolute;top:16px;left:50%;transform:translateX(-50%);background:#101b2be8;border:1px solid #40546d;border-radius:8px;padding:10px 16px;font-size:13px;white-space:nowrap;pointer-events:none}
+#overlay{position:absolute;inset:0;background:#080d16dd;display:none;align-items:center;justify-content:center;text-align:center;padding:20px}
+#overlay h2{font-size:clamp(30px,6vw,55px);margin:0 0 8px;color:#ff5260}
+#overlay p{color:#b9c9dd}
+button{cursor:pointer;border:0;border-radius:7px;padding:12px 17px;background:#63e6b0;color:#06140f;font-weight:800}
+.controls{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;margin-top:12px}
+.help{font-size:12px;color:#a8b8ce;line-height:2}
+kbd{background:#1a2a3e;border:1px solid #3b5069;border-radius:4px;padding:3px 6px;color:white}
+.meter{height:5px;background:#29384a;border-radius:10px;overflow:hidden;margin-top:8px}
+.meter div{height:100%;width:100%;background:#63e6b0;transition:width .1s}
+footer{text-align:center;padding:18px;color:#637991;font-size:11px}
+@media(max-width:600px){
+ main{padding:9px}.hud{grid-template-columns:repeat(2,minmax(0,1fr))}
+ header{padding:10px}.brand{font-size:16px}
+ #toast{font-size:11px;padding:8px}
+}
+</style>
+</head>
+<body>
+
+<header>
+ <div class="brand">POLICE <span>PURSUIT</span></div>
+ <div class="badge">OPEN CITY • BUILD 01</div>
+</header>
+
+<main>
+ <div class="hud">
+  <div class="panel">
+   <div class="label">Escape score</div>
+   <div class="value blue" id="score">00000</div>
+  </div>
+  <div class="panel">
+   <div class="label">Pursuit level</div>
+   <div class="value red" id="wanted">★☆☆☆☆</div>
+  </div>
+  <div class="panel">
+   <div class="label">Vehicle condition</div>
+   <div class="value green" id="health">100%</div>
+   <div class="meter"><div id="healthbar"></div></div>
+  </div>
+  <div class="panel">
+   <div class="label">Nitro boost</div>
+   <div class="value blue" id="nitro">100%</div>
+   <div class="meter"><div id="nitrobar"></div></div>
+  </div>
+ </div>
+
+ <div id="frame">
+  <canvas id="game" width="1200" height="675"></canvas>
+  <div id="toast">🚔 PURSUIT ACTIVE — FIND THE GREEN GARAGE</div>
+  <div id="overlay">
+   <div>
+    <h2 id="endtitle">BUSTED</h2>
+    <p id="endtext">Your escape has ended.</p>
+    <button id="again">RESTART PURSUIT ↻</button>
+   </div>
+  </div>
+ </div>
+
+ <div class="controls">
+  <div class="help">
+   <kbd>W</kbd><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd> Drive &nbsp;
+   <kbd>SPACE</kbd> Nitro &nbsp; <kbd>E</kbd> Exit garage &nbsp; <kbd>R</kbd> Restart<br>
+   Drive into the green GARAGE to lose the police. You can drive out any time, or press E for a quick exit.
+  </div>
+  <button id="restart">RESTART GAME ↻</button>
+ </div>
+</main>
+
+<footer>POLICE PURSUIT • CITY DIVISION • DRIVE SMART. ESCAPE SMARTER.</footer>
+
+<script>
+"use strict";
+
+const canvas=document.getElementById("game");
+const ctx=canvas.getContext("2d");
+const W=canvas.width,H=canvas.height;
+const WORLD={w:2600,h:1900};
+const keys={};
+
+const garage={x:370,y:350,w:110,h:105};
+const roadsX=[100,600,1100,1600,2100,2550];
+const roadsY=[100,500,900,1300,1800];
+
+let player,police,traffic,buildings,particles;
+let score,health,nitro,frame,hidden,capture,gameOver;
+let camera={x:0,y:0};
+let toastTimer=0;
+let lastTime=0;
+
+function rand(a,b){return a+Math.random()*(b-a)}
+function clamp(v,a,b){return Math.max(a,Math.min(b,v))}
+
+function reset(){
+ player={x:425,y:550,v:0,angle:0,r:17};
+ police=[];
+ traffic=[];
+ particles=[];
+ score=0;
+ health=100;
+ nitro=100;
+ frame=0;
+ hidden=false;
+ capture=0;
+ gameOver=false;
+ toastTimer=180;
+
+ for(let i=0;i<4;i++){
+  police.push({
+   x:rand(200,1000),y:rand(100,850),
+   angle:0,speed:rand(1.3,1.8),stun:0
+  });
+ }
+ for(let i=0;i<12;i++)spawnTraffic(true);
+
+ camera.x=clamp(player.x-W/2,0,WORLD.w-W);
+ camera.y=clamp(player.y-H/2,0,WORLD.h-H);
+
+ document.getElementById("overlay").style.display="none";
+ message("🚔 PURSUIT ACTIVE — FIND THE GREEN GARAGE",180);
+}
+
+function message(text,time=150){
+ document.getElementById("toast").textContent=text;
+ toastTimer=time;
+}
+
+function spawnTraffic(initial=false){
+ const horizontal=Math.random()<.5;
+ traffic.push({
+  x:initial?rand(0,WORLD.w):rand(0,WORLD.w),
+  y:initial?rand(0,WORLD.h):-40,
+  angle:horizontal?Math.PI/2:Math.PI,
+  speed:rand(1,2.3),
+  horizontal,
+  color:["#e9b65f","#d6e0e9","#bc8df3","#e66f79","#59cbb4"][Math.floor(Math.random()*5)],
+  hitCooldown:0
+ });
+}
+
+function inGarage(){
+ return player.x>garage.x &&
+        player.x<garage.x+garage.w &&
+        player.y>garage.y &&
+        player.y<garage.y+garage.h;
+}
+
+function exitGarage(){
+ if(!hidden || gameOver) return;
+ // Place the car just outside the garage, facing away from the entrance.
+ player.x=garage.x+garage.w/2;
+ player.y=garage.y+garage.h+38;
+ player.angle=Math.PI;
+ player.v=0;
+ hidden=false;
+ capture=0;
+ message("🚨 BACK ON THE ROAD — POLICE CAN SPOT YOU AGAIN!",180);
+}
+
+function dist(a,b){return Math.hypot(a.x-b.x,a.y-b.y)}
+
+function car(x,y,angle,color,policeCar=false,scale=1){
+ ctx.save();
+ ctx.translate(x,y);
+ ctx.rotate(angle);
+ ctx.scale(scale,scale);
+
+ // Shadow
+ ctx.fillStyle="#0006";
+ ctx.fillRect(-16,-24,34,51);
+
+ // Wheels
+ ctx.fillStyle="#10151c";
+ ctx.fillRect(-18,-17,6,13);
+ ctx.fillRect(12,-17,6,13);
+ ctx.fillRect(-18,10,6,13);
+ ctx.fillRect(12,10,6,13);
+
+ // Body
+ roundedRect(-14,-25,28,50,6,color);
+
+ // Glass
+ roundedRect(-10,-15,20,13,3,"#172e43");
+ ctx.fillRect(-10,5,20,8);
+
+ // Headlights and rear lights
+ ctx.fillStyle="#fff5c4";
+ ctx.fillRect(-11,-24,7,3);
+ ctx.fillRect(4,-24,7,3);
+ ctx.fillStyle="#ff3e50";
+ ctx.fillRect(-11,20,7,3);
+ ctx.fillRect(4,20,7,3);
+
+ if(policeCar){
+  const blue=Math.floor(frame/9)%2===0;
+  ctx.fillStyle=blue?"#378bff":"#ff3149";
+  ctx.fillRect(-12,-4,12,6);
+  ctx.fillStyle=blue?"#ff3149":"#378bff";
+  ctx.fillRect(0,-4,12,6);
+ }
+ ctx.restore();
+}
+
+function roundedRect(x,y,w,h,r,color){
+ // Custom rounded rectangle: works even when CanvasRenderingContext2D.roundRect is unavailable.
+ const radius=Math.max(0,Math.min(r,Math.abs(w)/2,Math.abs(h)/2));
+ ctx.fillStyle=color;
+ ctx.beginPath();
+ ctx.moveTo(x+radius,y);
+ ctx.lineTo(x+w-radius,y);
+ ctx.quadraticCurveTo(x+w,y,x+w,y+radius);
+ ctx.lineTo(x+w,y+h-radius);
+ ctx.quadraticCurveTo(x+w,y+h,x+w-radius,y+h);
+ ctx.lineTo(x+radius,y+h);
+ ctx.quadraticCurveTo(x,y+h,x,y+h-radius);
+ ctx.lineTo(x,y+radius);
+ ctx.quadraticCurveTo(x,y,x+radius,y);
+ ctx.closePath();
+ ctx.fill();
+}
+
+function drawWorld(){
+ ctx.fillStyle="#293b36";
+ ctx.fillRect(0,0,WORLD.w,WORLD.h);
+
+ // Roads
+ ctx.fillStyle="#3b424b";
+ roadsX.forEach(x=>ctx.fillRect(x-85,0,170,WORLD.h));
+ roadsY.forEach(y=>ctx.fillRect(0,y-85,WORLD.w,170));
+
+ // Lane markings
+ ctx.strokeStyle="#d8d1a1";
+ ctx.lineWidth=3;
+ ctx.setLineDash([24,24]);
+
+ roadsX.forEach(x=>{
+  ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x,WORLD.h);ctx.stroke();
+ });
+ roadsY.forEach(y=>{
+  ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(WORLD.w,y);ctx.stroke();
+ });
+ ctx.setLineDash([]);
+
+ // Road edges
+ ctx.strokeStyle="#747a7d";
+ ctx.lineWidth=3;
+ roadsX.forEach(x=>{
+  ctx.beginPath();ctx.moveTo(x-80,0);ctx.lineTo(x-80,WORLD.h);ctx.stroke();
+  ctx.beginPath();ctx.moveTo(x+80,0);ctx.lineTo(x+80,WORLD.h);ctx.stroke();
+ });
+ roadsY.forEach(y=>{
+  ctx.beginPath();ctx.moveTo(0,y-80);ctx.lineTo(WORLD.w,y-80);ctx.stroke();
+  ctx.beginPath();ctx.moveTo(0,y+80);ctx.lineTo(WORLD.w,y+80);ctx.stroke();
+ });
+
+ // City blocks with green courtyards and buildings
+ buildings.forEach(b=>{
+  roundedRect(b.x,b.y,b.w,b.h,8,"#344c40");
+  roundedRect(b.x+8,b.y+8,b.w-16,b.h-16,5,b.color);
+
+  // Windows
+  ctx.fillStyle="#8db6c2";
+  for(let x=b.x+17;x<b.x+b.w-12;x+=25){
+   for(let y=b.y+17;y<b.y+b.h-12;y+=27){
+    ctx.fillRect(x,y,8,10);
+   }
+  }
+ });
+
+ // Garage marker and building
+ roundedRect(garage.x-12,garage.y-12,garage.w+24,garage.h+24,9,"#54d995");
+ roundedRect(garage.x,garage.y,garage.w,garage.h,7,"#17382f");
+ ctx.fillStyle="#d4ffe6";
+ ctx.font="bold 14px Arial";
+ ctx.textAlign="center";
+ ctx.fillText("SAFE GARAGE",garage.x+garage.w/2,garage.y+25);
+
+ // Garage entrance
+ ctx.fillStyle="#071b17";
+ ctx.fillRect(garage.x+24,garage.y+42,62,63);
+ ctx.fillStyle="#50e8a1";
+ ctx.fillRect(garage.x+30,garage.y+48,50,5);
+ ctx.fillStyle="#caffdf";
+ ctx.font="11px Arial";
+ ctx.fillText("ENTER HERE",garage.x+55,garage.y+36);
+
+ // City signs
+ ctx.textAlign="left";
+ ctx.fillStyle="#a8bcb1";
+ ctx.font="bold 15px Arial";
+ ctx.fillText("DOWNTOWN",800,80);
+ ctx.fillText("INDUSTRIAL DISTRICT",1650,820);
+ ctx.fillText("NORTHSIDE",1150,1750);
+}
+
+function makeBuildings(){
+ buildings=[];
+ const blocks=[
+  [300,200],[800,200],[1300,200],[1800,200],
+  [300,600],[800,600],[1300,600],[1800,600],
+  [300,1000],[800,1000],[1300,1000],[1800,1000],
+  [300,1400],[800,1400],[1300,1400],[1800,1400],
+  [2300,300],[2300,700],[2300,1100],[2300,1500]
+ ];
+
+ blocks.forEach(([x,y],i)=>{
+  if(x===300&&y===200)return;
+  buildings.push({
+   x,y,w:rand(130,200),h:rand(110,150),
+   color:["#52636a","#625b66","#5c6659","#655d50"][i%4]
+  });
+ });
+}
+
+function drawMinimap(){
+ const mw=150,mh=110,pad=12;
+ const x=W-mw-pad,y=pad;
+ roundedRect(x,y,mw,mh,7,"#09131de8");
+
+ ctx.save();
+ ctx.beginPath();
+ ctx.rect(x,y,mw,mh);
+ ctx.clip();
+
+ ctx.fillStyle="#263c32";
+ ctx.fillRect(x,y,mw,mh);
+ ctx.fillStyle="#454f59";
+
+ roadsX.forEach(rx=>ctx.fillRect(x+rx/WORLD.w*mw-5,y,10,mh));
+ roadsY.forEach(ry=>ctx.fillRect(x,y+ry/WORLD.h*mh-4,mw,8));
+
+ ctx.fillStyle="#52f5a6";
+ ctx.fillRect(x+garage.x/WORLD.w*mw-2,y+garage.y/WORLD.h*mh-2,6,6);
+
+ police.forEach(p=>{
+  ctx.fillStyle="#ff4757";
+  ctx.fillRect(x+p.x/WORLD.w*mw-2,y+p.y/WORLD.h*mh-2,5,5);
+ });
+
+ ctx.fillStyle="#62dfff";
+ ctx.beginPath();
+ ctx.arc(x+player.x/WORLD.w*mw,y+player.y/WORLD.h*mh,4,0,Math.PI*2);
+ ctx.fill();
+ ctx.restore();
+}
+
+function update(dt){
+ if(gameOver)return;
+ const step=Math.min(dt/16.67,2);
+ frame+=step;
+
+ const forward=keys.w||keys.W||keys.ArrowUp;
+ const backward=keys.s||keys.S||keys.ArrowDown;
+ const left=keys.a||keys.A||keys.ArrowLeft;
+ const right=keys.d||keys.D||keys.ArrowRight;
+ const boost=keys[" "]&&nitro>0&&forward&&!hidden;
+
+ // Driving remains enabled inside the garage; the safehouse pauses police pursuit, not the game.
+ if(forward)player.v=Math.min(player.v+(boost?.15:.075)*step,boost?7:4.5);
+ if(backward)player.v=Math.max(player.v-.12*step,-2.5);
+ if(!forward&&!backward)player.v*=Math.pow(.985,step);
+
+ const steering=(Math.abs(player.v)/4.5)*.055*step;
+ if(left)player.angle-=steering*Math.sign(player.v||1);
+ if(right)player.angle+=steering*Math.sign(player.v||1);
+
+ if(boost)nitro=Math.max(0,nitro-.45*step);
+ else nitro=Math.min(100,nitro+.12*step);
+
+ player.x+=Math.sin(player.angle)*player.v*step;
+ player.y-=Math.cos(player.angle)*player.v*step;
+
+ // City boundaries
+ player.x=clamp(player.x,25,WORLD.w-25);
+ player.y=clamp(player.y,25,WORLD.h-25);
+
+ const wasHidden=hidden;
+ hidden=inGarage();
+
+ if(hidden){
+  capture=Math.max(0,capture-.8*step);
+  score+=.1*step;
+  if(!wasHidden)message("🏠 SAFEHOUSE — YOU CAN STILL DRIVE OUT OR PRESS E",240);
+ }else if(wasHidden){
+  message("🚨 YOU'RE BACK ON THE RADAR!",150);
+ }
+
+ // Traffic
+ traffic.forEach(t=>{
+  if(t.horizontal)t.x+=t.speed*step;
+  else t.y+=t.speed*step;
+
+  if(t.x>WORLD.w+50)t.x=-50;
+  if(t.y>WORLD.h+50)t.y=-50;
+
+  if(!hidden&&Math.hypot(t.x-player.x,t.y-player.y)<27){
+   health=Math.max(0,health-.12*step);
+   player.v*=-.3;
+   t.x=rand(100,WORLD.w-100);
+   t.y=rand(100,WORLD.h-100);
+  }
+ });
+
+ // Police AI
+ police.forEach(p=>{
+  if(hidden){
+   // Pause the pursuit while hidden; the police resume chasing when the player leaves.
+   return;
+  }
+
+  const dx=player.x-p.x;
+  const dy=player.y-p.y;
+  const d=Math.hypot(dx,dy)||1;
+  const speed=p.speed+Math.min(score/4000,.9);
+
+  const target=Math.atan2(dx,-dy);
+  let diff=((target-p.angle+Math.PI*3)%(Math.PI*2))-Math.PI;
+  p.angle+=clamp(diff,-.045*step,.045*step);
+
+  p.x+=Math.sin(p.angle)*speed*step;
+  p.y-=Math.cos(p.angle)*speed*step;
+
+  if(d<48){
+   capture+=.24*step;
+   health=Math.max(0,health-.025*step);
+  }else{
+   capture=Math.max(0,capture-.09*step);
+  }
+ });
+
+ // Gradually increase pressure
+ if(score>0&&Math.floor(score)%1800===0&&police.length<7){
+  if(frame%300<step)police.push({
+   x:clamp(player.x+rand(-400,400),50,WORLD.w-50),
+   y:clamp(player.y+rand(-400,400),50,WORLD.h-50),
+   angle:0,speed:rand(1.4,2),stun:0
+  });
+ }
+
+ score+=step*(hidden?.1:Math.max(.2,Math.abs(player.v)*.15));
+
+ // Camera follows the player
+ camera.x+=(clamp(player.x-W/2,0,WORLD.w-W)-camera.x)*.12;
+ camera.y+=(clamp(player.y-H/2,0,WORLD.h-H)-camera.y)*.12;
+
+ if(health<=0||capture>100){
+  gameOver=true;
+  document.getElementById("endtitle").textContent=capture>100?"BUSTED":"VEHICLE DISABLED";
+  document.getElementById("endtext").textContent="Escape score: "+Math.floor(score);
+  document.getElementById("overlay").style.display="flex";
+ }
+}
+
+function draw(){
+ ctx.clearRect(0,0,W,H);
+ ctx.save();
+ ctx.translate(-camera.x,-camera.y);
+
+ drawWorld();
+
+ traffic.forEach(t=>car(t.x,t.y,t.angle,t.color,false,.85));
+
+ police.forEach(p=>{
+  car(p.x,p.y,p.angle,"#edf2f7",true);
+ });
+
+ ctx.save();
+ if(hidden)ctx.globalAlpha=.55;
+ car(player.x,player.y,player.angle,"#19d9ff");
+ ctx.restore();
+
+ if(keys[" "]&&nitro>0&&!hidden){
+  for(let i=0;i<3;i++){
+   ctx.fillStyle=i%2?"#ffae45":"#58dcff";
+   ctx.beginPath();
+   ctx.arc(
+    player.x+rand(-5,5),
+    player.y+rand(20,35),
+    rand(2,5),0,Math.PI*2
+   );
+   ctx.fill();
+  }
+ }
+
+ ctx.restore();
+
+ drawMinimap();
+
+ document.getElementById("score").textContent=String(Math.floor(score)).padStart(5,"0");
+ document.getElementById("health").textContent=Math.ceil(health)+"%";
+ document.getElementById("healthbar").style.width=health+"%";
+ document.getElementById("healthbar").style.background=health<30?"#ff4757":"#63e6b0";
+ document.getElementById("nitro").textContent=Math.floor(nitro)+"%";
+ document.getElementById("nitrobar").style.width=nitro+"%";
+
+ const stars=hidden?0:Math.min(5,1+Math.floor(capture/20)+Math.floor(score/4000));
+ document.getElementById("wanted").textContent="★".repeat(stars)+"☆".repeat(5-stars);
+
+ if(toastTimer>0)toastTimer--;
+ else document.getElementById("toast").textContent=
+  hidden?"SAFEHOUSE SECURE":capture>45?"🚨 HIGH RISK — KEEP MOVING":"PURSUIT ACTIVE";
+}
+
+function loop(now){
+ const dt=lastTime?Math.min(now-lastTime,40):16.67;
+ lastTime=now;
+ update(dt);
+ draw();
+ requestAnimationFrame(loop);
+}
+
+window.addEventListener("keydown",e=>{
+ if(["ArrowUp","ArrowDown","ArrowLeft","ArrowRight"," "].includes(e.key))e.preventDefault();
+ keys[e.key]=true;
+ if(e.key.toLowerCase()==="r")reset();
+ if(e.key.toLowerCase()==="e")exitGarage();
+});
+window.addEventListener("keyup",e=>keys[e.key]=false);
+window.addEventListener("blur",()=>Object.keys(keys).forEach(k=>keys[k]=false));
+
+document.getElementById("restart").addEventListener("click",reset);
+document.getElementById("again").addEventListener("click",reset);
+
+makeBuildings();
+reset();
+requestAnimationFrame(loop);
+</script>
+</body>
+</html>
