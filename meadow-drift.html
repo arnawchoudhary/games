@@ -1,764 +1,1085 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Meadow Drift — Island Life</title>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+<title>Meadow Drift</title>
 <style>
-:root{--ink:#203c34;--deep:#193b32;--panel:#285648;--panel2:#326b57;--mint:#c9f1cc;--cream:#fff8e9;--gold:#f5d78a;--line:#ffffff24;--muted:#d5e8d8}
-*{box-sizing:border-box}
-body{margin:0;background:radial-gradient(circle at 15% 0%,#315f4e,#142e29 62%);color:var(--cream);font-family:Inter,ui-rounded,"Trebuchet MS",Arial,sans-serif;min-height:100vh}
-button,input{font:inherit}
-button{border:0;cursor:pointer;touch-action:manipulation}
-button:focus-visible,input:focus-visible{outline:3px solid #ffe08b;outline-offset:2px}
-.topbar{display:flex;align-items:center;justify-content:space-between;gap:14px;padding:14px clamp(12px,3vw,30px);background:#15382f;border-bottom:1px solid #ffffff20;box-shadow:0 5px 22px #0002;flex-wrap:wrap}
-.brand{display:flex;align-items:center;gap:11px}.brand-mark{width:43px;height:43px;border-radius:15px;background:linear-gradient(145deg,#b8ebac,#f4d78b);display:grid;place-items:center;font-size:25px;box-shadow:inset 0 2px 5px #fff8}.brand h1{font-size:clamp(19px,3vw,27px);margin:0;letter-spacing:.5px}.brand small{display:block;color:#b8d7c3;font-size:11px;letter-spacing:2px;margin-top:2px}
-.hud{display:flex;gap:8px;flex-wrap:wrap;align-items:center}.stat{background:#ffffff12;border:1px solid #ffffff16;border-radius:12px;padding:8px 11px;font-size:13px;min-width:75px}.stat b{color:#fff2b7;margin-left:3px}.save-state{font-size:11px;color:#c6e7cf;padding:0 5px}
-.page{width:min(1440px,100%);margin:auto;padding:16px;display:grid;grid-template-columns:minmax(0,1fr) 335px;gap:15px;align-items:start}
-.game-column{min-width:0}.game-frame{background:#193d34;padding:9px;border-radius:20px;border:1px solid #ffffff25;box-shadow:0 18px 50px #071b164d}.canvas-wrap{position:relative;overflow:hidden;border-radius:13px;background:#83c9d1}.canvas-wrap canvas{width:100%;height:auto;display:block;aspect-ratio:960/620;touch-action:pan-y}
-.canvas-tag{position:absolute;left:13px;top:12px;border-radius:999px;padding:7px 11px;background:#173b32db;border:1px solid #ffffff35;font-size:12px;color:#f8ffe9;pointer-events:none}.canvas-help{position:absolute;right:12px;top:12px;background:#173b32d9;border:1px solid #ffffff30;border-radius:10px;padding:7px 10px;font-size:11px;color:#f5ffe9;pointer-events:none}
-.game-footer{display:flex;justify-content:space-between;gap:10px;align-items:center;padding:10px 5px 2px;flex-wrap:wrap}.game-footer p{margin:0;color:#c3dfcb;font-size:12px}.action-row{display:flex;gap:7px;flex-wrap:wrap}.primary,.secondary,.soft{border-radius:11px;padding:10px 13px;font-weight:800;font-size:13px;transition:transform .12s,filter .12s}.primary{background:linear-gradient(145deg,#d5f3b8,#a6dfaa);color:#1c4637}.secondary{background:#f4d88f;color:#47391e}.soft{background:#ffffff16;color:#f5ffe9;border:1px solid #ffffff27}.primary:hover,.secondary:hover,.soft:hover{filter:brightness(1.07);transform:translateY(-1px)}
-.controls{display:flex;gap:12px;align-items:center;justify-content:center;margin-top:12px;flex-wrap:wrap}.dpad{display:grid;grid-template-columns:47px 47px 47px;grid-template-rows:42px 42px 42px;gap:4px}.pad{background:#ffffff18;color:#faffed;border:1px solid #ffffff30;border-radius:11px;font-size:18px;font-weight:bold;user-select:none}.pad[data-key="up"]{grid-column:2;grid-row:1}.pad[data-key="left"]{grid-column:1;grid-row:2}.pad[data-key="down"]{grid-column:2;grid-row:2}.pad[data-key="right"]{grid-column:3;grid-row:2}.act-pad{height:88px;min-width:88px;border-radius:50%;background:linear-gradient(145deg,#f4d98e,#eab95f);color:#45371e;font-weight:900;box-shadow:0 5px 0 #b88b42;font-size:14px}.control-note{font-size:11px;color:#b9d8c4;max-width:180px;line-height:1.45}
-.sidebar{display:flex;flex-direction:column;gap:11px;min-width:0}.card{background:linear-gradient(145deg,#2a5b49,#214b3e);border:1px solid #ffffff20;border-radius:16px;padding:14px;box-shadow:0 7px 20px #051d1730}.card h2{font-size:15px;margin:0 0 11px;display:flex;align-items:center;gap:7px;color:#e7f8d9}.card .sub{font-size:11px;color:#b9d7c1;margin:-5px 0 10px}.message-box{min-height:80px;border-radius:12px;background:#143d32a8;padding:12px;font-size:13px;line-height:1.5;color:#f4f8e9;border:1px solid #ffffff12}.speaker{display:block;color:#f6dc91;font-weight:900;margin-bottom:4px}.quest-list{display:flex;flex-direction:column;gap:7px;max-height:260px;overflow:auto;padding-right:2px}.quest{padding:9px 10px;border-radius:11px;background:#ffffff0d;border:1px solid #ffffff15;font-size:12px}.quest-top{display:flex;justify-content:space-between;gap:8px;font-weight:800;color:#f6f3dc}.quest-desc{color:#c6dfca;margin-top:4px;line-height:1.4}.bar{height:6px;border-radius:8px;background:#102f27;margin-top:7px;overflow:hidden}.bar span{height:100%;display:block;background:linear-gradient(90deg,#f2d17c,#b7e7a7);border-radius:8px}.empty{font-size:12px;color:#c4deca;line-height:1.5}.pockets{display:grid;grid-template-columns:repeat(3,1fr);gap:7px}.pocket{background:#ffffff10;border:1px solid #ffffff14;border-radius:10px;padding:9px 6px;text-align:center}.pocket b{display:block;font-size:17px;color:#fff1b7}.pocket small{font-size:10px;color:#c3ddc8}.tool-grid{display:grid;grid-template-columns:1fr 1fr;gap:7px}.tool-grid button{min-height:43px}.home-tools{display:flex;gap:7px;flex-wrap:wrap}.bag-list{display:flex;flex-direction:column;gap:6px;margin-top:9px}.bag-item{display:flex;align-items:center;justify-content:space-between;gap:6px;background:#ffffff10;border-radius:9px;padding:7px 8px;font-size:12px}.bag-item button{font-size:11px;padding:7px 9px;border-radius:8px;background:#d6efb9;color:#244536;font-weight:800}.footer-note{text-align:center;color:#93b5a2;font-size:10px;padding:10px}
-.overlay{position:fixed;inset:0;display:none;align-items:center;justify-content:center;background:#071a16c9;z-index:20;padding:16px;backdrop-filter:blur(5px)}.overlay.show{display:flex}.dialog{width:min(570px,100%);max-height:min(85vh,760px);overflow:auto;background:linear-gradient(145deg,#285846,#193f34);border:1px solid #ffffff3a;border-radius:20px;padding:20px;box-shadow:0 24px 80px #0008}.dialog h2{margin:0 0 8px;color:#e4f6ce;font-size:22px}.dialog p{color:#d2e8d7;font-size:13px;line-height:1.55}.dialog .muted{font-size:11px;color:#a9cdb7}.dialog-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px}.shop-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}.shop-item{background:#ffffff12;border:1px solid #ffffff1c;border-radius:12px;padding:10px;display:flex;align-items:center;gap:9px;min-width:0}.shop-emoji{font-size:27px;width:34px;text-align:center}.shop-info{min-width:0;flex:1}.shop-info b{font-size:12px;display:block}.shop-info small{font-size:11px;color:#c6dfca}.shop-item button{padding:8px 10px;border-radius:9px;background:#c7edb7;color:#244536;font-size:11px;font-weight:900}.house-choice{padding:12px;border:1px solid #ffffff1d;border-radius:12px;background:#ffffff0e;margin:8px 0;display:flex;justify-content:space-between;align-items:center;gap:10px}.house-choice b{display:block}.house-choice small{display:block;color:#c5dfcb;margin-top:4px}.login-dialog{width:min(420px,100%)}.login-dialog input{width:100%;padding:13px 14px;border-radius:11px;border:1px solid #ffffff35;background:#14392f;color:white;margin:10px 0 5px;font-size:16px}.toast{position:fixed;left:50%;bottom:20px;transform:translate(-50%,20px);opacity:0;pointer-events:none;background:#f4df9e;color:#3f351f;padding:11px 16px;border-radius:12px;font-size:13px;font-weight:900;box-shadow:0 8px 30px #0005;z-index:30;transition:.2s}.toast.show{opacity:1;transform:translate(-50%,0)}
-@media(max-width:980px){.page{grid-template-columns:minmax(0,1fr) 300px}}@media(max-width:760px){.page{grid-template-columns:1fr;padding:10px}.sidebar{display:grid;grid-template-columns:1fr 1fr}.sidebar .wide{grid-column:1/-1}.topbar{padding:11px}.stat{min-width:auto;padding:7px 9px}.canvas-help{display:none}}@media(max-width:480px){.sidebar{grid-template-columns:1fr}.sidebar .wide{grid-column:auto}.shop-grid{grid-template-columns:1fr}.brand small{letter-spacing:1px}.game-footer{align-items:flex-start}.control-note{max-width:125px}}
+  :root{--ink:#16352e;--glass:rgba(12,35,31,.78);--cream:#fff8e8;--mint:#bff0c9;--gold:#ffe49a}
+  *{box-sizing:border-box} html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#8bc9d2;font-family:ui-rounded,system-ui,-apple-system,Segoe UI,sans-serif;color:var(--cream);touch-action:none}
+  #game{display:block;width:100vw;height:100vh;}
+  .hud{position:fixed;z-index:4;pointer-events:none;inset:0;padding:14px;display:flex;justify-content:space-between;align-items:flex-start}
+  .panel{background:var(--glass);border:1px solid rgba(255,255,255,.24);box-shadow:0 8px 24px #102b2840;backdrop-filter:blur(10px);border-radius:16px;padding:10px 14px;pointer-events:auto}
+  #brand{font-weight:900;letter-spacing:.08em;font-size:14px;color:#d9ffd9}#brand small{display:block;font-size:10px;letter-spacing:.18em;color:#f7e6ac;font-weight:700;margin-top:2px}
+  #stats{display:flex;gap:8px;align-items:center;flex-wrap:wrap;justify-content:flex-end;font-size:12px} .pill{padding:7px 10px;border-radius:999px;background:#ffffff18;border:1px solid #ffffff25;white-space:nowrap}
+  #help{position:fixed;z-index:4;bottom:14px;left:50%;transform:translateX(-50%);font-size:12px;white-space:nowrap;max-width:calc(100vw - 24px);overflow:hidden;text-overflow:ellipsis}
+  #toast{position:fixed;z-index:10;left:50%;top:18%;transform:translate(-50%,-12px);opacity:0;transition:.25s;background:#123c33ed;border:1px solid #d8f7ca80;padding:14px 20px;border-radius:15px;font-weight:750;text-align:center;max-width:min(90vw,520px);box-shadow:0 12px 40px #132d2c55;pointer-events:none}
+  #toast.show{opacity:1;transform:translate(-50%,0)}
+  #dialog{position:fixed;z-index:8;left:50%;bottom:70px;transform:translateX(-50%);width:min(520px,calc(100vw - 28px));display:none;background:#fff8e9;color:#23443b;border-radius:18px;padding:16px 18px;box-shadow:0 15px 50px #102b2866;border:2px solid #d4eacb}
+  #dialog h3{margin:0 0 6px;font-size:17px}#dialog p{margin:0 0 12px;line-height:1.45;font-size:14px}#dialog button{border:0;border-radius:10px;background:#236a4c;color:white;padding:9px 13px;font-weight:800;cursor:pointer}
+  #mobile{position:fixed;z-index:5;bottom:22px;left:18px;display:none;gap:8px;align-items:flex-end;pointer-events:auto}
+  .pad{display:grid;grid-template-columns:44px 44px 44px;grid-template-rows:44px 44px 44px;gap:4px}.btn{border:1px solid #ffffff55;background:#163f39c9;color:#fff;border-radius:13px;font-size:18px;font-weight:900;touch-action:none;user-select:none}.pad .up{grid-column:2}.pad .left{grid-column:1;grid-row:2}.pad .down{grid-column:2;grid-row:2}.pad .right{grid-column:3;grid-row:2}.actions{display:flex;flex-direction:column;gap:8px;margin-left:10px}.actions .btn{width:58px;height:48px;font-size:12px}
+  #nameEntry{position:fixed;inset:0;z-index:20;background:linear-gradient(135deg,#163d35dd,#244e47ee);display:flex;align-items:center;justify-content:center;padding:20px}
+  #nameCard{width:min(420px,100%);background:#fff8e8;color:#23443b;border-radius:24px;padding:26px;box-shadow:0 20px 70px #0b282855;text-align:center}
+  #nameCard h1{margin:0;font-size:34px;color:#216548;letter-spacing:-.04em}#nameCard p{line-height:1.5}#nameCard input{width:100%;padding:13px;border:2px solid #c4dfc1;border-radius:12px;font-size:16px;margin:8px 0 12px;outline:none}#nameCard button{width:100%;padding:13px;border:0;border-radius:12px;background:#216548;color:#fff;font-weight:900;font-size:16px;cursor:pointer}
+  @media(max-width:700px){.hud{padding:8px}#stats{gap:4px}.panel{padding:8px 10px}.pill{padding:6px 8px;font-size:10px}#brand{font-size:12px}#mobile{display:flex}#help{bottom:8px;font-size:10px;left:auto;right:8px;transform:none;max-width:45vw;text-align:right}#dialog{bottom:150px}}
 </style>
-
-<style id="immersive-game-style">
-html,body{width:100%;height:100%;margin:0;overflow:hidden}
-body{min-height:0;background:#70b9c7;color:#fff;font-family:Inter,ui-rounded,"Trebuchet MS",Arial,sans-serif}
-.game-screen{position:fixed;inset:0;overflow:hidden;background:#72c4d0;isolation:isolate}
-#gameCanvas{position:absolute;inset:0;width:100%;height:100%;display:block;touch-action:none;cursor:crosshair}
-.top-hud{position:absolute;z-index:5;left:0;right:0;top:0;display:flex;justify-content:space-between;align-items:flex-start;gap:12px;padding:clamp(10px,2vw,22px);pointer-events:none}
-.brand-panel,.resource-hud,.hud-chip,.round-action,.hint-pill,.big-act,.touch-act,.pad{backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px)}
-.brand-panel{display:flex;align-items:center;gap:10px;padding:9px 14px 9px 9px;border-radius:16px;background:#153d32dc;border:1px solid #ffffff35;box-shadow:0 7px 24px #102a2540;pointer-events:auto}
-.brand-icon{width:39px;height:39px;border-radius:12px;display:grid;place-items:center;font-size:23px;background:linear-gradient(145deg,#d7f0ae,#f2d58b)}
-.brand-panel strong{font-size:14px;letter-spacing:1.5px;display:block;color:#f7ffe9}
-.brand-panel small{font-size:11px;color:#d0e8cf;display:block;margin-top:3px}
-.resource-hud{display:flex;justify-content:flex-end;align-items:center;gap:6px;flex-wrap:wrap;max-width:70%;padding:7px;border-radius:16px;background:#153d32c9;border:1px solid #ffffff28;box-shadow:0 7px 24px #102a2530;pointer-events:auto}
-.hud-chip{display:inline-flex;align-items:center;gap:4px;min-height:32px;padding:6px 10px;border-radius:10px;background:#ffffff13;border:1px solid #ffffff20;color:#fff9e8;font-size:12px;white-space:nowrap}
-.hud-chip b{font-size:12px;color:#fff0b6}.coins-chip{background:#eacb7d27}.day-chip{color:#fff4cf}
-.save-state{font-size:10px;color:#cae6ce;padding:0 5px;white-space:nowrap}
-.bottom-hud{position:absolute;z-index:5;left:0;right:0;bottom:0;padding:14px clamp(12px,2vw,24px) max(14px,env(safe-area-inset-bottom));display:grid;grid-template-columns:auto minmax(150px,1fr) auto;gap:16px;align-items:end;background:linear-gradient(0deg,#102e28bf,transparent);pointer-events:none}
-.quick-actions{display:flex;gap:8px;pointer-events:auto}
-.round-action{width:61px;height:58px;border-radius:15px;background:#183f34d9;color:#fff8e8;border:1px solid #ffffff35;box-shadow:0 5px 16px #10282055;font-size:21px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px}
-.round-action small{font-size:10px;font-weight:800;letter-spacing:.3px;color:#d9edda}
-.hint-area{min-width:0;text-align:center;align-self:end;padding-bottom:5px}
-.hint-pill{display:inline-block;max-width:min(520px,100%);padding:9px 16px;border-radius:13px;background:#173e34dc;border:1px solid #ffffff35;color:#fffbe8;font-size:12px;box-shadow:0 5px 18px #1028203d;line-height:1.35}
-.keyboard-hint{margin-top:7px;color:#f2ffe4d9;font-size:9px;font-weight:900;letter-spacing:1px;text-shadow:0 2px 4px #163326}
-.keyboard-hint span{padding:0 5px;color:#f4d98e}
-.big-act{width:69px;height:69px;border-radius:50%;background:linear-gradient(145deg,#fff0a9,#edbd63);border:4px solid #fff6d2;color:#4b3b1d;font-size:21px;font-weight:1000;box-shadow:0 7px 0 #ae8042,0 10px 22px #17271d70;display:flex;flex-direction:column;align-items:center;justify-content:center;pointer-events:auto}
-.big-act small{font-size:10px;letter-spacing:1px}
-.round-action,.big-act,.touch-act,.pad{transition:transform .12s,filter .12s}
-.round-action:hover,.big-act:hover,.touch-act:hover,.pad:hover{filter:brightness(1.08);transform:translateY(-2px)}
-.touch-controls{display:none;position:absolute;z-index:6;left:13px;right:13px;bottom:105px;justify-content:space-between;align-items:end;pointer-events:none}
-.dpad{display:grid;grid-template-columns:43px 43px 43px;grid-template-rows:43px 43px 43px;gap:4px;pointer-events:auto}
-.pad{border-radius:12px;background:#163c32b8;border:1px solid #ffffff45;color:#fff;font-size:17px;font-weight:900;user-select:none;touch-action:none}
-.pad[data-pad="up"]{grid-column:2;grid-row:1}.pad[data-pad="left"]{grid-column:1;grid-row:2}.pad[data-pad="down"]{grid-column:2;grid-row:2}.pad[data-pad="right"]{grid-column:3;grid-row:2}
-.touch-act{width:65px;height:65px;border-radius:50%;background:#edc76f;border:3px solid #fff4c7;color:#493a20;font-weight:1000;font-size:13px;pointer-events:auto;box-shadow:0 5px 0 #ad8344;touch-action:manipulation}
-.speech-bubble{position:absolute;z-index:8;left:50%;bottom:116px;transform:translate(-50%,14px);opacity:0;pointer-events:none;width:min(460px,calc(100% - 32px));padding:13px 17px 14px;border-radius:16px;background:#183e34ed;border:1px solid #ffffff42;box-shadow:0 12px 35px #10282070;transition:opacity .18s,transform .18s}
-.speech-bubble.show{opacity:1;transform:translate(-50%,0)}
-.speech-bubble strong{display:block;color:#f5d98d;font-size:12px;letter-spacing:.4px;margin-bottom:4px}
-.speech-bubble p{margin:0;color:#fff8e8;font-size:13px;line-height:1.45}
-.legacy-data{display:none!important}
-.overlay{z-index:20;background:#071a16c9;padding:16px;backdrop-filter:blur(7px)}
-.dialog{max-height:min(82vh,720px);border-radius:21px}
-.toast{z-index:40;bottom:110px}
-@media (hover:hover) and (pointer:fine){.touch-controls{display:none!important}}
-@media(max-width:760px){.top-hud{padding:9px;gap:7px}.brand-panel{gap:7px;padding:7px 10px 7px 7px}.brand-icon{width:34px;height:34px;font-size:20px}.brand-panel strong{font-size:11px;letter-spacing:1px}.brand-panel small{font-size:9px}.resource-hud{gap:4px;padding:5px;max-width:68%}.hud-chip{min-height:28px;padding:5px 7px;font-size:10px}.hud-chip b{font-size:10px}.save-state{display:none}.bottom-hud{grid-template-columns:auto minmax(0,1fr) auto;gap:8px;padding:10px 10px max(12px,env(safe-area-inset-bottom))}.round-action{width:49px;height:48px;border-radius:13px;font-size:18px}.round-action small{font-size:9px}.hint-pill{font-size:10px;padding:8px 10px}.keyboard-hint{display:none}.big-act{width:57px;height:57px;border-width:3px;font-size:17px}.speech-bubble{bottom:185px}.touch-controls{display:flex}.toast{bottom:190px}}
-@media(max-width:430px){.brand-panel{padding-right:7px}.brand-panel small{max-width:110px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.resource-hud{max-width:64%}.hud-chip{padding:5px 6px}.day-chip{display:none}.weather-chip{display:none}.clock-chip{display:inline-flex}.quick-actions{gap:5px}.round-action{width:43px;height:45px}.hint-area{padding-bottom:2px}.hint-pill{max-width:100%;font-size:9px}.big-act{width:53px;height:53px}}
-@media(prefers-reduced-motion:reduce){.round-action,.big-act,.touch-act,.pad,.speech-bubble{transition:none}}
-</style>
-
 </head>
 <body>
-<div class="game-screen" id="gameScreen">
-  <canvas id="gameCanvas" width="960" height="620" aria-label="Meadow Drift island game. Explore the island, meet citizens and decorate your home."></canvas>
+<canvas id="game"></canvas>
 
-  <div class="top-hud">
-    <div class="brand-panel">
-      <div class="brand-icon">🌿</div>
-      <div><strong>MEADOW DRIFT</strong><small id="locationTag">Meadow Square</small></div>
-    </div>
-    <div class="resource-hud" aria-live="polite">
-      <span class="hud-chip coins-chip">🪙 <b id="coinsStat">160</b></span>
-      <span class="hud-chip">🪵 <b id="woodStat">0</b></span>
-      <span class="hud-chip">🫐 <b id="berryStat">0</b></span>
-      <span class="hud-chip">🌷 <b id="flowerStat">0</b></span>
-      <span class="hud-chip day-chip">☀️ <b id="dayStat">Day 1</b></span>
-      <span class="hud-chip clock-chip" title="Island time">🕒 <b id="clockStat">08:00 AM</b></span>
-      <span class="hud-chip weather-chip" title="Island weather">🌤️ <b id="weatherStat">Sunny</b></span>
-      <span class="save-state" id="saveState">● Ready</span>
-    </div>
-  </div>
-
-  <div class="bottom-hud">
-    <div class="quick-actions">
-      <button class="round-action" data-action="journal" title="Quest journal" aria-label="Quest journal">📜<small>Quests</small></button>
-      <button class="round-action" data-action="bag" title="Backpack" aria-label="Backpack">🎒<small>Bag</small></button>
-      <button class="round-action" data-action="menu" title="Game menu" aria-label="Game menu">☰<small>Menu</small></button>
-    </div>
-    <div class="hint-area">
-      <div class="hint-pill" id="hintText">Explore the island. Walk near a person or place and press E.</div>
-      <div class="keyboard-hint">WASD / ARROWS TO MOVE <span>•</span> CLICK THE GROUND TO WALK</div>
-    </div>
-    <button class="big-act" data-action="interact">E <small>ACT</small></button>
-  </div>
-
-  <div class="touch-controls" aria-label="Touch movement controls">
-    <div class="dpad">
-      <button class="pad" data-pad="up" aria-label="Move up">▲</button>
-      <button class="pad" data-pad="left" aria-label="Move left">◀</button>
-      <button class="pad" data-pad="down" aria-label="Move down">▼</button>
-      <button class="pad" data-pad="right" aria-label="Move right">▶</button>
-    </div>
-    <button class="touch-act" data-action="interact">ACT</button>
-  </div>
-
-  <div class="speech-bubble" id="speechBubble" aria-live="polite">
-    <strong id="speechName">Meadow Drift</strong>
-    <p id="speechText">Welcome to your island. Your neighbours are waiting to meet you!</p>
+<div class="hud">
+  <div class="panel" id="brand">MEADOW DRIFT<small>A LITTLE ISLAND LIFE</small></div>
+  <div class="panel" id="stats">
+    <span class="pill" id="clock">☀️ 08:00</span>
+    <span class="pill" id="weather">🌤️ Clear</span>
+    <span class="pill" id="materials">🪵 0 · 🍓 0 · 🌼 0</span>
+    <span class="pill" id="location">🏝️ Meadow Island</span>
   </div>
 </div>
 
-<!-- Hidden compatibility elements keep the existing save, quest and decorating systems intact. -->
-<div class="legacy-data" aria-hidden="true">
-  <div id="messageBox"></div><div id="woodPocket">0</div><div id="berryPocket">0</div><div id="flowerPocket">0</div>
-  <div id="homeName">Meadow Cottage</div><div id="questCount">0 active</div><div id="questList"></div>
-  <button id="sleepButton" data-action="sleep"></button><button id="homeEntryBtn" data-action="enterHome"></button>
-  <div id="homeCard"><button data-action="decorate">Decorate</button></div>
-  <div id="decorPanel"><div id="furnitureBag"></div><button data-action="stopDecorating">Finish decorating</button></div>
-</div>
-<div class="overlay" id="loginLayer" role="dialog" aria-modal="true" aria-labelledby="loginTitle">
-  <form class="dialog login-dialog" id="loginForm">
-    <h2 id="loginTitle">🌿 Welcome to Meadow Drift</h2>
-    <p>Every great island adventure needs a name. What should appear above your character?</p>
-    <label for="playerName" class="muted">YOUR ISLAND NAME</label>
-    <input id="playerName" maxlength="18" autocomplete="nickname" placeholder="Enter your name" required>
-    <p class="muted">Your progress is saved in this browser on this device. No password needed.</p>
-    <div class="dialog-actions"><button class="primary" type="submit">Start my adventure →</button></div>
-  </form>
+<div id="help" class="panel">WASD / Arrows: move · E: interact · G: gather · F: place furniture · H: home</div>
+<div id="toast"></div>
+
+<div id="dialog">
+  <h3 id="dialogTitle"></h3>
+  <p id="dialogText"></p>
+  <button id="dialogOk">Got it</button>
 </div>
 
-<div class="overlay" id="modalLayer" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
-  <div class="dialog">
-    <h2 id="modalTitle">Meadow Drift</h2>
-    <div id="modalBody"></div>
-    <div class="dialog-actions"><button class="soft" data-action="closeModal">Close</button></div>
+<div id="mobile">
+  <div class="pad">
+    <button class="btn up" data-key="ArrowUp">▲</button>
+    <button class="btn left" data-key="ArrowLeft">◀</button>
+    <button class="btn down" data-key="ArrowDown">▼</button>
+    <button class="btn right" data-key="ArrowRight">▶</button>
+  </div>
+  <div class="actions">
+    <button class="btn" id="actBtn">ACT · E</button>
+    <button class="btn" id="furnBtn">PLACE · F</button>
   </div>
 </div>
-<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<div id="nameEntry">
+  <div id="nameCard">
+    <h1>Meadow Drift 🌿</h1>
+    <p>A quiet island, friendly neighbours, travelling traders and a little home to make your own.</p>
+    <input id="playerName" maxlength="16" placeholder="What should we call you?" autocomplete="off"/>
+    <button id="startBtn">Start exploring</button>
+    <p style="font-size:11px;color:#648075;margin-bottom:0">Your progress saves on this device.</p>
+  </div>
+</div>
 
 <script>
 (()=>{
 'use strict';
-const W=960,H=620;
-const canvas=document.getElementById('gameCanvas');
-const ctx=canvas.getContext('2d');
-const $=id=>document.getElementById(id);
-const keyState={up:false,down:false,left:false,right:false};
-let lastFrame=0,toastTimer=0,dialogueTimer=0,saveTimer=0,modalOpen=false,loginOpen=true;
-let decorating=false,selectedFurniture=null,inside=false;
-let moveTarget=null,targetInteract=false,lastLocationText="";
-let player={x:480,y:350,face:1,bob:0};
-const homes=[
- {id:'cottage',name:'Meadow Cottage',price:0,desc:'A cosy starter home with a little garden.',wall:'#f1d6a7',roof:'#c9785b'},
- {id:'villa',name:'Willow Villa',price:180,desc:'A roomy home with big sunny windows.',wall:'#d9e8d0',roof:'#719b83'},
- {id:'estate',name:'Sunflower Estate',price:350,desc:'A grand island home with a golden roof.',wall:'#f5e3a6',roof:'#d8a64e'}
-];
-// The Estate Office can generate and sell one million numbered home blueprints.
-const houseStyles=[
- {type:'Garden Cottage',base:160},{type:'Modern Villa',base:360},{type:'Beach House',base:420},
- {type:'Glass House',base:650},{type:'Skyline Mansion',base:980},{type:'Forest Lodge',base:520},
- {type:'Sunset Bungalow',base:280},{type:'Royal Estate',base:1250},{type:'Lake House',base:740}
-];
-function generateHouse(number){
- const idNum=Math.max(1,Math.min(1000000,Math.floor(Number(number)||1)));
- let seed=(Math.imul(idNum,2654435761)>>>0);
- const style=houseStyles[seed%houseStyles.length];
- const hue=(seed>>>5)%360;
- const suffixes=['Willow','Clover','Starfall','Moonbeam','Cedar','Sunrise','Pebble','Silverleaf','Cloudberry','Rosewood','Maple','Bluebell'];
- const suffix=suffixes[(seed>>>13)%suffixes.length];
- return {id:'generated-'+idNum,number:idNum,name:suffix+' '+style.type+' #'+idNum,price:style.base+(seed%850),desc:'A one-of-a-kind '+style.type.toLowerCase()+' blueprint from the million-home collection.',wall:'hsl('+hue+' 43% 84%)',roof:'hsl('+((hue+345)%360)+' 43% 47%)',generated:true};
+
+const canvas=document.getElementById('game'),ctx=canvas.getContext('2d');
+let W=innerWidth,H=innerHeight,DPR=Math.min(devicePixelRatio||1,2);
+
+function resize(){
+  W=innerWidth;H=innerHeight;DPR=Math.min(devicePixelRatio||1,2);
+  canvas.width=Math.floor(W*DPR);
+  canvas.height=Math.floor(H*DPR);
+  canvas.style.width=W+'px';
+  canvas.style.height=H+'px';
+  ctx.setTransform(DPR,0,0,DPR,0,0);
 }
-const furnitureCatalog=[
- {id:'sofa',name:'Cloud Sofa',emoji:'🛋️',price:60,desc:'A soft spot to relax.'},
- {id:'tv',name:'Smart TV',emoji:'📺',price:85,desc:'Big screen for movie nights.'},
- {id:'gaming',name:'Gaming Setup',emoji:'🖥️',price:110,desc:'A proper gamer corner.'},
- {id:'bed',name:'Modern Bed',emoji:'🛏️',price:65,desc:'Sleep under cosy blankets.'},
- {id:'fridge',name:'Smart Fridge',emoji:'🧊',price:70,desc:'Keep snacks chilled.'},
- {id:'dining',name:'Dining Table',emoji:'🍽️',price:55,desc:'Room for island friends.'},
- {id:'lamp',name:'Floor Lamp',emoji:'💡',price:25,desc:'Warm evening light.'},
- {id:'shelf',name:'Bookshelf',emoji:'📚',price:40,desc:'A shelf for good stories.'},
- {id:'plant',name:'Indoor Plant',emoji:'🪴',price:20,desc:'A little extra green.'},
- {id:'kitchen',name:'Modern Kitchen',emoji:'🍳',price:105,desc:'A shiny kitchen upgrade.'},
- {id:'aquarium',name:'Aquarium',emoji:'🐠',price:90,desc:'A tiny underwater world.'},
- {id:'rug',name:'Sunset Rug',emoji:'🟠',price:30,desc:'A bright touch for the floor.'},
- {id:'table',name:'Coffee Table',emoji:'🪵',price:35,desc:'Perfect beside your sofa.'},
- {id:'speaker',name:'Music Speaker',emoji:'🔊',price:45,desc:'Bring the good vibes home.'},
- {id:'arcade',name:'Arcade Cabinet',emoji:'🕹️',price:170,desc:'A rare cabinet from the travelling trader.',traderOnly:true},
- {id:'grandpiano',name:'Grand Piano',emoji:'🎹',price:230,desc:'A beautiful limited-edition piano.',traderOnly:true},
- {id:'fountain',name:'Moonlight Fountain',emoji:'⛲',price:195,desc:'A glowing fountain for your garden room.',traderOnly:true},
- {id:'robot',name:'Helper Robot',emoji:'🤖',price:260,desc:'A rare little home companion.',traderOnly:true},
- {id:'chandelier',name:'Crystal Chandelier',emoji:'✨',price:210,desc:'A sparkling ceiling centrepiece.',traderOnly:true},
- {id:'telescope',name:'Starwatch Telescope',emoji:'🔭',price:185,desc:'Look up at the island night sky.',traderOnly:true}
+addEventListener('resize',resize);
+resize();
+
+const WORLD={w:3200,h:2300};
+const saveKey='meadowDriftSaveV2';
+
+let saved={};
+try{
+  saved=JSON.parse(localStorage.getItem(saveKey)||'{}')||{};
+}catch(e){}
+
+let player={
+  x:saved.x||980,
+  y:saved.y||920,
+  name:saved.name||'Island Friend',
+  speed:220,
+  wood:saved.wood||0,
+  berries:saved.berries||0,
+  flowers:saved.flowers||0
+};
+
+let scene='outside',
+    insideAt={x:980,y:920},
+    boatMode=false,
+    boat={x:1530,y:900},
+    boatDir=0;
+
+let keys={},
+    last=performance.now(),
+    toastTimer=0,
+    dialogOpen=false,
+    day=saved.day||1,
+    gameMinute=saved.gameMinute||480,
+    lastHour=Math.floor(gameMinute/60),
+    citizensGone=false,
+    eveningNoticeDay=-1;
+
+let weather='clear',
+    weatherTimer=35,
+    wetUntil=0,
+    snowCover=0,
+    rainDrops=[],
+    snowFlakes=[];
+
+let houseWindowOpen=!!saved.windowOpen;
+let furniture=['sofa','smart TV','bookshelf','plant','bed','dining table'];
+let placed=saved.placed||['sofa','smart TV','bed','plant'];
+let furnitureIndex=0;
+
+const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
+const rnd=(a,b)=>a+Math.random()*(b-a);
+
+const land={cx:1050,cy:980,rx:930,ry:760};
+
+const traders=[
+  {name:'Ravi',x:2210,y:790,color:'#f0bc72',goods:'rare seeds, polished shells and seaside decorations'},
+  {name:'Mira',x:2460,y:1120,color:'#dba6d5',goods:'fruit baskets and flower bundles'},
+  {name:'Tao',x:2050,y:1430,color:'#9fd4df',goods:'furniture, lamps and little surprises'}
 ];
+
 const citizens=[
- {id:'milo',name:'Milo',role:'Town gardener',x:295,y:260,color:'#e5a36e',hair:'#614435',line:'Hey, neighbour! The little park bench is wobbly. Could you bring me 3 pieces of wood?',resource:'wood',amount:3,reward:40},
- {id:'luna',name:'Luna',role:'Flower lover',x:330,y:410,color:'#c89be5',hair:'#503b66',line:'Hello! I am making flower crowns. Could you gather 3 flowers for me?',resource:'flowers',amount:3,reward:35},
- {id:'oliver',name:'Oliver',role:'Market helper',x:595,y:260,color:'#e7c56f',hair:'#654b37',line:'Welcome! I am preparing a berry pie. I need 4 fresh berries. Can you help?',resource:'berries',amount:4,reward:45},
- {id:'emma',name:'Emma',role:'Bookshop fan',x:565,y:405,color:'#e99aa5',hair:'#68444a',line:'I am fixing a reading nook. Please bring me 2 pieces of wood!',resource:'wood',amount:2,reward:30},
- {id:'noah',name:'Noah',role:'Treehouse builder',x:100,y:325,color:'#83b7e7',hair:'#3d4b58',line:'I have a treehouse plan! Four pieces of wood would help me a lot.',resource:'wood',amount:4,reward:55},
- {id:'ava',name:'Ava',role:'Island artist',x:840,y:355,color:'#edb27b',hair:'#604336',line:'I am painting the town square. Could you find me 2 bright flowers?',resource:'flowers',amount:2,reward:30},
- {id:'leo',name:'Leo',role:'Picnic planner',x:745,y:490,color:'#a7c879',hair:'#564638',line:'Picnic time! I need 5 berries for the whole group. You in?',resource:'berries',amount:5,reward:50},
- {id:'sofia',name:'Sofia',role:'Home designer',x:240,y:515,color:'#df9ac8',hair:'#55405c',line:'I am decorating my room. Could you bring me 4 flowers for inspiration?',resource:'flowers',amount:4,reward:45}
+  {name:'Luna',x:790,y:770,shirt:'#e6a7c5',line:'The sea looks extra sparkly today. Have you visited the harbour?'},
+  {name:'Milo',x:1190,y:820,shirt:'#8abce8',line:'I heard Ravi has arrived with a special delivery!'},
+  {name:'Ava',x:650,y:1080,shirt:'#f1c36f',line:'I am collecting flowers for the town square.'},
+  {name:'Noah',x:1270,y:1120,shirt:'#9bcf9b',line:'A good home needs a cosy corner and a window with a view.'},
+  {name:'Oliver',x:930,y:590,shirt:'#c2a4e6',line:'The weather changes quickly on this island. Keep an eye on the sky!'},
+  {name:'Emma',x:1420,y:990,shirt:'#efa18c',line:'I love when the travelling traders visit.'}
 ];
-const resourceNodes=[
- {id:'tree',name:'Old Oak Tree',x:155,y:435,resource:'wood',amount:2,emoji:'🌳',limit:8},
- {id:'berries',name:'Berry Bush',x:430,y:455,resource:'berries',amount:3,emoji:'🫐',limit:9},
- {id:'flowers',name:'Flower Patch',x:650,y:455,resource:'flowers',amount:2,emoji:'🌷',limit:8},
- {id:'woodpile',name:'Driftwood Pile',x:835,y:485,resource:'wood',amount:2,emoji:'🪵',limit:8}
-];
-const landmarks=[
- {id:'market',name:'Market Stall',x:180,y:190,emoji:'🏪'},
- {id:'estateOffice',name:'Estate Office',x:480,y:185,emoji:'🏢'},
- {id:'home',name:'Your Home',x:780,y:190,emoji:'🏡'},
- {id:'board',name:'Town Notice Board',x:480,y:490,emoji:'📋'}
-];
-const travellingTrader={id:'ravi',name:'Ravi the Trader',x:690,y:245,color:'#d69b68',hair:'#48352e'};
-function traderIsHere(){return game.day>=3&&game.day%3===0;}
-const defaultGame=()=>({name:'',coins:160,inventory:{wood:0,berries:0,flowers:0},day:1,home:'cottage',customHome:null,quests:[],dailyQuests:[],dailyQuestDay:0,traderBought:[],bag:['plant','lamp'],placed:[
- {id:'bed',x:480,y:350},{id:'rug',x:480,y:410}
-],harvested:{wood:0,berries:0,flowers:0},reputation:0,clockMinutes:480,worldMinutes:0,weather:'sunny',weatherNextChange:260,player:{x:480,y:350}});
-let game=defaultGame();
 
-function safeNumber(n,fallback=0){return Number.isFinite(Number(n))?Math.max(0,Number(n)):fallback;}
-function mergeSaved(saved,name){
- const base=defaultGame();
- if(!saved||typeof saved!=='object')return {...base,name};
- const merged={...base,...saved,name};
- merged.inventory={...base.inventory,...(saved.inventory||{})};
- merged.harvested={...base.harvested,...(saved.harvested||{})};
- merged.quests=Array.isArray(saved.quests)?saved.quests:[];
- merged.dailyQuests=Array.isArray(saved.dailyQuests)?saved.dailyQuests:[];
- merged.dailyQuestDay=safeNumber(saved.dailyQuestDay,0);
- merged.traderBought=Array.isArray(saved.traderBought)?saved.traderBought:[];
- merged.clockMinutes=safeNumber(saved.clockMinutes,480)%1440;
- merged.worldMinutes=safeNumber(saved.worldMinutes,0);
- merged.weather=['sunny','cloudy','rainy'].includes(saved.weather)?saved.weather:'sunny';
- merged.weatherNextChange=safeNumber(saved.weatherNextChange,merged.worldMinutes+260);
- merged.customHome=saved.customHome&&Number.isInteger(Number(saved.customHome.number))&&Number(saved.customHome.number)>=1&&Number(saved.customHome.number)<=1000000?generateHouse(Number(saved.customHome.number)):null;
- merged.bag=Array.isArray(saved.bag)?saved.bag.filter(id=>furnitureCatalog.some(f=>f.id===id)):base.bag;
- merged.placed=Array.isArray(saved.placed)?saved.placed.filter(p=>p&&furnitureCatalog.some(f=>f.id===p.id)).map(p=>({id:p.id,x:safeNumber(p.x,480),y:safeNumber(p.y,350)})):base.placed;
- merged.coins=safeNumber(merged.coins,160);merged.day=Math.max(1,safeNumber(merged.day,1));merged.reputation=safeNumber(merged.reputation,0);
- if(merged.customHome&&saved.home===merged.customHome.id)merged.home=merged.customHome.id;else merged.customHome=null;
- for(const k of ['wood','berries','flowers']){merged.inventory[k]=safeNumber(merged.inventory[k]);merged.harvested[k]=safeNumber(merged.harvested[k]);}
- return merged;
+const trees=[];
+for(let i=0;i<90;i++){
+  let a=rnd(0,Math.PI*2),r=Math.sqrt(Math.random());
+  let x=land.cx+Math.cos(a)*land.rx*r*.88;
+  let y=land.cy+Math.sin(a)*land.ry*r*.88;
+  if(Math.hypot(x-1050,y-950)>250&&Math.hypot(x-530,y-720)>150&&Math.hypot(x-1450,y-1000)>140)
+    trees.push({x,y,s:rnd(.75,1.3),tone:Math.random()});
 }
-function storageKey(name){return 'meadowDriftDeluxe_'+name.trim().toLowerCase().replace(/[^a-z0-9_-]/g,'_');}
-function saveGame(){
- if(!game.name)return;
- game.player={x:player.x,y:player.y};
- try{localStorage.setItem(storageKey(game.name),JSON.stringify(game));localStorage.setItem('meadowDriftDeluxe_last',game.name);$('saveState').textContent='● Saved';}
- catch(err){$('saveState').textContent='● Local save unavailable';}
-}
-function loadGame(name){
- let saved=null;
- try{const raw=localStorage.getItem(storageKey(name));if(raw)saved=JSON.parse(raw);}catch(e){saved=null;}
- game=mergeSaved(saved,name);
- ensureDailyQuests();
- if(game.weatherNextChange<=game.worldMinutes)game.weatherNextChange=game.worldMinutes+220;
- player={x:game.player?.x??480,y:game.player?.y??350,face:1,bob:0};
- if(!Number.isFinite(player.x)||player.x<30||player.x>930)player.x=480;
- if(!Number.isFinite(player.y)||player.y<30||player.y>590)player.y=350;
- loginOpen=false;$('loginLayer').classList.remove('show');
- updateUI();lastClockMinute=Math.floor(game.clockMinutes);saveGame();say('Welcome back, '+game.name+'! Your island is just how you left it.','Meadow Drift');
-}
-function escapeHTML(value){return String(value).replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));}
-function say(message,speaker='Island notice'){
- $('messageBox').innerHTML='<span class="speaker">'+escapeHTML(speaker)+'</span>'+escapeHTML(message);
- $('hintText').textContent=message.length>88?message.slice(0,85)+'…':message;
- $('speechName').textContent=speaker;
- $('speechText').textContent=message;
- $('speechBubble').classList.add('show');
- clearTimeout(dialogueTimer);
- dialogueTimer=setTimeout(()=>$('speechBubble').classList.remove('show'),6500);
-}
-function toast(message){const el=$('toast');el.textContent=message;el.classList.add('show');clearTimeout(toastTimer);toastTimer=setTimeout(()=>el.classList.remove('show'),2100);}
-function currentHome(){if(game.customHome&&game.home===game.customHome.id)return game.customHome;return homes.find(h=>h.id===game.home)||homes[0];}
-function makeDailyQuests(day){
- const sets=[
-  [{title:'Woodland Helper',resource:'wood',base:7},{title:'Berry Basket',resource:'berries',base:9},{title:'Flower Festival',resource:'flowers',base:7}],
-  [{title:'Build It Better',resource:'wood',base:10},{title:'Picnic Prep',resource:'berries',base:12},{title:'Colour the Meadow',resource:'flowers',base:10}],
-  [{title:'Lumber Legend',resource:'wood',base:12},{title:'Berry Bonanza',resource:'berries',base:15},{title:'Bloom Collector',resource:'flowers',base:12}],
-  [{title:'Forest Fix-Up',resource:'wood',base:8},{title:'Juicy Discovery',resource:'berries',base:11},{title:'Garden Glow',resource:'flowers',base:9}]
- ];
- const chosen=sets[(day-1)%sets.length];
- return chosen.map((q,i)=>{const amount=q.base+((day+i)%3)*2;return {id:'daily-'+day+'-'+i,title:q.title,resource:q.resource,amount,progress:0,reward:45+amount*5,claimed:false};});
-}
-function ensureDailyQuests(){
- if(!Array.isArray(game.dailyQuests)||game.dailyQuestDay!==game.day){game.dailyQuests=makeDailyQuests(game.day);game.dailyQuestDay=game.day;}
-}
-function weatherLabel(){return game.weather==='rainy'?'Rainy':game.weather==='cloudy'?'Cloudy':'Sunny';}
-function formatGameClock(){const total=Math.floor(Number.isFinite(game.clockMinutes)?game.clockMinutes:480)%1440;const hour=Math.floor(total/60),minute=total%60;const suffix=hour>=12?'PM':'AM';const shown=hour%12||12;return String(shown).padStart(2,'0')+':'+String(minute).padStart(2,'0')+' '+suffix;}
-function updateWeather(){
- const choices=['sunny','sunny','cloudy','rainy','rainy'];let next=choices[Math.floor(Math.random()*choices.length)];
- if(next===game.weather)next=next==='rainy'?'sunny':next==='sunny'?'rainy':'sunny';
- game.weather=next;game.weatherNextChange=game.worldMinutes+210+Math.random()*270;
- updateClockUI();saveGame();
- if(next==='rainy')toast('🌧️ Rain is falling over Meadow Drift!');
- else if(next==='cloudy')toast('☁️ Clouds are rolling over the island.');
- else toast('☀️ The clouds cleared. Sunshine is back!');
-}
-function updateClockUI(){$('clockStat').textContent=formatGameClock();$('weatherStat').textContent=weatherLabel();}
-function advanceWorldClock(dt){
- const advance=Math.max(0,dt)/60;
- game.clockMinutes=(game.clockMinutes+advance)%1440;
- game.worldMinutes+=advance;
- if(game.worldMinutes>=game.weatherNextChange)updateWeather();
- const shown=Math.floor(game.clockMinutes);
- if(shown!==lastClockMinute){lastClockMinute=shown;updateClockUI();}
-}
-let lastClockMinute=-1;
-function dailyQuestMarkup(){
- ensureDailyQuests();
- return game.dailyQuests.map((q,index)=>{
-  const done=q.progress>=q.amount,claimed=!!q.claimed,pct=Math.min(100,Math.round(q.progress/q.amount*100));
-  return '<div class="quest"><div class="quest-top"><span>🌟 '+escapeHTML(q.title)+'</span><span>'+q.progress+'/'+q.amount+'</span></div><div class="quest-desc">Collect '+q.amount+' '+resourceName(q.resource)+' · Reward: 🪙 '+q.reward+'</div><div class="bar"><span style="width:'+pct+'%"></span></div><div class="dialog-actions"><button class="primary" data-action="claimDaily" data-index="'+index+'" '+(!done||claimed?'disabled':'')+'>'+(claimed?'✅ Claimed':done?'Claim reward':'Keep going')+'</button></div></div>';
- }).join('');
-}
-function claimDailyQuest(index){
- ensureDailyQuests();const q=game.dailyQuests[index];if(!q||q.claimed||q.progress<q.amount){toast('Finish the daily task before claiming it.');return;}
- q.claimed=true;game.coins+=q.reward;game.reputation++;updateUI();saveGame();openJournal();toast('Daily quest reward: +'+q.reward+' coins!');
-}
-function traderStockForToday(){
- const stock=furnitureCatalog.filter(f=>f.traderOnly);const start=((Math.floor(game.day/3)-1)*2)%stock.length;
- return [0,1,2].map(n=>stock[(start+n)%stock.length]);
-}
-function openTrader(){
- if(!traderIsHere()){say('Ravi visits Meadow Drift every third day. Check back soon!','Travelling trader');return;}
- const stock=traderStockForToday();
- const cards=stock.map(f=>{const bought=game.traderBought.includes(game.day+':'+f.id);return '<div class="shop-item"><span class="shop-emoji">'+f.emoji+'</span><div class="shop-info"><b>'+escapeHTML(f.name)+'</b><small>🪙 '+f.price+' · Special one-day stock</small></div><button data-action="buyTraderItem" data-id="'+f.id+'" '+(bought?'disabled':'')+'>'+(bought?'Sold out':'Buy')+'</button></div>';}).join('');
- showModal('🧳 Ravi’s Travelling Trader','<p>Ravi only visits on <b>every third island day</b>, and leaves when you sleep. He brings rare furniture you cannot buy at the regular studio.</p><div class="shop-grid">'+cards+'</div><p class="muted">Today is Day '+game.day+'. These special items return on a future visit.</p>');
-}
-function buyTraderItem(id){
- if(!traderIsHere()){toast('The trader has packed up and left.');return;}
- const f=furnitureCatalog.find(x=>x.id===id&&x.traderOnly);if(!f)return;
- const key=game.day+':'+f.id;if(game.traderBought.includes(key)){toast('That special item has sold out today.');return;}
- if(game.coins<f.price){toast('You need '+(f.price-game.coins)+' more coins.');return;}
- game.coins-=f.price;game.bag.push(f.id);game.traderBought.push(key);updateUI();saveGame();openTrader();toast(f.name+' bought from Ravi!');
-}
-function updateUI(){
- $('coinsStat').textContent=game.coins;$('woodStat').textContent=game.inventory.wood;$('berryStat').textContent=game.inventory.berries;$('flowerStat').textContent=game.inventory.flowers;$('dayStat').textContent='Day '+game.day;
- $('clockStat').textContent=formatGameClock();$('weatherStat').textContent=weatherLabel();
- $('woodPocket').textContent=game.inventory.wood;$('berryPocket').textContent=game.inventory.berries;$('flowerPocket').textContent=game.inventory.flowers;$('homeName').textContent=currentHome().name;
- $('locationTag').textContent=inside?'🏠 '+currentHome().name:'📍 '+(getNearby()?.label||'Meadow Square');
- const active=game.quests.filter(q=>!q.done);$('questCount').textContent=active.length+' active';
- $('questList').innerHTML=game.quests.length?game.quests.slice().reverse().map(q=>{
-  const have=Math.min(q.amount,game.inventory[q.resource]||0),pct=q.done?100:Math.round(have/q.amount*100);
-  const resourceLabel={wood:'wood',berries:'berries',flowers:'flowers'}[q.resource];
-  return '<div class="quest"><div class="quest-top"><span>'+escapeHTML(q.citizen)+' · '+(q.done?'✅ Done':'⭐ Quest')+'</span><span>'+have+'/'+q.amount+'</span></div><div class="quest-desc">Collect '+q.amount+' '+resourceLabel+' · Reward: 🪙 '+q.reward+'</div><div class="bar"><span style="width:'+pct+'%"></span></div></div>';
- }).join(''):'<div class="empty">No quests yet. Find a citizen with a 💬 above their head and say hello!</div>';
- $('sleepButton').style.display=inside?'inline-block':'none';
- const homeButton=$('homeEntryBtn');homeButton.textContent=inside?'🚪 Exit home':'🚪 Enter home';homeButton.dataset.action=inside?'exitHome':'enterHome';homeButton.disabled=false;
- $('homeCard').querySelector('[data-action="decorate"]').textContent=decorating?'🎨 Decorating ON':'🎨 Decorate';
- $('decorPanel').style.display=inside&&decorating?'block':'none';
- renderBag();
-}
-function renderBag(){
- const el=$('furnitureBag');
- if(!game.bag.length){el.innerHTML='<div class="empty">Your furniture bag is empty. Buy something at the furniture shop.</div>';return;}
- el.innerHTML=game.bag.map((id,index)=>{const f=furnitureCatalog.find(x=>x.id===id);return '<div class="bag-item"><span>'+f.emoji+' '+escapeHTML(f.name)+'</span><button data-action="selectFurniture" data-index="'+index+'">'+(selectedFurniture===index?'Selected ✓':'Select')+'</button></div>';}).join('');
-}
-function showModal(title,html){$('modalTitle').textContent=title;$('modalBody').innerHTML=html;$('modalLayer').classList.add('show');modalOpen=true;}
-function closeModal(){$('modalLayer').classList.remove('show');modalOpen=false;}
-function resourceName(type){return type==='wood'?'wood':type==='berries'?'berries':'flowers';}
 
-function getNearby(){
- if(inside)return {kind:'exit',label:'Home exit',distance:Math.hypot(player.x-480,player.y-545)};
- let targets=[];
- citizens.forEach(c=>targets.push({kind:'citizen',data:c,label:c.name,distance:Math.hypot(player.x-c.x,player.y-c.y)}));
- if(traderIsHere())targets.push({kind:'trader',data:travellingTrader,label:'Ravi the Trader',distance:Math.hypot(player.x-travellingTrader.x,player.y-travellingTrader.y)});
- landmarks.forEach(o=>targets.push({kind:'landmark',data:o,label:o.name,distance:Math.hypot(player.x-o.x,(player.y)-(o.y+55))}));
- resourceNodes.forEach(o=>targets.push({kind:'resource',data:o,label:o.name,distance:Math.hypot(player.x-o.x,player.y-o.y)}));
- targets.sort((a,b)=>a.distance-b.distance);
- return targets[0]&&targets[0].distance<76?targets[0]:null;
+const flowers=[];
+for(let i=0;i<100;i++){
+  let a=rnd(0,Math.PI*2),r=Math.sqrt(Math.random());
+  flowers.push({
+    x:land.cx+Math.cos(a)*land.rx*r*.85,
+    y:land.cy+Math.sin(a)*land.ry*r*.85,
+    c:['#fff0a6','#f5b6da','#d8c5ff','#fff'][i%4]
+  });
 }
-function nearestLabel(){const n=getNearby();return n?n.label:'Meadow Square';}
-function interact(){
- if(modalOpen||loginOpen)return;
- if(inside){if(Math.hypot(player.x-480,player.y-545)<105){exitHome();return;}if(decorating){say('Choose a furniture item in your home panel, then click an open spot on the room floor.','Decorating tip');return;}say('Cosy, right? Press Decorate to place furniture, or walk to the bottom door to leave.','At home');return;}
- const n=getNearby();
- if(!n){say('Nothing close enough yet. Walk nearer to a citizen, building or resource and press E.','Meadow guide');return;}
- if(n.kind==='citizen')talk(n.data);
- else if(n.kind==='trader')openTrader();
- else if(n.kind==='resource')harvest(n.data);
- else if(n.data.id==='market')openMarket();
- else if(n.data.id==='estateOffice')openEstate();
- else if(n.data.id==='home')enterHome();
- else if(n.data.id==='board')openNoticeBoard();
+
+function save(){
+  try{
+    localStorage.setItem(saveKey,JSON.stringify({
+      name:player.name,
+      x:player.x,
+      y:player.y,
+      wood:player.wood,
+      berries:player.berries,
+      flowers:player.flowers,
+      day,
+      gameMinute,
+      windowOpen:houseWindowOpen,
+      placed
+    }));
+  }catch(e){}
 }
-function talk(c){
- let q=game.quests.find(q=>q.citizenId===c.id);
- if(!q){
-  q={citizenId:c.id,citizen:c.name,resource:c.resource,amount:c.amount,reward:c.reward,done:false};game.quests.push(q);
-  say(c.line+' Quest added: collect '+c.amount+' '+resourceName(c.resource)+'.',c.name+' · '+c.role);
-  toast('New quest from '+c.name+'!');
- }else if(q.done){
-  const replies=['The island feels brighter with you around!','Thanks again for your help. You are a star!','Have a lovely day, neighbour!'];
-  say(replies[(game.day+c.name.length)%replies.length],c.name+' · '+c.role);
- }else{
-  const have=game.inventory[q.resource];
-  if(have>=q.amount){
-   game.inventory[q.resource]-=q.amount;q.done=true;game.coins+=q.reward;game.reputation++;
-   say('You brought everything I needed! Here are '+q.reward+' coins. Thank you!','🎉 '+c.name+' · Quest complete');
-   toast('Quest complete! +'+q.reward+' coins');
-  }else{
-   say('You are doing great! I still need '+(q.amount-have)+' more '+resourceName(q.resource)+'.',''+c.name+' · '+c.role);
+
+setInterval(save,5000);
+
+function toast(t,ms=2400){
+  const el=document.getElementById('toast');
+  el.textContent=t;
+  el.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer=setTimeout(()=>el.classList.remove('show'),ms);
+}
+
+function showDialog(title,text){
+  dialogOpen=true;
+  document.getElementById('dialogTitle').textContent=title;
+  document.getElementById('dialogText').textContent=text;
+  document.getElementById('dialog').style.display='block';
+}
+
+function closeDialog(){
+  dialogOpen=false;
+  document.getElementById('dialog').style.display='none';
+}
+
+document.getElementById('dialogOk').onclick=closeDialog;
+
+function dist(a,b){return Math.hypot(a.x-b.x,a.y-b.y)}
+function screenX(x,cx){return x-cx+W/2}
+function screenY(y,cy){return y-cy+H/2}
+
+function camera(){
+  if(boatMode)return{x:boat.x,y:boat.y};
+  return{
+    x:clamp(player.x,W/2,WORLD.w-W/2),
+    y:clamp(player.y,H/2,WORLD.h-H/2)
+  };
+}
+
+function rounded(x,y,w,h,r,fill,stroke){
+  ctx.beginPath();
+  ctx.roundRect(x,y,w,h,r);
+  if(fill){ctx.fillStyle=fill;ctx.fill()}
+  if(stroke){ctx.strokeStyle=stroke;ctx.stroke()}
+}
+
+function drawWater(cx,cy){
+  ctx.fillStyle='#65b8c5';
+  ctx.fillRect(0,0,W,H);
+  let t=performance.now()/1000;
+
+  for(let y=-50;y<H+60;y+=55){
+    for(let x=-30;x<W+60;x+=105){
+      let xx=x+Math.sin(t*.45+y*.01)*15;
+      let yy=y+Math.cos(t*.35+x*.01)*5;
+      ctx.strokeStyle='rgba(226,255,247,.18)';
+      ctx.lineWidth=2;
+      ctx.beginPath();
+      ctx.moveTo(xx,yy);
+      ctx.quadraticCurveTo(xx+22,yy-5,xx+44,yy);
+      ctx.stroke();
+    }
   }
- }
- updateUI();saveGame();
 }
-function harvest(node){
- // Materials are unlimited: resource spots never run out, even during the same day.
- const type=node.resource;
- const amount=node.amount;
- game.inventory[type]=(game.inventory[type]||0)+amount;
- game.harvested[type]=(game.harvested[type]||0)+amount;
- ensureDailyQuests();
- game.dailyQuests.forEach(q=>{if(q.resource===type&&!q.claimed)q.progress=Math.min(q.amount,q.progress+amount);});
- const emoji=type==='wood'?'🪵':type==='berries'?'🫐':'🌷';
- say('You collected '+amount+' '+type+'! '+emoji+' There is no daily material limit — gather as much as you like.','Gathering spot');
- toast('+'+amount+' '+type);updateUI();saveGame();
-}
-function openMarket(){
- const i=game.inventory;
- showModal('🏪 Meadow Market','<p>Fresh island finds, exchanged for coins. Your pockets:</p><div class="shop-grid">'+[
-  ['wood','🪵','Wood',4],['berries','🫐','Berries',5],['flowers','🌷','Flowers',7]
- ].map(([id,emoji,name,price])=>'<div class="shop-item"><span class="shop-emoji">'+emoji+'</span><div class="shop-info"><b>'+name+'</b><small>'+i[id]+' in bag · '+price+' coins each</small></div><button data-action="sellResource" data-resource="'+id+'">Sell all</button></div>').join('')+'</div><p class="muted">Tip: citizens pay quest rewards too, so decide whether to sell or save your items.</p>');
-}
-function sellResource(type){const amount=game.inventory[type]||0;if(!amount){toast('You have none to sell.');return;}const price={wood:4,berries:5,flowers:7}[type];const earned=amount*price;game.inventory[type]=0;game.coins+=earned;updateUI();saveGame();openMarket();toast('Sold '+amount+' '+type+' for '+earned+' coins!');}
-function openEstate(){
- showModal('🏡 Meadow Drift Estate Office','<p>Your current home: <b>'+escapeHTML(currentHome().name)+'</b>. The classic collection is here, plus <b>1,000,000 procedurally generated homes</b> to discover.</p>'+homes.map(h=>'<div class="house-choice"><div><b>'+h.name+'</b><small>'+h.desc+'</small><small>Price: '+(h.price===0?'Free':'🪙 '+h.price)+' coins</small></div><button class="primary" data-action="chooseHome" data-home="'+h.id+'">'+(game.home===h.id?'Current ✓':h.price===0?'Choose':'Buy')+'</button></div>').join('')+'<div class="quest"><b>🏘️ Million-home collection</b><div class="quest-desc">Find any home blueprint from #1 to #1,000,000, or let the Estate Office surprise you.</div><label for="houseNumberInput" class="muted">HOUSE BLUEPRINT NUMBER</label><input id="houseNumberInput" type="number" min="1" max="1000000" value="'+(1+((game.day*7919)%1000000))+'" style="width:100%;padding:11px;border-radius:10px;border:1px solid #ffffff45;background:#14392f;color:white;margin:8px 0;font-size:16px"><div class="dialog-actions"><button class="primary" data-action="previewHouse">Find this home</button><button class="secondary" data-action="randomHouse">🎲 Surprise me</button></div></div><p class="muted">Each blueprint has its own number, colour palette, style and price. Your furniture stays yours when you move.</p>');
-}
-function previewGeneratedHouse(number){
- const n=Math.floor(Number(number));if(!Number.isFinite(n)||n<1||n>1000000){toast('Enter a house number from 1 to 1,000,000.');return;}
- const h=generateHouse(n);const isCurrent=game.home===h.id;
- showModal('🏡 Home Blueprint #'+n,'<div style="border-radius:15px;padding:20px;background:'+h.wall+';color:#223b34;border:5px solid '+h.roof+';text-align:center"><div style="font-size:54px">🏠</div><h3 style="margin:5px 0">'+escapeHTML(h.name)+'</h3><b>'+escapeHTML(houseStyles.find(x=>h.name.includes(x.type))?.type||'Dream home')+'</b></div><p>'+h.desc+'</p><p><b>Blueprint:</b> '+n.toLocaleString('en-IN')+' / 1,000,000</p><p><b>Price:</b> 🪙 '+h.price+' coins</p><div class="dialog-actions"><button class="primary" data-action="buyGeneratedHome" data-house-number="'+n+'" '+(isCurrent?'disabled':'')+'>'+(isCurrent?'Your current home':'Buy this house')+'</button><button class="soft" data-action="estate">Back to Estate Office</button></div>');
-}
-function buyGeneratedHome(number){
- const h=generateHouse(number);if(game.home===h.id){toast('You already live here!');return;}
- if(game.coins<h.price){toast('You need '+(h.price-game.coins)+' more coins for this home.');return;}
- game.coins-=h.price;game.customHome=h;game.home=h.id;updateUI();saveGame();closeModal();say('Welcome to '+h.name+'! Your furniture came with you.','Estate Office');toast('New dream home unlocked! 🏡');
-}
-function chooseHome(id){const h=homes.find(x=>x.id===id);if(!h)return;if(game.home===id){toast('That is already your home!');return;}if(game.coins<h.price){toast('You need '+(h.price-game.coins)+' more coins. Try quests!');return;}game.coins-=h.price;game.home=id;game.customHome=null;updateUI();saveGame();closeModal();say('Welcome to your new '+h.name+'! Your furniture has moved with you.','Estate Office');toast('New home unlocked! 🏡');}
-function openFurniture(){
- showModal('🛋️ Modern Furniture Studio','<p>Build your dream home. Buy an item here, then enter your home, tap <b>Decorate</b>, select it and click the floor to place it.</p><div class="shop-grid">'+furnitureCatalog.filter(f=>!f.traderOnly).map((f)=>{
- const count=game.bag.filter(id=>id===f.id).length;
- const index=furnitureCatalog.indexOf(f);return '<div class="shop-item"><span class="shop-emoji">'+f.emoji+'</span><div class="shop-info"><b>'+f.name+'</b><small>🪙 '+f.price+' · Owned: '+count+'</small></div><button data-action="buyFurniture" data-index="'+index+'">Buy</button></div>';
- }).join('')+'</div><p class="muted">Your home starts with a bed and a rug. Add a Smart TV, gaming setup, modern kitchen and more!</p>');
-}
-function buyFurniture(index){const f=furnitureCatalog[index];if(!f)return;if(game.coins<f.price){toast('Not enough coins. Complete a quest or sell island finds!');return;}game.coins-=f.price;game.bag.push(f.id);updateUI();saveGame();openFurniture();toast(f.name+' added to your furniture bag!');}
-function enterHome(){if(inside)return;inside=true;decorating=false;selectedFurniture=null;player.x=480;player.y=485;updateUI();saveGame();say('Welcome home, '+game.name+'! Your place is ready for a makeover.','At home');}
-function exitHome(){inside=false;decorating=false;selectedFurniture=null;player.x=780;player.y=255;updateUI();saveGame();say('Back to the island! See what your neighbours are up to.','Meadow Drift');}
-function setDecorating(){if(!inside){toast('Enter your home before decorating.');return;}decorating=!decorating;selectedFurniture=null;updateUI();say(decorating?'Choose an item in your furniture bag, then click an open spot on the floor.':'Decorating mode switched off.','Home designer');}
-function stopDecorating(){decorating=false;selectedFurniture=null;updateUI();}
-function selectFurniture(index){if(!inside){toast('Enter your home first.');return;}if(!decorating){decorating=true;}if(index<0||index>=game.bag.length)return;selectedFurniture=index;closeModal();renderBag();say('Selected '+furnitureCatalog.find(f=>f.id===game.bag[index]).name+'. Click an open place in your home to put it down.','Decorating mode');}
-function placeFurniture(point){
- if(decorating&&selectedFurniture!==null){
-  const id=game.bag[selectedFurniture],f=furnitureCatalog.find(x=>x.id===id);if(!f)return;
-  const x=Math.max(130,Math.min(830,Math.round(point.x/20)*20));const y=Math.max(180,Math.min(465,Math.round(point.y/20)*20));
-  if(game.placed.some(p=>Math.hypot(p.x-x,p.y-y)<48)){toast('That spot is a little crowded. Choose another spot.');return;}
-  game.placed.push({id,x,y});game.bag.splice(selectedFurniture,1);selectedFurniture=null;updateUI();saveGame();toast(f.name+' placed!');say('Looking good! Your '+f.name+' is in place.','Home designer');return;
- }
- const found=game.placed.findIndex(p=>Math.hypot(p.x-point.x,p.y-point.y)<42);
- if(found>=0){const item=game.placed.splice(found,1)[0];game.bag.push(item.id);updateUI();saveGame();toast('Picked up '+furnitureCatalog.find(f=>f.id===item.id).name+'.');say('Furniture moved back into your bag.','Home designer');}
-}
-function sleep(){
- if(!inside){toast('You need to be home to sleep.');return;}
- game.day++;game.clockMinutes=480;game.worldMinutes+=720;game.harvested={wood:0,berries:0,flowers:0};
- game.dailyQuests=makeDailyQuests(game.day);game.dailyQuestDay=game.day;game.traderBought=[];
- if(game.worldMinutes>=game.weatherNextChange){game.weatherNextChange=game.worldMinutes+210+Math.random()*270;game.weather=['sunny','cloudy','rainy'][Math.floor(Math.random()*3)];}
- player.x=480;player.y=485;updateUI();saveGame();
- const traderMessage=traderIsHere()?' Ravi the Travelling Trader has arrived near the pond for today!':'';
- say('Good morning! It is Day '+game.day+'. Three fresh daily quests are waiting on your Quest Journal.'+traderMessage,'☀️ New day');
- toast(traderIsHere()?'🧳 Ravi the Trader has arrived today!':'A fresh island day begins! New daily quests are ready.');
-}
-function openNoticeBoard(){
- const finished=game.quests.filter(q=>q.done).length;
- const traderText=traderIsHere()?'Ravi the Trader is visiting TODAY! Find his stall near the pond.':'Ravi the Trader visits every third day. Next visit: Day '+(Math.floor(game.day/3)*3+3)+'.';
- showModal('📋 Meadow Notice Board','<p>Welcome to the community board, '+escapeHTML(game.name)+'.</p><div class="quest"><b>🌟 Island reputation</b><div class="quest-desc">'+game.reputation+' completed quests.</div></div><div class="quest"><b>🧑‍🤝‍🧑 Neighbours</b><div class="quest-desc">There are 8 citizens to meet around Meadow Drift.</div></div><div class="quest"><b>🌞 Today’s daily quests</b><div class="quest-desc">'+game.dailyQuests.filter(q=>q.claimed).length+' of 3 rewards claimed. Open the Quest Journal to see your tasks.</div></div><div class="quest"><b>🧳 Travelling trader</b><div class="quest-desc">'+traderText+'</div></div><p class="muted">Completed citizen quests: '+finished+' · Current day: '+game.day+'</p>');
-}
-function openJournal(){
- ensureDailyQuests();
- const active=game.quests.filter(q=>!q.done),done=game.quests.filter(q=>q.done);
- const rows=game.quests.slice().reverse().map(q=>{
-  const have=Math.min(q.amount,game.inventory[q.resource]||0),pct=q.done?100:Math.round(have/q.amount*100);
-  return '<div class="quest"><div class="quest-top"><span>'+escapeHTML(q.citizen)+' · '+(q.done?'✅ Complete':'⭐ In progress')+'</span><span>'+have+'/'+q.amount+'</span></div><div class="quest-desc">Collect '+q.amount+' '+resourceName(q.resource)+' · Reward: 🪙 '+q.reward+'</div><div class="bar"><span style="width:'+pct+'%"></span></div></div>';
- }).join('');
- showModal('📜 Quest Journal','<p><b>Day '+game.day+'</b> · '+active.length+' citizen quests active · '+done.length+' completed · Reputation: '+game.reputation+'</p><h3 style="color:#e4f6ce;font-size:15px;margin:16px 0 8px">🌞 Daily quests · New every day</h3>'+dailyQuestMarkup()+'<h3 style="color:#e4f6ce;font-size:15px;margin:18px 0 8px">🧑‍🤝‍🧑 Neighbour quests</h3>'+(rows||'<div class="empty">No neighbour quests yet. Find a citizen and say hello!</div>'));
-}
-function openBag(){
- const counts={wood:game.inventory.wood,berries:game.inventory.berries,flowers:game.inventory.flowers};
- const resources='<div class="pockets"><div class="pocket"><b>'+counts.wood+'</b><small>🪵 Wood</small></div><div class="pocket"><b>'+counts.berries+'</b><small>🫐 Berries</small></div><div class="pocket"><b>'+counts.flowers+'</b><small>🌷 Flowers</small></div></div>';
- const items=game.bag.map((id,index)=>{const f=furnitureCatalog.find(x=>x.id===id);return '<div class="bag-item"><span>'+f.emoji+' '+escapeHTML(f.name)+'</span><button data-action="selectFurniture" data-index="'+index+'">Place</button></div>';}).join('');
- const decorate=inside?'<div class="dialog-actions"><button class="primary" data-action="decorate">'+(decorating?'Stop decorating':'🎨 Start decorating')+'</button></div>':'';
- showModal('🎒 Backpack','<p>Your island finds and furniture collection.</p>'+resources+'<h3 style="margin:18px 0 8px;color:#e4f6ce;font-size:15px">🛋️ Furniture bag · '+game.bag.length+'</h3>'+(items||'<div class="empty">No furniture waiting to be placed. Visit the Furniture Studio!</div>')+decorate);
-}
-function openMenu(){
- showModal('☰ Island Menu','<p>Take a moment, neighbour. Where would you like to go?</p><div class="shop-grid">'+
- '<button class="soft" data-action="market">🏪 Market</button><button class="soft" data-action="estate">🏡 Estate Office</button>'+
- '<button class="soft" data-action="openFurniture">🛋️ Furniture Studio</button><button class="soft" data-action="journal">📜 Quest Journal</button>'+
- '<button class="soft" data-action="noticeBoard">📋 Town Board</button><button class="soft" data-action="help">🗺️ How to Play</button><button class="soft" data-action="fullscreen">⛶ Fullscreen</button>'+
- (inside?'<button class="soft" data-action="exitHome">🚪 Leave Home</button><button class="soft" data-action="sleep">🌙 Sleep · New Day</button><button class="soft" data-action="decorate">🎨 Decorate Home</button>':'<button class="soft" data-action="enterHome">🚪 Go Home</button>')+
- '</div><p class="muted">Your island saves automatically on this device.</p>');
-}
-function toggleFullscreen(){
- const el=document.documentElement;
- if(!document.fullscreenElement&&el.requestFullscreen){el.requestFullscreen().catch(()=>toast('Fullscreen is not available in this browser.'));}
- else if(document.exitFullscreen){document.exitFullscreen().catch(()=>{});}
-}
-function openHelp(){showModal('🗺️ How to play Meadow Drift','<div class="quest"><b>Move around</b><div class="quest-desc">Use W A S D or the arrow keys, or click the ground to walk there. On touch screens, use the direction pad.</div></div><div class="quest"><b>Meet people</b><div class="quest-desc">Walk near one of the 8 citizens and press E or ACT, or click a citizen to walk over and greet them. They may give you a quest.</div></div><div class="quest"><b>Collect things</b><div class="quest-desc">Visit the oak tree for wood, berry bush for berries and flower patch for flowers.</div></div><div class="quest"><b>Build your home</b><div class="quest-desc">Earn coins, visit the Estate Office, buy furniture, then decorate your room.</div></div><div class="quest"><b>Weather and clock</b><div class="quest-desc">Island time moves while you play. Sunny, cloudy and rainy weather can roll in naturally.</div></div><div class="quest"><b>Daily quests and trader</b><div class="quest-desc">Sleep at home to start a new day and receive three new daily quests. Ravi visits every third day with rare furniture.</div></div><div class="quest"><b>A million homes</b><div class="quest-desc">Visit the Estate Office to search or randomly discover one of 1,000,000 numbered home designs.</div></div><div class="quest"><b>Save your progress</b><div class="quest-desc">Your game saves automatically in this browser on this device.</div></div>');}
 
-// ---------- DRAWING: island world ----------
-function roundedRect(x,y,w,h,r,fill,stroke){ctx.beginPath();ctx.roundRect(x,y,w,h,r);if(fill){ctx.fillStyle=fill;ctx.fill();}if(stroke){ctx.strokeStyle=stroke;ctx.stroke();}}
-function drawWater(t){
- ctx.fillStyle='#72c4d0';ctx.fillRect(0,0,W,H);
- for(let row=0;row<9;row++){
-  const y=25+row*72+(Math.sin(t*.0006+row)*5);
-  ctx.strokeStyle='rgba(236,255,239,.23)';ctx.lineWidth=2;ctx.beginPath();
-  for(let x=-20;x<=W+20;x+=8){const yy=y+Math.sin(x*.022+t*.0012+row)*4;if(x===-20)ctx.moveTo(x,yy);else ctx.lineTo(x,yy);}ctx.stroke();
- }
- for(let i=0;i<22;i++){const x=(i*137+Math.sin(t*.0003+i)*23)%W;const y=(i*83+30)%H;ctx.fillStyle='rgba(255,255,255,.12)';ctx.beginPath();ctx.ellipse(x,y,10,3,-.2,0,Math.PI*2);ctx.fill();}
-}
-function islandPath(){ctx.beginPath();ctx.moveTo(82,100);ctx.bezierCurveTo(165,40,335,48,435,70);ctx.bezierCurveTo(580,28,770,58,867,115);ctx.bezierCurveTo(942,165,934,360,884,472);ctx.bezierCurveTo(838,570,690,585,553,565);ctx.bezierCurveTo(405,602,198,565,104,500);ctx.bezierCurveTo(26,444,30,230,82,100);ctx.closePath();}
-function drawIsland(){
- islandPath();ctx.lineWidth=27;ctx.strokeStyle='#e8d59b';ctx.stroke();ctx.fillStyle='#91c978';ctx.fill();ctx.lineWidth=4;ctx.strokeStyle='#5d9e67';ctx.stroke();
- // little grass patches
- for(let i=0;i<85;i++){const x=75+(i*97)%810,y=92+(i*53)%450;const nx=(x-480)/445,ny=(y-315)/285;if(nx*nx+ny*ny<.92){ctx.strokeStyle=i%3?'#74b66b':'#a8d77e';ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(x,y);ctx.lineTo(x+3,y-6);ctx.moveTo(x+4,y);ctx.lineTo(x+7,y-5);ctx.stroke();}}
- // sandy walking trails
- ctx.lineCap='round';ctx.lineJoin='round';ctx.strokeStyle='#d8c58f';ctx.lineWidth=42;ctx.beginPath();ctx.moveTo(180,290);ctx.bezierCurveTo(310,285,350,305,480,305);ctx.bezierCurveTo(615,305,700,285,780,290);ctx.stroke();
- ctx.beginPath();ctx.moveTo(480,210);ctx.bezierCurveTo(480,275,470,350,480,500);ctx.stroke();
- ctx.strokeStyle='#f0dfb5';ctx.lineWidth=3;ctx.setLineDash([8,12]);ctx.beginPath();ctx.moveTo(180,290);ctx.bezierCurveTo(310,285,350,305,480,305);ctx.bezierCurveTo(615,305,700,285,780,290);ctx.stroke();ctx.setLineDash([]);
- // pond
- ctx.fillStyle='#69bdc5';ctx.beginPath();ctx.ellipse(720,330,62,35,-.2,0,Math.PI*2);ctx.fill();ctx.strokeStyle='#d8d18c';ctx.lineWidth=6;ctx.stroke();
- ctx.fillStyle='#d0e8ad';ctx.beginPath();ctx.ellipse(715,325,26,8,-.2,0,Math.PI*2);ctx.fill();
- // flowers scattered
- for(let i=0;i<27;i++){const x=90+(i*149)%780,y=100+(i*71)%445;ctx.fillStyle=['#f5c6d6','#fff0a5','#e7c4f0'][i%3];ctx.beginPath();ctx.arc(x,y,3,0,Math.PI*2);ctx.fill();ctx.fillStyle='#e3b85b';ctx.beginPath();ctx.arc(x,y,1.3,0,Math.PI*2);ctx.fill();}
-}
-function drawTree(x,y,scale=1){
- ctx.fillStyle='#0002';ctx.beginPath();ctx.ellipse(x,y+13,28*scale,8*scale,0,0,Math.PI*2);ctx.fill();
- ctx.fillStyle='#875a3b';ctx.fillRect(x-5*scale,y-25*scale,10*scale,38*scale);
- [[-15,-30,22,'#4f995c'],[10,-34,24,'#65aa61'],[-1,-53,22,'#78b96a'],[-25,-43,16,'#5ca35f']].forEach(a=>{ctx.fillStyle=a[3];ctx.beginPath();ctx.arc(x+a[0]*scale,y+a[1]*scale,a[2]*scale,0,Math.PI*2);ctx.fill();});
- ctx.fillStyle='#a4d77a';ctx.beginPath();ctx.arc(x+5*scale,y-61*scale,6*scale,0,Math.PI*2);ctx.fill();
-}
-function drawTraderStall(t){
- // A little travelling cart appears only on trader-visit days.
- ctx.fillStyle='#0003';ctx.beginPath();ctx.ellipse(690,225,66,13,0,0,Math.PI*2);ctx.fill();
- ctx.fillStyle='#8b6746';ctx.fillRect(646,168,88,48);ctx.fillStyle='#f1d69b';ctx.fillRect(652,175,76,35);
- ctx.fillStyle='#6b9d76';ctx.beginPath();ctx.moveTo(640,174);ctx.lineTo(655,140);ctx.lineTo(725,140);ctx.lineTo(740,174);ctx.closePath();ctx.fill();
- for(let i=0;i<4;i++){ctx.fillStyle=i%2?'#e9d18e':'#d77e68';ctx.fillRect(655+i*18,144,9,27);}
- ctx.fillStyle='#fff4da';ctx.font='bold 11px Arial';ctx.textAlign='center';ctx.fillText('RAVI’S RARE FINDS',690,132);ctx.textAlign='left';
- ctx.fillStyle='#e0b66b';ctx.beginPath();ctx.arc(665,211,7,0,Math.PI*2);ctx.arc(710,211,7,0,Math.PI*2);ctx.fill();
- drawPerson(travellingTrader.x,travellingTrader.y,travellingTrader.name,travellingTrader.color,travellingTrader.hair,false,t*.005,true);
-}
-function drawWeather(t){
- if(game.weather==='sunny')return;
- if(game.weather==='cloudy'){
-  ctx.fillStyle='rgba(68,85,91,.10)';ctx.fillRect(0,0,W,H);
-  for(let i=0;i<5;i++){const x=(i*225+((t*.012)%180)-90);const y=58+(i%2)*26;ctx.fillStyle='rgba(241,247,245,.50)';ctx.beginPath();ctx.arc(x,y,24,0,Math.PI*2);ctx.arc(x+25,y-8,29,0,Math.PI*2);ctx.arc(x+53,y,23,0,Math.PI*2);ctx.fill();}
-  return;
- }
- // Rain is drawn as animated streaks over the whole outdoor island.
- ctx.fillStyle='rgba(39,61,81,.19)';ctx.fillRect(0,0,W,H);
- for(let i=0;i<100;i++){
-  const x=(i*97+(t*.34))%(W+40)-20;const y=(i*59+(t*.72))%(H+50)-25;
-  ctx.strokeStyle='rgba(222,241,255,.62)';ctx.lineWidth=1.4;ctx.beginPath();ctx.moveTo(x,y);ctx.lineTo(x-5,y+15);ctx.stroke();
- }
- for(let i=0;i<8;i++){const x=90+i*112,y=560-(i%3)*18;ctx.fillStyle='rgba(72,134,148,.15)';ctx.beginPath();ctx.ellipse(x,y,18,4,0,0,Math.PI*2);ctx.fill();}
-}
-function drawTimeLighting(){
- const hour=Math.floor(game.clockMinutes/60);
- if(hour>=20||hour<5){ctx.fillStyle='rgba(20,31,67,.30)';ctx.fillRect(0,0,W,H);}
- else if(hour>=17&&hour<20){ctx.fillStyle='rgba(255,151,82,.10)';ctx.fillRect(0,0,W,H);}
- else if(hour>=5&&hour<8){ctx.fillStyle='rgba(255,218,142,.08)';ctx.fillRect(0,0,W,H);}
-}
-function drawBuilding(kind,x,y){
- ctx.fillStyle='#0002';ctx.beginPath();ctx.ellipse(x,y+28,73,17,0,0,Math.PI*2);ctx.fill();
- if(kind==='market'){
-  ctx.fillStyle='#e9d7ad';ctx.fillRect(x-56,y-5,112,47);ctx.fillStyle='#a86c48';ctx.fillRect(x-61,y-8,122,9);
-  ctx.fillStyle='#fff1d3';ctx.fillRect(x-51,y+4,102,33);
-  ctx.fillStyle='#d78a61';ctx.fillRect(x-52,y-29,104,25);
-  for(let i=0;i<5;i++){ctx.fillStyle=i%2?'#f2d89b':'#cf715d';ctx.beginPath();ctx.moveTo(x-52+i*21,y-29);ctx.lineTo(x-42+i*21,y-29);ctx.lineTo(x-42+i*21,y-5);ctx.lineTo(x-52+i*21,y-5);ctx.closePath();ctx.fill();}
-  ctx.fillStyle='#76523b';ctx.fillRect(x-15,y+7,30,29);ctx.fillStyle='#e5c37d';ctx.fillRect(x-10,y+12,20,8);ctx.font='bold 12px Arial';ctx.fillStyle='#fff';ctx.textAlign='center';ctx.fillText('MARKET',x,y-38);ctx.textAlign='left';
- }else if(kind==='estateOffice'){
-  ctx.fillStyle='#f1e9d4';ctx.fillRect(x-60,y-27,120,66);ctx.fillStyle='#5e927f';ctx.fillRect(x-66,y-34,132,12);
-  ctx.fillStyle='#9accc0';ctx.fillRect(x-47,y-15,27,29);ctx.fillRect(x+20,y-15,27,29);ctx.fillStyle='#fff2ce';ctx.fillRect(x-12,y+2,24,37);
-  ctx.strokeStyle='#f7f5dc';ctx.lineWidth=3;ctx.beginPath();ctx.moveTo(x-34,y-15);ctx.lineTo(x-34,y+14);ctx.moveTo(x+34,y-15);ctx.lineTo(x+34,y+14);ctx.stroke();
-  ctx.font='bold 12px Arial';ctx.fillStyle='#fff';ctx.textAlign='center';ctx.fillText('ESTATE OFFICE',x,y-44);ctx.textAlign='left';
- }else if(kind==='home'){
-  const h=currentHome();ctx.fillStyle=h.wall;ctx.fillRect(x-58,y-26,116,68);ctx.fillStyle=h.roof;ctx.beginPath();ctx.moveTo(x-75,y-25);ctx.lineTo(x,y-76);ctx.lineTo(x+75,y-25);ctx.closePath();ctx.fill();
-  ctx.fillStyle='#fff1d0';ctx.fillRect(x-43,y-10,25,24);ctx.fillRect(x+18,y-10,25,24);ctx.fillStyle='#73a6a2';ctx.fillRect(x-7,y+5,27,37);ctx.fillStyle='#77553c';ctx.fillRect(x+8,y+20,3,3);
-  ctx.font='bold 12px Arial';ctx.fillStyle='#fff';ctx.textAlign='center';ctx.fillText(h.name.toUpperCase(),x,y-86);ctx.textAlign='left';
- }
-}
-function drawTreeNode(node){
- if(node.id==='tree')drawTree(node.x,node.y,1.05);
- else if(node.id==='berries'){
-  ctx.fillStyle='#0002';ctx.beginPath();ctx.ellipse(node.x,node.y+9,30,9,0,0,Math.PI*2);ctx.fill();
-  ctx.fillStyle='#4d985a';ctx.beginPath();ctx.arc(node.x-12,node.y-5,20,0,Math.PI*2);ctx.arc(node.x+10,node.y-7,21,0,Math.PI*2);ctx.fill();
-  for(let i=0;i<7;i++){ctx.fillStyle='#795ac0';ctx.beginPath();ctx.arc(node.x-18+(i*13)%35,node.y-15+(i%3)*9,4,0,Math.PI*2);ctx.fill();}
- }else if(node.id==='flowers'){
-  for(let i=0;i<8;i++){const x=node.x-25+(i%4)*17,y=node.y-12+Math.floor(i/4)*17;ctx.strokeStyle='#4c9654';ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(x,y+10);ctx.lineTo(x,y-1);ctx.stroke();ctx.fillStyle=['#e9a8cb','#f4da75','#d9b0ee'][i%3];for(let a=0;a<5;a++){const ang=a*Math.PI*2/5;ctx.beginPath();ctx.arc(x+Math.cos(ang)*5,y-4+Math.sin(ang)*5,3,0,Math.PI*2);ctx.fill();}}
- }else{ctx.fillStyle='#8b6847';ctx.save();ctx.translate(node.x,node.y);ctx.rotate(-.15);ctx.fillRect(-24,-7,48,13);ctx.fillRect(-18,-18,35,10);ctx.restore();}
- ctx.font='11px Arial';ctx.fillStyle='#31593c';ctx.textAlign='center';ctx.fillText(node.name,node.x,node.y+34);ctx.textAlign='left';
-}
-function drawPerson(x,y,name,color,hair,isPlayer=false,bob=0,hasQuest=false){
- const lift=Math.sin(bob)*2;
- ctx.fillStyle='#0002';ctx.beginPath();ctx.ellipse(x,y+5,15,6,0,0,Math.PI*2);ctx.fill();
- ctx.fillStyle=isPlayer?'#355eab':color;ctx.beginPath();ctx.roundRect(x-10,y-22+lift,20,23,7);ctx.fill();
- ctx.fillStyle='#f3c9a5';ctx.beginPath();ctx.arc(x,y-31+lift,9,0,Math.PI*2);ctx.fill();
- ctx.fillStyle=hair;ctx.beginPath();ctx.arc(x,y-35+lift,9,Math.PI,Math.PI*2);ctx.fill();ctx.fillRect(x-9,y-35+lift,4,8);
- ctx.fillStyle='#47352f';ctx.beginPath();ctx.arc(x-3,y-31+lift,1,0,Math.PI*2);ctx.arc(x+3,y-31+lift,1,0,Math.PI*2);ctx.fill();
- if(isPlayer){ctx.fillStyle='#f1d57c';ctx.fillRect(x-8,y-48+lift,16,5);ctx.fillRect(x-5,y-54+lift,10,7);}
- ctx.font='bold 12px Arial';ctx.textAlign='center';ctx.lineWidth=3;ctx.strokeStyle='#f1f4d8';ctx.strokeText(name,x,y-57+lift);ctx.fillStyle='#284a38';ctx.fillText(name,x,y-57+lift);
- if(hasQuest){ctx.fillStyle='#f5dc8e';ctx.beginPath();ctx.arc(x+14,y-48+lift,9,0,Math.PI*2);ctx.fill();ctx.fillStyle='#3b4a31';ctx.font='bold 11px Arial';ctx.fillText('!',x+14,y-44+lift);}
- ctx.textAlign='left';
-}
-function drawWorld(t){
- drawWater(t);drawIsland();
- drawTree(80,160,.65);drawTree(890,145,.75);drawTree(880,540,.8);drawTree(95,540,.65);
- drawBuilding('market',180,190);drawBuilding('estateOffice',480,185);drawBuilding('home',780,190);
- if(traderIsHere())drawTraderStall(t);
- // notice board and benches
- ctx.fillStyle='#8c613f';ctx.fillRect(458,465,44,31);ctx.fillStyle='#e7d6a5';ctx.fillRect(462,468,36,21);ctx.fillStyle='#6b4933';ctx.font='bold 9px Arial';ctx.textAlign='center';ctx.fillText('NEWS',480,481);ctx.textAlign='left';
- ctx.fillStyle='#9b7752';ctx.fillRect(350,315,55,10);ctx.fillRect(355,325,5,10);ctx.fillRect(395,325,5,10);
- ctx.fillStyle='#d1c18b';ctx.beginPath();ctx.arc(480,330,19,0,Math.PI*2);ctx.fill();ctx.fillStyle='#82c8d0';ctx.beginPath();ctx.arc(480,328,12,0,Math.PI*2);ctx.fill();
- resourceNodes.forEach(drawTreeNode);
- citizens.forEach(c=>{const q=game.quests.find(q=>q.citizenId===c.id);drawPerson(c.x,c.y,c.name,c.color,c.hair,false,t*.004+c.x*.03,!!(!q));});
- drawPerson(player.x,player.y,game.name||'YOU','#355eab','#463b35',true,t*.006,false);
- if(!inside)drawWeather(t);
- drawTimeLighting();
- const n=getNearby();if(n){ctx.strokeStyle='rgba(255,247,190,.85)';ctx.lineWidth=2;ctx.setLineDash([5,5]);ctx.beginPath();ctx.arc(n.kind==='citizen'?n.data.x:n.kind==='trader'?n.data.x:n.kind==='resource'?n.data.x:n.kind==='landmark'?n.data.x:player.x,n.kind==='citizen'?n.data.y:n.kind==='trader'?n.data.y:n.kind==='resource'?n.data.y:n.kind==='landmark'?n.data.y+55:player.y,31,0,Math.PI*2);ctx.stroke();ctx.setLineDash([]);}
-}
-function drawHouse(t){
- ctx.fillStyle='#d8c49a';ctx.fillRect(0,0,W,H);
- // walls and floor boards
- ctx.fillStyle='#f3e7ca';ctx.fillRect(48,40,864,540);
- ctx.fillStyle='#b17e59';ctx.fillRect(48,40,864,28);ctx.fillRect(48,40,24,540);ctx.fillRect(888,40,24,540);ctx.fillRect(48,556,864,24);
- ctx.fillStyle='#d6b78a';ctx.fillRect(72,68,816,488);
- for(let y=115;y<540;y+=70){ctx.strokeStyle='#c9a477';ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(75,y);ctx.lineTo(885,y);ctx.stroke();}
- // windows
- ctx.fillStyle='#91c8c5';ctx.fillRect(130,78,100,58);ctx.fillRect(730,78,100,58);ctx.strokeStyle='#fff4da';ctx.lineWidth=7;ctx.strokeRect(130,78,100,58);ctx.strokeRect(730,78,100,58);
- ctx.strokeStyle='#fff4da';ctx.lineWidth=3;ctx.beginPath();ctx.moveTo(180,80);ctx.lineTo(180,134);ctx.moveTo(780,80);ctx.lineTo(780,134);ctx.stroke();
- // rug
- ctx.fillStyle='#c87e70';ctx.beginPath();ctx.ellipse(480,385,180,100,0,0,Math.PI*2);ctx.fill();ctx.strokeStyle='#f1d69b';ctx.lineWidth=5;ctx.stroke();ctx.fillStyle='#e6ba84';ctx.beginPath();ctx.ellipse(480,385,145,76,0,0,Math.PI*2);ctx.fill();
- // furniture items
- game.placed.forEach(p=>{const f=furnitureCatalog.find(x=>x.id===p.id);if(!f)return;ctx.font='42px "Apple Color Emoji","Segoe UI Emoji",Arial';ctx.textAlign='center';ctx.fillText(f.emoji,p.x,p.y);ctx.font='11px Arial';ctx.fillStyle='#513b2e';ctx.fillText(f.name,p.x,p.y+16);});
- // exit door
- ctx.fillStyle='#81563b';ctx.fillRect(435,520,90,48);ctx.fillStyle='#e8d5ac';ctx.beginPath();ctx.arc(510,544,3,0,Math.PI*2);ctx.fill();
- ctx.font='bold 15px Arial';ctx.fillStyle='#63482f';ctx.textAlign='center';ctx.fillText('YOUR HOME · '+currentHome().name,480,32);ctx.font='12px Arial';ctx.fillText('Door  ↓',480,596);ctx.textAlign='left';
- drawPerson(player.x,player.y,game.name||'YOU','#355eab','#463b35',true,t*.006,false);
- if(decorating){ctx.fillStyle='#315844dd';ctx.fillRect(250,145,460,45);ctx.font='bold 15px Arial';ctx.fillStyle='#fff5d6';ctx.textAlign='center';const selected=selectedFurniture!==null?furnitureCatalog.find(f=>f.id===game.bag[selectedFurniture])?.name:'Choose furniture from your bag';ctx.fillText('DECORATING · '+(selected||'Choose an item')+' · click floor to place',480,173);ctx.textAlign='left';}
-}
-function draw(t){if(inside){drawHouse(t);drawTimeLighting();}else drawWorld(t);}
+function drawIsland(cx,cy){
+  let x=screenX(land.cx,cx),y=screenY(land.cy,cy);
+  ctx.save();
+  ctx.translate(x,y);
 
-function pointFromEvent(e){const rect=canvas.getBoundingClientRect();return{x:(e.clientX-rect.left)*W/rect.width,y:(e.clientY-rect.top)*H/rect.height};}
-canvas.addEventListener('click',e=>{
- if(modalOpen||loginOpen)return;
- const p=pointFromEvent(e);
- if(inside){
-  if(decorating){placeFurniture(p);return;}
-  const placedIndex=game.placed.findIndex(item=>Math.hypot(item.x-p.x,item.y-p.y)<42);
-  if(placedIndex>=0){placeFurniture(p);return;}
-  moveTarget={x:Math.max(100,Math.min(860,p.x)),y:Math.max(150,Math.min(520,p.y))};targetInteract=false;return;
- }
- if(traderIsHere()&&Math.hypot(travellingTrader.x-p.x,travellingTrader.y-p.y)<48){const dx=player.x-travellingTrader.x,dy=player.y-travellingTrader.y,len=Math.hypot(dx,dy)||1;moveTarget={x:travellingTrader.x+dx/len*43,y:travellingTrader.y+dy/len*43};targetInteract=true;return;}
- const citizen=citizens.find(c=>Math.hypot(c.x-p.x,c.y-p.y)<38);
- if(citizen){const dx=player.x-citizen.x,dy=player.y-citizen.y,len=Math.hypot(dx,dy)||1;moveTarget={x:citizen.x+dx/len*43,y:citizen.y+dy/len*43};targetInteract=true;return;}
- const node=resourceNodes.find(n=>Math.hypot(n.x-p.x,n.y-p.y)<42);
- if(node){const dx=player.x-node.x,dy=player.y-node.y,len=Math.hypot(dx,dy)||1;moveTarget={x:node.x+dx/len*43,y:node.y+dy/len*43};targetInteract=true;return;}
- const mark=landmarks.find(m=>Math.hypot(m.x-p.x,m.y+55-p.y)<58);
- if(mark){moveTarget={x:mark.x,y:mark.y+105};targetInteract=true;return;}
- moveTarget={x:Math.max(50,Math.min(910,p.x)),y:Math.max(75,Math.min(555,p.y))};targetInteract=false;
+  ctx.fillStyle='#d8c18b';
+  ctx.beginPath();
+  ctx.ellipse(0,0,land.rx+28,land.ry+25,0,0,Math.PI*2);
+  ctx.fill();
+
+  ctx.fillStyle=wetUntil>Date.now()?'#6da978':'#82be78';
+  ctx.beginPath();
+  ctx.ellipse(0,0,land.rx,land.ry,0,0,Math.PI*2);
+  ctx.fill();
+  ctx.restore();
+
+  ctx.lineCap='round';
+  ctx.strokeStyle='#dec99b';
+  ctx.lineWidth=66;
+  ctx.beginPath();
+  ctx.moveTo(screenX(710,cx),screenY(990,cy));
+  ctx.quadraticCurveTo(screenX(920,cx),screenY(880,cy),screenX(1100,cx),screenY(930,cy));
+  ctx.quadraticCurveTo(screenX(1280,cx),screenY(1000,cy),screenX(1430,cx),screenY(870,cy));
+  ctx.stroke();
+
+  ctx.lineWidth=38;
+  ctx.strokeStyle='#ecd9b0';
+  ctx.stroke();
+
+  ctx.beginPath();
+  ctx.moveTo(screenX(1080,cx),screenY(930,cy));
+  ctx.quadraticCurveTo(screenX(1280,cx),screenY(780,cy),screenX(1430,cx),screenY(720,cy));
+  ctx.stroke();
+}
+
+function drawTree(t,cx,cy){
+  let x=screenX(t.x,cx),y=screenY(t.y,cy),s=t.s;
+  if(x<-80||x>W+80||y<-100||y>H+100)return;
+
+  ctx.fillStyle='#73513d';
+  ctx.fillRect(x-5*s,y+8*s,10*s,23*s);
+
+  ctx.fillStyle=t.tone>.5?'#397e57':'#4b9160';
+  ctx.beginPath();
+  ctx.arc(x,y,25*s,0,Math.PI*2);
+  ctx.arc(x-16*s,y+6*s,18*s,0,Math.PI*2);
+  ctx.arc(x+16*s,y+7*s,17*s,0,Math.PI*2);
+  ctx.fill();
+
+  ctx.fillStyle='#a8d58b55';
+  ctx.beginPath();
+  ctx.arc(x-8*s,y-9*s,9*s,0,Math.PI*2);
+  ctx.fill();
+}
+
+function drawBuilding(x,y,w,h,label,kind,cx,cy){
+  let sx=screenX(x,cx),sy=screenY(y,cy);
+
+  ctx.fillStyle='#00000022';
+  ctx.fillRect(sx+8,sy+12,w,h);
+
+  ctx.fillStyle=kind==='home'?'#f2dfbd':kind==='market'?'#f0c77f':'#d8e7d0';
+  ctx.fillRect(sx,sy,w,h);
+
+  ctx.fillStyle=kind==='home'?'#bd7657':kind==='market'?'#b85f54':'#658d75';
+  ctx.beginPath();
+  ctx.moveTo(sx-12,sy+5);
+  ctx.lineTo(sx+w/2,sy-42);
+  ctx.lineTo(sx+w+12,sy+5);
+  ctx.closePath();
+  ctx.fill();
+
+  ctx.fillStyle='#684b3b';
+  ctx.fillRect(sx+w/2-13,sy+h-42,26,42);
+
+  ctx.fillStyle='#b7e5e7';
+  ctx.fillRect(sx+17,sy+25,25,25);
+  ctx.fillRect(sx+w-42,sy+25,25,25);
+
+  ctx.fillStyle='#254b3d';
+  ctx.font='bold 14px system-ui';
+  ctx.textAlign='center';
+  ctx.fillText(label,sx+w/2,sy+h+23);
+}
+
+function drawDock(cx,cy){
+  let x=screenX(1450,cx),y=screenY(900,cy);
+  ctx.fillStyle='#9b704b';
+  ctx.fillRect(x,y,170,28);
+
+  for(let i=0;i<8;i++){
+    ctx.fillStyle='#b88b5e';
+    ctx.fillRect(x+i*22,y,18,28);
+  }
+
+  ctx.fillStyle='#78583e';
+  ctx.fillRect(x+5,y+25,12,28);
+  ctx.fillRect(x+150,y+25,12,28);
+
+  ctx.fillStyle='#fff0c9';
+  ctx.font='bold 12px system-ui';
+  ctx.fillText('HARBOUR',x+85,y-12);
+}
+
+function drawBoat(x,y,name,cx,cy,isPlayer=false){
+  let sx=screenX(x,cx),sy=screenY(y,cy);
+  ctx.save();
+  ctx.translate(sx,sy);
+  ctx.rotate(isPlayer?boatDir:Math.sin(performance.now()/1800+y)*.025);
+
+  ctx.fillStyle='#5f4335';
+  ctx.beginPath();
+  ctx.moveTo(-43,0);
+  ctx.lineTo(-30,18);
+  ctx.lineTo(35,18);
+  ctx.lineTo(48,0);
+  ctx.closePath();
+  ctx.fill();
+
+  ctx.fillStyle='#d9a66b';
+  ctx.fillRect(-33,-6,66,12);
+
+  ctx.strokeStyle='#6f5943';
+  ctx.lineWidth=3;
+  ctx.beginPath();
+  ctx.moveTo(0,-5);
+  ctx.lineTo(0,-54);
+  ctx.stroke();
+
+  ctx.fillStyle=isPlayer?'#fff4cc':'#f7e8c7';
+  ctx.beginPath();
+  ctx.moveTo(3,-50);
+  ctx.lineTo(34,-15);
+  ctx.lineTo(3,-15);
+  ctx.closePath();
+  ctx.fill();
+
+  ctx.fillStyle='#183f38';
+  ctx.font='bold 12px system-ui';
+  ctx.textAlign='center';
+  ctx.fillText(name,0,36);
+  ctx.restore();
+}
+
+function drawPerson(p,cx,cy,isPlayer=false){
+  let x=screenX(p.x,cx),y=screenY(p.y,cy);
+  if(x<-50||x>W+50||y<-60||y>H+60)return;
+
+  ctx.fillStyle='#0002';
+  ctx.beginPath();
+  ctx.ellipse(x,y+13,12,5,0,0,Math.PI*2);
+  ctx.fill();
+
+  ctx.fillStyle=isPlayer?'#3b6fba':p.shirt;
+  ctx.beginPath();
+  ctx.roundRect(x-10,y-9,20,22,7);
+  ctx.fill();
+
+  ctx.fillStyle='#f3c9a4';
+  ctx.beginPath();
+  ctx.arc(x,y-17,9,0,Math.PI*2);
+  ctx.fill();
+
+  ctx.fillStyle='#4b3027';
+  ctx.beginPath();
+  ctx.arc(x,y-21,9,Math.PI,Math.PI*2);
+  ctx.fill();
+
+  if(isPlayer){
+    ctx.fillStyle='#143d36';
+    ctx.font='bold 12px system-ui';
+    ctx.textAlign='center';
+    ctx.fillText(player.name,x,y-34);
+  }
+}
+
+function drawOutside(cx,cy){
+  drawWater(cx,cy);
+  drawIsland(cx,cy);
+
+  for(const f of flowers){
+    let x=screenX(f.x,cx),y=screenY(f.y,cy);
+    if(x>-8&&x<W+8&&y>-8&&y<H+8){
+      ctx.fillStyle=f.c;
+      ctx.beginPath();
+      ctx.arc(x,y,3,0,Math.PI*2);
+      ctx.fill();
+    }
+  }
+
+  for(const t of trees)drawTree(t,cx,cy);
+
+  drawBuilding(850,700,210,175,'YOUR HOME','home',cx,cy);
+  drawBuilding(570,850,150,120,'MARKET','market',cx,cy);
+  drawBuilding(1210,650,175,135,'ESTATE OFFICE','office',cx,cy);
+  drawBuilding(1270,1070,170,130,'FURNITURE','shop',cx,cy);
+  drawDock(cx,cy);
+
+  if(!boatMode)drawBoat(boat.x,boat.y,'YOUR BOAT',cx,cy,true);
+
+  traders.forEach(t=>{
+    drawBoat(t.x,t.y,t.name+' · TRADER',cx,cy,false);
+    let sx=screenX(t.x,cx),sy=screenY(t.y,cy);
+    ctx.fillStyle='#143d36';
+    ctx.font='11px system-ui';
+    ctx.textAlign='center';
+    ctx.fillText('E: meet '+t.name,sx,sy+53);
+  });
+
+  let currentHour=Math.floor((gameMinute%1440)/60);
+  if(currentHour>=6&&currentHour<18)
+    citizens.forEach(p=>drawPerson(p,cx,cy));
+
+  if(boatMode)
+    drawBoat(boat.x,boat.y,player.name,cx,cy,true);
+  else
+    drawPerson(player,cx,cy,true);
+
+  if(wetUntil>Date.now()){
+    ctx.fillStyle='rgba(42,83,95,.10)';
+    ctx.fillRect(0,0,W,H);
+
+    for(let i=0;i<18;i++){
+      let x=(i*137+Math.sin(i)*70)%W;
+      let y=(i*89+Math.cos(i)*50)%H;
+      ctx.fillStyle='#d9f7f766';
+      ctx.beginPath();
+      ctx.ellipse(x,y,15,5,0,0,Math.PI*2);
+      ctx.fill();
+    }
+  }
+
+  if(snowCover>0){
+    ctx.fillStyle=`rgba(237,249,255,${Math.min(.34,snowCover*.22)})`;
+    ctx.fillRect(0,0,W,H);
+  }
+}
+
+function drawInterior(){
+  ctx.fillStyle='#d3b991';
+  ctx.fillRect(0,0,W,H);
+
+  let margin=Math.min(50,W*.08);
+  let x=margin,y=margin+20,w=W-2*margin,h=H-2*margin-30;
+
+  ctx.fillStyle='#f4e8cf';
+  ctx.fillRect(x,y,w,h);
+
+  ctx.strokeStyle='#805b47';
+  ctx.lineWidth=15;
+  ctx.strokeRect(x,y,w,h);
+
+  ctx.strokeStyle='#b99570';
+  ctx.lineWidth=5;
+  ctx.beginPath();
+  ctx.moveTo(x+w/2,y);
+  ctx.lineTo(x+w/2,y+h);
+  ctx.moveTo(x,y+h/2);
+  ctx.lineTo(x+w,y+h/2);
+  ctx.stroke();
+
+  ctx.fillStyle='#496153';
+  ctx.font='bold 16px system-ui';
+  ctx.textAlign='left';
+  ctx.fillText('LIVING ROOM',x+25,y+28);
+  ctx.fillText('BEDROOM',x+w/2+25,y+28);
+  ctx.fillText('KITCHEN',x+25,y+h/2+28);
+  ctx.fillText('STUDY & HOBBY ROOM',x+w/2+25,y+h/2+28);
+
+  ctx.fillStyle=houseWindowOpen?'#74c8d5':'#a4cdd2';
+  ctx.fillRect(x+w/2-44,y-2,88,16);
+  ctx.strokeStyle='#fff7dd';
+  ctx.lineWidth=4;
+  ctx.strokeRect(x+w/2-44,y-2,88,16);
+
+  ctx.fillStyle='#6e9f7d';
+  ctx.font='12px system-ui';
+  ctx.fillText(houseWindowOpen?'Window open · fresh sea breeze':'Window closed · press E near window',x+15,y+h-14);
+
+  function sofa(px,py){
+    ctx.fillStyle='#507d71';
+    ctx.fillRect(px,py,115,48);
+    ctx.fillStyle='#8cb6a4';
+    ctx.fillRect(px+8,py+7,99,32);
+    ctx.fillStyle='#e6d1a4';
+    ctx.fillRect(px+15,py+12,25,20);
+    ctx.fillRect(px+48,py+12,25,20);
+  }
+
+  function tv(px,py){
+    ctx.fillStyle='#553e33';
+    ctx.fillRect(px,py,92,54);
+    ctx.fillStyle='#172e37';
+    ctx.fillRect(px+6,py+5,80,40);
+    ctx.fillStyle='#5eb4bd';
+    ctx.fillRect(px+14,py+12,64,25);
+    ctx.fillStyle='#553e33';
+    ctx.fillRect(px+37,py+54,18,8);
+  }
+
+  function bed(px,py){
+    ctx.fillStyle='#83634e';
+    ctx.fillRect(px,py,112,75);
+    ctx.fillStyle='#f5eedc';
+    ctx.fillRect(px+7,py+7,98,61);
+    ctx.fillStyle='#9eb7d2';
+    ctx.fillRect(px+12,py+12,40,22);
+    ctx.fillStyle='#d18d83';
+    ctx.fillRect(px+58,py+12,40,22);
+  }
+
+  function plant(px,py){
+    ctx.fillStyle='#a95f49';
+    ctx.fillRect(px-10,py+18,22,20);
+    ctx.strokeStyle='#447d53';
+    ctx.lineWidth=5;
+    ctx.beginPath();
+    ctx.moveTo(px,py+20);
+    ctx.lineTo(px,py-20);
+    ctx.stroke();
+
+    ctx.fillStyle='#5c9e69';
+    for(let i=-1;i<=1;i++){
+      ctx.beginPath();
+      ctx.ellipse(px+i*12,py-14-Math.abs(i)*5,10,5,i*.5,0,Math.PI*2);
+      ctx.fill();
+    }
+  }
+
+  function table(px,py){
+    ctx.fillStyle='#9a6d48';
+    ctx.fillRect(px,py,96,55);
+    ctx.fillStyle='#d4a675';
+    ctx.fillRect(px+5,py+5,86,45);
+    ctx.fillStyle='#7e5940';
+    ctx.fillRect(px+10,py+52,8,18);
+    ctx.fillRect(px+78,py+52,8,18);
+  }
+
+  function shelf(px,py){
+    ctx.fillStyle='#966b4c';
+    ctx.fillRect(px,py,78,74);
+
+    for(let i=0;i<3;i++){
+      ctx.fillStyle=['#d99b64','#85bba0','#c69bd4'][i];
+      ctx.fillRect(px+9+i*20,py+8,14,24);
+      ctx.fillStyle='#6f4d38';
+      ctx.fillRect(px+5,py+36+i*2,68,5);
+    }
+  }
+
+  const positions={
+    'sofa':[x+35,y+70],
+    'smart TV':[x+190,y+75],
+    'bed':[x+w/2+40,y+80],
+    'plant':[x+45,y+h/2+90],
+    'dining table':[x+180,y+h/2+85],
+    'bookshelf':[x+w/2+80,y+h/2+80]
+  };
+
+  for(const item of placed){
+    let p=positions[item];
+    if(!p)continue;
+    if(item==='sofa')sofa(...p);
+    if(item==='smart TV')tv(...p);
+    if(item==='bed')bed(...p);
+    if(item==='plant')plant(...p);
+    if(item==='dining table')table(...p);
+    if(item==='bookshelf')shelf(...p);
+  }
+
+  let px=x+w/2,py=y+h/2;
+  ctx.fillStyle='#3d76bd';
+  ctx.beginPath();
+  ctx.arc(px,py,13,0,Math.PI*2);
+  ctx.fill();
+
+  ctx.fillStyle='#f2c6a2';
+  ctx.beginPath();
+  ctx.arc(px,py-17,9,0,Math.PI*2);
+  ctx.fill();
+
+  ctx.fillStyle='#153b35';
+  ctx.font='bold 12px system-ui';
+  ctx.textAlign='center';
+  ctx.fillText(player.name,px,py-34);
+
+  ctx.fillStyle='#244b3e';
+  ctx.font='bold 13px system-ui';
+  ctx.textAlign='center';
+  ctx.fillText('HOME · 4 ROOMS',W/2,24);
+}
+
+function updateHUD(){
+  let total=((gameMinute%1440)+1440)%1440;
+  let h=Math.floor(total/60),m=Math.floor(total%60);
+
+  document.getElementById('clock').textContent=
+    (h>=6&&h<18?'☀️':'🌙')+' '+
+    String(h).padStart(2,'0')+':'+
+    String(m).padStart(2,'0')+' · Day '+day;
+
+  document.getElementById('weather').textContent=
+    weather==='rain'?'🌧️ Rain':
+    weather==='snow'?'❄️ Snow':
+    wetUntil>Date.now()?'💧 Wet ground':'🌤️ Clear';
+
+  document.getElementById('materials').textContent=
+    `🪵 ${player.wood} · 🍓 ${player.berries} · 🌼 ${player.flowers}`;
+
+  document.getElementById('location').textContent=
+    scene==='inside'?'🏡 Your Home':
+    boatMode?'🚤 At Sea':'🏝️ Meadow Island';
+}
+
+function nearest(){
+  if(scene==='inside')return null;
+
+  let point=boatMode?boat:player;
+  let opts=[];
+
+  if(boatMode){
+    traders.forEach(t=>opts.push({d:dist(point,t),type:'trader',obj:t}));
+    opts.push({
+      d:Math.hypot(point.x-1450,point.y-900),
+      type:'dock'
+    });
+  }else{
+    opts.push({d:dist(point,boat),type:'boat'});
+
+    citizens.forEach(c=>opts.push({d:dist(point,c),type:'citizen',obj:c}));
+    traders.forEach(t=>opts.push({d:dist(point,t),type:'trader',obj:t}));
+
+    if(Math.hypot(point.x-955,point.y-870)<130)
+      opts.push({d:Math.hypot(point.x-955,point.y-870),type:'home'});
+
+    if(Math.hypot(point.x-650,point.y-910)<110)
+      opts.push({d:Math.hypot(point.x-650,point.y-910),type:'market'});
+
+    if(Math.hypot(point.x-1320,point.y-1135)<120)
+      opts.push({d:Math.hypot(point.x-1320,point.y-1135),type:'furniture'});
+  }
+
+  return opts.filter(o=>o.d<115).sort((a,b)=>a.d-b.d)[0]||null;
+}
+
+function interact(){
+  if(dialogOpen){
+    closeDialog();
+    return;
+  }
+
+  if(scene==='inside'){
+    if(player.x<0){
+      scene='outside';
+      player.x=insideAt.x;
+      player.y=insideAt.y;
+      toast('Back to Meadow Island!');
+      return;
+    }
+
+    if(player.y<0){
+      houseWindowOpen=!houseWindowOpen;
+      toast(houseWindowOpen?'Window opened. A lovely sea breeze!':'Window closed.');
+      return;
+    }
+
+    let h=((gameMinute%1440)+1440)%1440;
+
+    if(player.x>W*.48&&player.y<H*.34){
+      if(h>=18||h<6){
+        day++;
+        gameMinute=480;
+        citizensGone=false;
+        eveningNoticeDay=-1;
+        weather='clear';
+        weatherTimer=45;
+        wetUntil=0;
+        toast('Good morning! A new day on Meadow Drift.');
+        save();
+      }else{
+        toast('You can sleep after 6 PM. There is still a whole island to explore!');
+      }
+      return;
+    }
+
+    houseWindowOpen=!houseWindowOpen;
+    toast(houseWindowOpen?'Window opened.':'Window closed.');
+    return;
+  }
+
+  let n=nearest();
+
+  if(!n){
+    if(boatMode){
+      toast('Sail anywhere across the open sea. Find the trader sails to meet the crew!');
+    }else{
+      toast('Nothing nearby. Explore, gather and say hello!');
+    }
+    return;
+  }
+
+  if(n.type==='boat'){
+    boatMode=true;
+    boat.x=player.x;
+    boat.y=player.y;
+    toast('You boarded your boat. Sail out into the open sea!');
+    return;
+  }
+
+  if(n.type==='dock'){
+    boatMode=false;
+    player.x=1450;
+    player.y=960;
+    toast('You returned to the harbour.');
+    return;
+  }
+
+  if(n.type==='citizen'){
+    let c=n.obj;
+    showDialog(c.name,c.line+' Try visiting the harbour to meet the travelling traders.');
+    return;
+  }
+
+  if(n.type==='trader'){
+    let t=n.obj;
+    showDialog(t.name+' · Travelling Trader',`Welcome aboard! Today I have ${t.goods}. Thanks for visiting Meadow Drift!`);
+    player.berries+=1;
+    toast('You received a little welcome gift: +1 berry!');
+    return;
+  }
+
+  if(n.type==='home'){
+    insideAt={x:player.x,y:player.y};
+    scene='inside';
+    player.x=W/2;
+    player.y=H/2;
+    toast('Welcome home! Four rooms, and plenty of space to decorate.');
+    return;
+  }
+
+  if(n.type==='market'){
+    let got=player.berries>=2;
+
+    if(got){
+      player.berries-=2;
+      player.flowers+=1;
+      toast('Market trade: 2 berries → 1 flower.');
+    }else{
+      showDialog('Meadow Market','Gather berries around the island. Bring 2 berries here to trade for a flower.');
+    }
+    return;
+  }
+
+  if(n.type==='furniture'){
+    furnitureIndex=(furnitureIndex+1)%furniture.length;
+    showDialog('Furniture Studio','Furniture selected: '+furniture[furnitureIndex]+'. Go inside your home and press F to add it to your rooms.');
+    return;
+  }
+}
+
+function placeFurniture(){
+  if(scene!=='inside'){
+    toast('Furniture can be placed inside your home.');
+    return;
+  }
+
+  let item=furniture.find(v=>!placed.includes(v));
+
+  if(!item){
+    toast('All six furniture pieces are already placed.');
+    return;
+  }
+
+  furnitureIndex=furniture.indexOf(item);
+  placed.push(item);
+  toast('Placed '+item+' in your home!');
+  save();
+}
+
+function actionKey(e){
+  if(e.repeat)return;
+
+  if(e.key==='e'||e.key==='E'||e.key==='Enter'){
+    e.preventDefault();
+    interact();
+  }
+
+  if(e.key==='f'||e.key==='F'){
+    placeFurniture();
+  }
+
+  if(e.key==='h'||e.key==='H'){
+    if(scene==='outside'&&!boatMode){
+      insideAt={x:player.x,y:player.y};
+      scene='inside';
+      toast('Welcome home!');
+    }else if(scene==='inside'){
+      scene='outside';
+      player.x=insideAt.x;
+      player.y=insideAt.y;
+      toast('Back outside!');
+    }
+  }
+
+  if(e.key==='Escape'){
+    closeDialog();
+  }
+}
+
+addEventListener('keydown',e=>{
+  if(['ArrowUp','ArrowDown','ArrowLeft','ArrowRight',' '].includes(e.key))
+    e.preventDefault();
+
+  if(e.target&&['INPUT','TEXTAREA'].includes(e.target.tagName))
+    return;
+
+  keys[e.key.toLowerCase()]=true;
+  keys[e.key]=true;
+  actionKey(e);
 });
 
-function isEditable(el){return el&&(['INPUT','TEXTAREA','SELECT'].includes(el.tagName)||el.isContentEditable);}
-const keyMap={w:'up',arrowup:'up',s:'down',arrowdown:'down',a:'left',arrowleft:'left',d:'right',arrowright:'right'};
-document.addEventListener('keydown',e=>{
- if(isEditable(e.target))return;
- const k=e.key.toLowerCase();
- if(k==='escape'&&modalOpen){closeModal();return;}
- if(modalOpen||loginOpen)return;
- if(keyMap[k]){keyState[keyMap[k]]=true;moveTarget=null;targetInteract=false;e.preventDefault();}
- if((k==='e'||k==='enter')&&!e.repeat){e.preventDefault();moveTarget=null;targetInteract=false;interact();}
- if(k==='m'&&!e.repeat){e.preventDefault();openJournal();}
- if(k==='i'&&!e.repeat){e.preventDefault();openBag();}
- if(k==='escape'&&!e.repeat&&!modalOpen){e.preventDefault();openMenu();}
+addEventListener('keyup',e=>{
+  keys[e.key.toLowerCase()]=false;
+  keys[e.key]=false;
 });
-document.addEventListener('keyup',e=>{const k=e.key.toLowerCase();if(keyMap[k])keyState[keyMap[k]]=false;});
-window.addEventListener('blur',()=>{Object.keys(keyState).forEach(k=>keyState[k]=false);});
-document.querySelectorAll('[data-pad]').forEach(btn=>{
- const key=btn.dataset.pad;const down=e=>{e.preventDefault();keyState[key]=true;try{btn.setPointerCapture(e.pointerId);}catch(err){}};const up=()=>{keyState[key]=false;};
- btn.addEventListener('pointerdown',down);btn.addEventListener('pointerup',up);btn.addEventListener('pointercancel',up);btn.addEventListener('lostpointercapture',up);btn.addEventListener('pointerleave',e=>{if(e.buttons===0)up();});
-});
-function updateMovement(dt){
- if(modalOpen||loginOpen)return;
- let dx=(keyState.right?1:0)-(keyState.left?1:0),dy=(keyState.down?1:0)-(keyState.up?1:0);
- if(dx||dy){moveTarget=null;targetInteract=false;}
- else if(moveTarget){dx=moveTarget.x-player.x;dy=moveTarget.y-player.y;const distance=Math.hypot(dx,dy);if(distance<5){moveTarget=null;if(targetInteract){targetInteract=false;interact();}return;}dx/=distance;dy/=distance;}
- else return;
- const len=Math.hypot(dx,dy)||1;dx/=len;dy/=len;const speed=3.15*dt;let nx=player.x+dx*speed,ny=player.y+dy*speed;
- if(inside){nx=Math.max(95,Math.min(865,nx));ny=Math.max(155,Math.min(525,ny));if(ny>500&&Math.abs(nx-480)>78)ny=500;}
- else{nx=Math.max(50,Math.min(910,nx));ny=Math.max(75,Math.min(555,ny));
-  const blocks=[{x:180,y:190,rx:66,ry:45},{x:480,y:185,rx:69,ry:48},{x:780,y:190,rx:77,ry:55}];
-  for(const b of blocks){if(Math.abs(nx-b.x)<b.rx&&Math.abs(ny-b.y)<b.ry){if(Math.abs(player.x-b.x)>=b.rx)nx=player.x;if(Math.abs(player.y-b.y)>=b.ry)ny=player.y;if(Math.abs(nx-b.x)<b.rx&&Math.abs(ny-b.y)<b.ry){if(Math.abs(dx)>Math.abs(dy))ny=player.y;else nx=player.x;}}}
- }
- player.x=nx;player.y=ny;player.face=dx<0?-1:dx>0?1:player.face;player.bob+=dt*.22;
- if(moveTarget&&Math.hypot(moveTarget.x-player.x,moveTarget.y-player.y)<6){moveTarget=null;if(targetInteract){targetInteract=false;interact();}}
+
+addEventListener('blur',()=>keys={});
+
+// Mobile controls
+for(const b of document.querySelectorAll('[data-key]')){
+  let k=b.dataset.key;
+
+  b.addEventListener('pointerdown',e=>{
+    e.preventDefault();
+    keys[k]=true;
+    keys[k.toLowerCase()]=true;
+    b.setPointerCapture(e.pointerId);
+  });
+
+  ['pointerup','pointercancel','lostpointercapture'].forEach(ev=>
+    b.addEventListener(ev,()=>{
+      keys[k]=false;
+      keys[k.toLowerCase()]=false;
+    })
+  );
 }
-function frame(t){const dt=lastFrame?Math.min((t-lastFrame)/16.667,2):1;lastFrame=t;advanceWorldClock(dt);updateMovement(dt);draw(t);const loc=inside?'🏠 '+currentHome().name:'📍 '+(getNearby()?.label||'Meadow Square');if(loc!==lastLocationText){$('locationTag').textContent=loc;lastLocationText=loc;}if(t-saveTimer>12000){saveTimer=t;saveGame();}requestAnimationFrame(frame);}
 
-// One click/delegated event handler keeps every shop and menu button working.
-document.addEventListener('click',e=>{
- const btn=e.target.closest('[data-action]');if(!btn)return;
- const action=btn.dataset.action;
- switch(action){
-  case'interact':interact();break;
-  case'journal':openJournal();break;
-  case'bag':openBag();break;
-  case'menu':openMenu();break;
-  case'noticeBoard':openNoticeBoard();break;
-  case'fullscreen':toggleFullscreen();break;
-  case'openFurniture':openFurniture();break;
-  case'market':openMarket();break;
-  case'estate':openEstate();break;
-  case'help':openHelp();break;
-  case'closeModal':closeModal();break;
-  case'sellResource':sellResource(btn.dataset.resource);break;
-  case'chooseHome':chooseHome(btn.dataset.home);break;
-  case'buyFurniture':buyFurniture(Number(btn.dataset.index));break;
-  case'claimDaily':claimDailyQuest(Number(btn.dataset.index));break;
-  case'buyTraderItem':buyTraderItem(btn.dataset.id);break;
-  case'previewHouse':previewGeneratedHouse($('houseNumberInput')?.value);break;
-  case'randomHouse':previewGeneratedHouse(1+Math.floor(Math.random()*1000000));break;
-  case'buyGeneratedHome':buyGeneratedHome(Number(btn.dataset.houseNumber));break;
-  case'enterHome':enterHome();break;
-  case'exitHome':exitHome();break;
-  case'decorate':setDecorating();break;
-  case'stopDecorating':stopDecorating();break;
-  case'selectFurniture':selectFurniture(Number(btn.dataset.index));break;
-  case'sleep':sleep();break;
- }
+document.getElementById('actBtn').onclick=interact;
+document.getElementById('furnBtn').onclick=placeFurniture;
+
+function update(dt){
+  if(dialogOpen)return;
+
+  // One real second advances one in-game minute
+  gameMinute+=dt;
+
+  let hour=Math.floor((gameMinute%1440)/60);
+
+  if(hour!==lastHour){
+    lastHour=hour;
+
+    if(hour===18){
+      citizensGone=true;
+      eveningNoticeDay=day;
+      toast('everyone is now sleeping go and sleep or work all night',5000);
+    }
+
+    if(hour===6){
+      citizensGone=false;
+      toast('Good morning! The island is waking up.');
+    }
+  }
+
+  // Rain and five-minute wet ground effect
+  weatherTimer-=dt;
+
+  if(weatherTimer<=0){
+    if(weather==='rain'){
+      weather='clear';
+      wetUntil=Date.now()+300000;
+      weatherTimer=rnd(25,55);
+      toast('The rain has stopped. The island will stay wet for 5 minutes.');
+    }else{
+      let roll=Math.random();
+      weather=roll<.55?'clear':roll<.82?'rain':'snow';
+
+      weatherTimer=weather==='rain'?rnd(22,38):rnd(35,65);
+
+      if(weather==='rain')
+        toast('Rain is moving over Meadow Drift!');
+
+      if(weather==='snow')
+        toast('Snowflakes are falling over the island!');
+    }
+  }
+
+  if(weather==='snow')
+    snowCover=clamp(snowCover+dt*.025,0,1);
+  else
+    snowCover=clamp(snowCover-dt*.008,0,1);
+
+  let moveX=
+    (keys.a||keys.A||keys.ArrowLeft?-1:0)+
+    (keys.d||keys.D||keys.ArrowRight?1:0);
+
+  let moveY=
+    (keys.w||keys.W||keys.ArrowUp?-1:0)+
+    (keys.s||keys.S||keys.ArrowDown?1:0);
+
+  let len=Math.hypot(moveX,moveY)||1;
+  moveX/=len;
+  moveY/=len;
+
+  if(scene==='outside'){
+    let target=boatMode?boat:player;
+    let spd=boatMode?300:player.speed;
+
+    target.x+=moveX*spd*dt;
+    target.y+=moveY*spd*dt;
+
+    if(!boatMode){
+      target.x=clamp(target.x,40,WORLD.w-40);
+      target.y=clamp(target.y,40,WORLD.h-40);
+    }
+
+    if(boatMode){
+      boatDir=Math.atan2(moveY,moveX)+Math.PI/2;
+
+      if(Math.hypot(boat.x-1450,boat.y-900)<80&&Math.hypot(moveX,moveY)===0){
+        /* Dock drift is intentional */
+      }
+    }
+
+    // Gather materials using G
+    if(keys.g||keys.G){
+      if(!boatMode){
+        player.wood+=1;
+        player.berries+=1;
+        player.flowers+=1;
+        keys.g=false;
+        toast('Gathered wood, a berry and a flower!');
+      }
+    }
+  }else{
+    // Home movement
+    player.x=clamp(player.x+moveX*190*dt,-30,W+30);
+    player.y=clamp(player.y+moveY*190*dt,-25,H+25);
+  }
+
+  updateHUD();
+}
+
+function drawWeather(){
+  if(weather==='rain'){
+    ctx.strokeStyle='rgba(220,245,255,.45)';
+    ctx.lineWidth=1.2;
+
+    for(let i=0;i<110;i++){
+      let x=(i*97+performance.now()*.23)%W;
+      let y=(i*67+performance.now()*.8)%H;
+      ctx.beginPath();
+      ctx.moveTo(x,y);
+      ctx.lineTo(x-7,y+17);
+      ctx.stroke();
+    }
+  }
+
+  if(weather==='snow'){
+    ctx.fillStyle='rgba(255,255,255,.85)';
+
+    for(let i=0;i<85;i++){
+      let x=(i*73+Math.sin(performance.now()/900+i)*25)%W;
+      let y=(i*49+performance.now()/50)%H;
+      ctx.beginPath();
+      ctx.arc(x,y,2+(i%3),0,Math.PI*2);
+      ctx.fill();
+    }
+  }
+}
+
+function frame(now){
+  let dt=Math.min(.05,(now-last)/1000);
+  last=now;
+
+  update(dt);
+
+  let c=camera();
+
+  if(scene==='outside')
+    drawOutside(c.x,c.y);
+  else
+    drawInterior();
+
+  drawWeather();
+  requestAnimationFrame(frame);
+}
+
+// Start screen
+function start(){
+  let n=document.getElementById('playerName').value.trim();
+
+  if(n)
+    player.name=n;
+  else if(saved.name)
+    player.name=saved.name;
+
+  document.getElementById('nameEntry').style.display='none';
+  toast('Welcome to Meadow Drift, '+player.name+'!');
+  updateHUD();
+  requestAnimationFrame(frame);
+  save();
+}
+
+document.getElementById('startBtn').onclick=start;
+
+document.getElementById('playerName').addEventListener('keydown',e=>{
+  if(e.key==='Enter')start();
 });
-$('modalLayer').addEventListener('click',e=>{if(e.target===$('modalLayer'))closeModal();});
-$('loginForm').addEventListener('submit',e=>{e.preventDefault();const name=$('playerName').value.trim().replace(/\s+/g,' ');if(!name){$('playerName').focus();return;}loadGame(name.slice(0,18));});
-$('playerName').addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();$('loginForm').requestSubmit();}});
 
-try{const last=localStorage.getItem('meadowDriftDeluxe_last');if(last){$('playerName').value=last;}}catch(e){}
-$('loginLayer').classList.add('show');$('playerName').focus();
-requestAnimationFrame(frame);
-window.addEventListener('beforeunload',saveGame);
+if(saved.name)
+  document.getElementById('playerName').value=saved.name;
+
+setTimeout(()=>{
+  if(!saved.name)
+    toast('Tip: walk with WASD or arrows. Press E near people and places.',5000);
+},1000);
+
 })();
 </script>
 </body>
