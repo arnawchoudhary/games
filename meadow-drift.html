@@ -2,137 +2,365 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Meadow Drift — Island Life</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Meadow Drift — Master Island Edition | Arnaw Studios</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800&family=Playfair+Display:ital,wght@0,700;1,600&display=swap" rel="stylesheet">
+
 <style>
-:root{--ink:#203c34;--deep:#193b32;--panel:#285648;--panel2:#326b57;--mint:#c9f1cc;--cream:#fff8e9;--gold:#f5d78a;--line:#ffffff24;--muted:#d5e8d8}
-*{box-sizing:border-box}
-body{margin:0;background:radial-gradient(circle at 15% 0%,#315f4e,#142e29 62%);color:var(--cream);font-family:Inter,ui-rounded,"Trebuchet MS",Arial,sans-serif;min-height:100vh}
-button,input{font:inherit}
-button{border:0;cursor:pointer;touch-action:manipulation}
-button:focus-visible,input:focus-visible{outline:3px solid #ffe08b;outline-offset:2px}
-.topbar{display:flex;align-items:center;justify-content:space-between;gap:14px;padding:14px clamp(12px,3vw,30px);background:#15382f;border-bottom:1px solid #ffffff20;box-shadow:0 5px 22px #0002;flex-wrap:wrap}
-.brand{display:flex;align-items:center;gap:11px}.brand-mark{width:43px;height:43px;border-radius:15px;background:linear-gradient(145deg,#b8ebac,#f4d78b);display:grid;place-items:center;font-size:25px;box-shadow:inset 0 2px 5px #fff8}.brand h1{font-size:clamp(19px,3vw,27px);margin:0;letter-spacing:.5px}.brand small{display:block;color:#b8d7c3;font-size:11px;letter-spacing:2px;margin-top:2px}
-.hud{display:flex;gap:8px;flex-wrap:wrap;align-items:center}.stat{background:#ffffff12;border:1px solid #ffffff16;border-radius:12px;padding:8px 11px;font-size:13px;min-width:75px}.stat b{color:#fff2b7;margin-left:3px}.save-state{font-size:11px;color:#c6e7cf;padding:0 5px}
-.page{width:min(1440px,100%);margin:auto;padding:16px;display:grid;grid-template-columns:minmax(0,1fr) 335px;gap:15px;align-items:start}
-.game-column{min-width:0}.game-frame{background:#193d34;padding:9px;border-radius:20px;border:1px solid #ffffff25;box-shadow:0 18px 50px #071b164d}.canvas-wrap{position:relative;overflow:hidden;border-radius:13px;background:#83c9d1}.canvas-wrap canvas{width:100%;height:auto;display:block;aspect-ratio:960/620;touch-action:pan-y}
-.canvas-tag{position:absolute;left:13px;top:12px;border-radius:999px;padding:7px 11px;background:#173b32db;border:1px solid #ffffff35;font-size:12px;color:#f8ffe9;pointer-events:none}.canvas-help{position:absolute;right:12px;top:12px;background:#173b32d9;border:1px solid #ffffff30;border-radius:10px;padding:7px 10px;font-size:11px;color:#f5ffe9;pointer-events:none}
-.game-footer{display:flex;justify-content:space-between;gap:10px;align-items:center;padding:10px 5px 2px;flex-wrap:wrap}.game-footer p{margin:0;color:#c3dfcb;font-size:12px}.action-row{display:flex;gap:7px;flex-wrap:wrap}.primary,.secondary,.soft{border-radius:11px;padding:10px 13px;font-weight:800;font-size:13px;transition:transform .12s,filter .12s}.primary{background:linear-gradient(145deg,#d5f3b8,#a6dfaa);color:#1c4637}.secondary{background:#f4d88f;color:#47391e}.soft{background:#ffffff16;color:#f5ffe9;border:1px solid #ffffff27}.primary:hover,.secondary:hover,.soft:hover{filter:brightness(1.07);transform:translateY(-1px)}
-.controls{display:flex;gap:12px;align-items:center;justify-content:center;margin-top:12px;flex-wrap:wrap}.dpad{display:grid;grid-template-columns:47px 47px 47px;grid-template-rows:42px 42px 42px;gap:4px}.pad{background:#ffffff18;color:#faffed;border:1px solid #ffffff30;border-radius:11px;font-size:18px;font-weight:bold;user-select:none}.pad[data-key="up"]{grid-column:2;grid-row:1}.pad[data-key="left"]{grid-column:1;grid-row:2}.pad[data-key="down"]{grid-column:2;grid-row:2}.pad[data-key="right"]{grid-column:3;grid-row:2}.act-pad{height:88px;min-width:88px;border-radius:50%;background:linear-gradient(145deg,#f4d98e,#eab95f);color:#45371e;font-weight:900;box-shadow:0 5px 0 #b88b42;font-size:14px}.control-note{font-size:11px;color:#b9d8c4;max-width:180px;line-height:1.45}
-.sidebar{display:flex;flex-direction:column;gap:11px;min-width:0}.card{background:linear-gradient(145deg,#2a5b49,#214b3e);border:1px solid #ffffff20;border-radius:16px;padding:14px;box-shadow:0 7px 20px #051d1730}.card h2{font-size:15px;margin:0 0 11px;display:flex;align-items:center;gap:7px;color:#e7f8d9}.card .sub{font-size:11px;color:#b9d7c1;margin:-5px 0 10px}.message-box{min-height:80px;border-radius:12px;background:#143d32a8;padding:12px;font-size:13px;line-height:1.5;color:#f4f8e9;border:1px solid #ffffff12}.speaker{display:block;color:#f6dc91;font-weight:900;margin-bottom:4px}.quest-list{display:flex;flex-direction:column;gap:7px;max-height:260px;overflow:auto;padding-right:2px}.quest{padding:9px 10px;border-radius:11px;background:#ffffff0d;border:1px solid #ffffff15;font-size:12px}.quest-top{display:flex;justify-content:space-between;gap:8px;font-weight:800;color:#f6f3dc}.quest-desc{color:#c6dfca;margin-top:4px;line-height:1.4}.bar{height:6px;border-radius:8px;background:#102f27;margin-top:7px;overflow:hidden}.bar span{height:100%;display:block;background:linear-gradient(90deg,#97e296,#ffe185);border-radius:8px}.shop-grid{display:grid;grid-template-columns:1fr 1fr;gap:7px}.shop-btn{padding:10px 8px;border-radius:12px;background:#ffffff14;border:1px solid #ffffff20;color:#f8fceb;font-size:12px;font-weight:700;display:flex;flex-direction:column;align-items:center;gap:3px}.shop-btn span{font-size:18px}.badge{background:#f3d789;color:#352c16;padding:2px 7px;border-radius:999px;font-size:10px;font-weight:900}
-.modal-layer{position:fixed;inset:0;background:#051713b3;display:none;align-items:center;justify-content:center;padding:16px;z-index:90;backdrop-filter:blur(3px)}.modal-layer.show{display:flex}.modal{width:min(560px,100%);max-height:88vh;background:linear-gradient(160deg,#245443,#1a3e33);border:1px solid #ffffff30;border-radius:20px;box-shadow:0 25px 60px #02110ea6;display:flex;flex-direction:column;overflow:hidden}.modal-head{display:flex;justify-content:space-between;align-items:center;padding:14px 18px;border-bottom:1px solid #ffffff1a}.modal-head h3{margin:0;font-size:18px;color:#f8ecd2}.close-btn{background:#ffffff17;border-radius:50%;width:33px;height:33px;font-size:18px;color:#fff;display:grid;place-items:center}.modal-body{padding:16px 18px;overflow:auto;display:flex;flex-direction:column;gap:12px;font-size:13px;line-height:1.5}.list-card{background:#ffffff0d;border:1px solid #ffffff14;border-radius:12px;padding:11px 13px;display:flex;justify-content:space-between;gap:10px;align-items:center}.chip{background:#ffffff12;padding:4px 8px;border-radius:8px;font-size:11px;font-weight:bold;color:#fce49b}
-.login-layer{position:fixed;inset:0;background:#102d26f2;display:none;align-items:center;justify-content:center;padding:16px;z-index:99}.login-layer.show{display:flex}.login-card{width:min(440px,100%);background:linear-gradient(160deg,#245242,#173a30);border:1px solid #ffffff35;border-radius:22px;padding:26px;box-shadow:0 30px 70px #020c09;text-align:center}.login-card h2{margin:0 0 6px;font-size:25px;color:#fae8bf}.login-card p{margin:0 0 16px;color:#c0dec9;font-size:13px;line-height:1.4}.name-input{width:100%;padding:13px 15px;border-radius:12px;border:1px solid #ffffff40;background:#ffffff15;color:#fff;font-size:16px;margin-bottom:12px}.name-input::placeholder{color:#bddcc4}.start-btn{width:100%;padding:13px;border-radius:12px;font-weight:900;background:linear-gradient(145deg,#d2f3b3,#99db9c);color:#194032;font-size:15px}
-@media(max-width:980px){.page{grid-template-columns:minmax(0,1fr) 300px}}@media(max-width:760px){.page{grid-template-columns:1fr;padding:10px}.sidebar{display:grid;grid-template-columns:1fr 1fr}.sidebar .wide{grid-column:1/-1}.topbar{padding:11px}.stat{min-width:auto;padding:7px 9px}.canvas-help{display:none}}@media(max-width:480px){.sidebar{grid-template-columns:1fr}.sidebar .wide{grid-column:auto}.shop-grid{grid-template-columns:1fr}.brand small{letter-spacing:1px}.game-footer{align-items:flex-start}.control-note{max-width:125px}}
+:root {
+  --ink: #18382f;
+  --deep: #132f28;
+  --mint: #cbf5cf;
+  --cream: #fff9ed;
+  --gold: #fed876;
+  --glass: rgba(18, 43, 37, 0.85);
+  --border: rgba(255, 255, 255, 0.18);
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  min-height: 100vh;
+  background: radial-gradient(circle at 50% 0%, #295c4c 0%, #112822 75%, #0a1a16 100%);
+  color: var(--cream);
+  font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+  user-select: none;
+  overflow-x: hidden;
+}
+button, input { font: inherit; }
+button { border: 0; cursor: pointer; touch-action: manipulation; transition: all 0.18s ease; }
+button:active { transform: scale(0.97); }
+
+/* Header */
+.topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 12px clamp(14px, 3vw, 32px);
+  background: rgba(14, 38, 32, 0.92);
+  backdrop-filter: blur(14px);
+  border-bottom: 1px solid var(--border);
+  position: sticky;
+  top: 0;
+  z-index: 50;
+}
+.brand { display: flex; align-items: center; gap: 12px; }
+.brand-icon {
+  width: 40px; height: 40px; border-radius: 12px;
+  background: linear-gradient(135deg, #4ade80, #15803d);
+  display: grid; place-items: center; font-size: 22px;
+  box-shadow: 0 4px 14px rgba(74, 222, 128, 0.35);
+}
+.brand h1 { font-family: 'Playfair Display', serif; font-size: clamp(18px, 3vw, 24px); color: #fff; }
+.brand small { display: block; font-size: 10px; letter-spacing: 1.5px; color: var(--gold); font-weight: 800; }
+
+.hud-chips { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.chip {
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid var(--border);
+  padding: 6px 12px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+.chip b { color: var(--gold); }
+.btn-sound {
+  background: rgba(254, 216, 118, 0.18);
+  border: 1px solid var(--gold);
+  color: var(--gold);
+  padding: 6px 14px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 800;
+}
+
+/* Layout */
+.layout {
+  width: min(1340px, 96%);
+  margin: 18px auto 40px;
+  display: grid;
+  grid-template-columns: 1fr 340px;
+  gap: 20px;
+}
+@media (max-width: 1080px) {
+  .layout { grid-template-columns: 1fr; }
+}
+
+.game-card {
+  background: var(--glass);
+  border: 1px solid var(--border);
+  border-radius: 24px;
+  overflow: hidden;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.45);
+}
+.canvas-wrap { position: relative; width: 100%; aspect-ratio: 960/620; background: #132e26; }
+canvas { width: 100%; height: 100%; display: block; }
+
+.badge-loc {
+  position: absolute; top: 14px; left: 16px;
+  background: rgba(14, 38, 32, 0.85);
+  border: 1px solid var(--border);
+  padding: 6px 14px; border-radius: 999px;
+  font-size: 12px; font-weight: 800; color: var(--mint);
+  backdrop-filter: blur(8px);
+}
+.badge-hint {
+  position: absolute; bottom: 14px; left: 50%; transform: translateX(-50%);
+  background: rgba(0, 0, 0, 0.65);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  padding: 6px 16px; border-radius: 999px;
+  font-size: 12px; color: #fff; pointer-events: none;
+  white-space: nowrap;
+}
+
+/* Controls */
+.control-bar {
+  padding: 14px 18px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 10px;
+  background: rgba(9, 25, 21, 0.6);
+  border-top: 1px solid var(--border);
+}
+.action-group { display: flex; gap: 8px; flex-wrap: wrap; }
+.btn-act {
+  padding: 10px 18px; border-radius: 14px;
+  font-size: 13px; font-weight: 800; display: inline-flex;
+  align-items: center; gap: 6px;
+}
+.btn-primary { background: linear-gradient(135deg, #4ade80, #16a34a); color: #0a2318; box-shadow: 0 4px 12px rgba(74, 222, 128, 0.3); }
+.btn-secondary { background: linear-gradient(135deg, #38bdf8, #0284c7); color: #052136; box-shadow: 0 4px 12px rgba(56, 189, 248, 0.3); }
+.btn-soft { background: rgba(255, 255, 255, 0.08); border: 1px solid var(--border); color: #fff; }
+.btn-soft:hover { background: rgba(255, 255, 255, 0.15); }
+
+/* Sidebar */
+.sidebar { display: flex; flex-direction: column; gap: 16px; }
+.panel-card {
+  background: var(--glass);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  padding: 18px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+}
+.panel-card h2 {
+  font-family: 'Playfair Display', serif; font-size: 17px;
+  margin-bottom: 12px; color: var(--gold); display: flex; align-items: center; gap: 8px;
+}
+
+.dialogue-box {
+  background: rgba(8, 22, 18, 0.7);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 12px 14px;
+  min-height: 80px;
+}
+.speaker-tag {
+  font-weight: 800; font-size: 13px; color: #4ade80;
+  display: block; margin-bottom: 4px;
+}
+.dialogue-text { font-size: 13px; line-height: 1.5; color: #e6f5ee; }
+
+.town-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.town-btn {
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 12px 10px;
+  color: #fff; font-size: 12px; font-weight: 700;
+  display: flex; flex-direction: column; align-items: center; gap: 6px;
+}
+.town-btn:hover { background: rgba(255, 255, 255, 0.12); border-color: var(--gold); }
+.town-btn span { font-size: 20px; }
+
+/* Mobile Touch Overlay */
+.touch-zone {
+  display: none;
+  margin-top: 14px;
+  gap: 16px;
+  align-items: center;
+  justify-content: space-around;
+}
+@media (max-width: 900px) {
+  .touch-zone { display: flex; }
+}
+.dpad {
+  width: 140px; height: 140px; position: relative;
+}
+.dbtn {
+  position: absolute; width: 44px; height: 44px;
+  background: rgba(255, 255, 255, 0.14);
+  border: 1px solid var(--border);
+  border-radius: 12px; color: #fff; font-size: 18px;
+  display: grid; place-items: center;
+}
+.dbtn[data-k="up"] { top: 0; left: 48px; }
+.dbtn[data-k="down"] { bottom: 0; left: 48px; }
+.dbtn[data-k="left"] { top: 48px; left: 0; }
+.dbtn[data-k="right"] { top: 48px; right: 0; }
+
+.touch-actions { display: flex; gap: 12px; }
+.big-act {
+  width: 68px; height: 68px; border-radius: 20px;
+  background: linear-gradient(135deg, #4ade80, #15803d);
+  color: #062315; font-size: 14px; font-weight: 900;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  box-shadow: 0 6px 18px rgba(74, 222, 128, 0.4);
+}
+
+/* Modals */
+.modal-layer {
+  position: fixed; inset: 0; background: rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(8px);
+  display: none; place-items: center; z-index: 100; padding: 20px;
+}
+.modal-layer.show { display: grid; }
+.modal-win {
+  width: min(640px, 94%); max-height: 85vh;
+  background: #143027; border: 1px solid var(--gold);
+  border-radius: 24px; padding: 24px;
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.8);
+  overflow-y: auto; color: #fff;
+}
+.modal-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 18px; border-bottom: 1px solid var(--border); padding-bottom: 12px; }
+.modal-head h3 { font-family: 'Playfair Display', serif; font-size: 20px; color: var(--gold); }
+.modal-close { background: rgba(255, 255, 255, 0.1); border-radius: 50%; width: 32px; height: 32px; color: #fff; font-size: 16px; }
+
+/* Login Modal */
+.login-layer {
+  position: fixed; inset: 0; background: rgba(6, 20, 16, 0.95);
+  display: none; place-items: center; z-index: 200; padding: 20px;
+}
+.login-layer.show { display: grid; }
+.login-box {
+  background: #143027; border: 2px solid var(--mint);
+  border-radius: 24px; padding: 32px; max-width: 420px; width: 100%; text-align: center;
+}
+.input-name {
+  width: 100%; padding: 14px 18px; border-radius: 14px;
+  border: 1px solid var(--border); background: rgba(0, 0, 0, 0.35);
+  color: #fff; margin: 18px 0; font-size: 16px; text-align: center;
+}
 </style>
 </head>
 <body>
 
 <header class="topbar">
   <div class="brand">
-    <div class="brand-mark">🌿</div>
+    <div class="brand-icon">🍃</div>
     <div>
       <h1>Meadow Drift</h1>
-      <small>DELUXE EDITION • ARNAW STUDIOS</small>
+      <small>MASTER ISLAND EDITION • ARNAW STUDIOS</small>
     </div>
   </div>
-  <div class="hud">
-    <div class="stat">Day <b id="dayCount">1</b></div>
-    <div class="stat"><span id="clockEmoji">☀️</span> <b id="clockText">08:00</b></div>
-    <div class="stat"><span id="weatherEmoji">🌤️</span> <b id="weatherText">Sunny</b></div>
-    <div class="stat">🪙 <b id="coinCount">15</b></div>
-    <div class="stat">⚡ <b id="energyCount">100</b>/100</div>
-    <div class="save-state" id="saveState">● Synced</div>
+
+  <div class="hud-chips">
+    <div class="chip">Day <b id="dayText">1</b></div>
+    <div class="chip"><span id="clockIcon">☀️</span> <b id="clockText">08:00</b></div>
+    <div class="chip"><span id="weatherIcon">🌤️</span> <b id="weatherText">Sunny</b></div>
+    <div class="chip">🪙 <b id="coinText">25</b></div>
+    <div class="chip">⚡ <b id="energyText">100</b>/100</div>
+    <button class="btn-sound" id="soundToggleBtn">🔊 Audio: ON</button>
   </div>
 </header>
 
-<main class="page">
-  <section class="game-column">
-    <div class="game-frame">
+<main class="layout">
+  <!-- Left Side: Interactive World Canvas -->
+  <section>
+    <div class="game-card">
       <div class="canvas-wrap">
         <canvas id="gameCanvas" width="960" height="620"></canvas>
-        <div class="canvas-tag" id="locationTag">📍 Meadow Square</div>
-        <div class="canvas-help">WASD / Click to move · E: Interact · Space: Action</div>
+        <div class="badge-loc" id="locationBadge">📍 Meadow Square</div>
+        <div class="badge-hint">WASD / Tap to walk • E: Interact • F: Cast Rod</div>
       </div>
-      <div class="game-footer">
-        <div class="action-row">
-          <button class="primary" data-action="interact">ACT / Talk (E)</button>
-          <button class="secondary" data-action="journal">Quests (M)</button>
-          <button class="soft" data-action="bag">Bag (I)</button>
-          <button class="soft" data-action="enterHome" id="homeQuickBtn">Enter Home</button>
-          <button class="soft" data-action="menu">Settings</button>
+
+      <div class="control-bar">
+        <div class="action-group">
+          <button class="btn-act btn-primary" data-act="interact">💬 Talk / Harvest (E)</button>
+          <button class="btn-act btn-secondary" data-act="fish">🎣 Cast Rod (F)</button>
+          <button class="btn-act btn-soft" data-act="bag">🎒 Backpack</button>
+          <button class="btn-act btn-soft" data-act="journal">📜 Quests</button>
+          <button class="btn-act btn-soft" data-act="toggleHome" id="homeBtn">🏡 Enter Home</button>
         </div>
-        <p id="subHint">Walk near an islander, shop or plant to interact.</p>
+        <div style="font-size:12px;color:#c0ded0" id="hintFooter">Stroll near flowers, villagers or water.</div>
       </div>
     </div>
 
-    <div class="controls">
+    <!-- Touch D-Pad for Mobile -->
+    <div class="touch-zone">
       <div class="dpad">
-        <button class="pad" data-pad="up" data-key="up">▲</button>
-        <button class="pad" data-pad="left" data-key="left">◀</button>
-        <button class="pad" data-pad="down" data-key="down">▼</button>
-        <button class="pad" data-pad="right" data-key="right">▶</button>
+        <button class="dbtn" data-k="up">▲</button>
+        <button class="dbtn" data-k="left">◀</button>
+        <button class="dbtn" data-k="down">▼</button>
+        <button class="dbtn" data-k="right">▶</button>
       </div>
-      <button class="act-pad" data-action="interact">ACT<br><small style="font-size:10px">E</small></button>
-      <div class="control-note">Touch buttons, tap anywhere on the meadow, or use WASD / Arrow keys.</div>
+      <div class="touch-actions">
+        <button class="big-act" data-act="interact">ACT<br><span style="font-size:10px">E</span></button>
+        <button class="big-act" style="background:linear-gradient(135deg,#38bdf8,#0284c7);color:#032034" data-act="fish">FISH<br><span style="font-size:10px">F</span></button>
+      </div>
     </div>
   </section>
 
+  <!-- Right Side: Island Information & Services -->
   <aside class="sidebar">
-    <div class="card wide">
+    <div class="panel-card">
       <h2>💬 Island Dialogue</h2>
-      <div class="message-box" id="speakerBox">
-        <span class="speaker" id="speakerName">Sunny Meadow</span>
-        <span id="speakerText">Welcome to Meadow Island! Stroll along the path, meet neighbours and collect timber and berries.</span>
+      <div class="dialogue-box">
+        <span class="speaker-tag" id="speakerTitle">Meadow Breeze</span>
+        <span class="dialogue-text" id="speakerContent">Welcome to Meadow Drift! Breathe in the fresh ocean air, meet your friendly neighbours, and catch wild fish.</span>
       </div>
     </div>
 
-    <div class="card">
-      <h2>📜 Active Quests <span class="badge" id="activeQuestCount">0</span></h2>
-      <div class="sub">Complete tasks for neighbours to earn coins & friendship!</div>
-      <div class="quest-list" id="sidebarQuestList"></div>
+    <div class="panel-card">
+      <h2>📜 Active Quests</h2>
+      <div id="questListContainer" style="font-size:13px;line-height:1.6;color:#cbf5cf"></div>
     </div>
 
-    <div class="card">
+    <div class="panel-card">
       <h2>🏪 Island Services</h2>
-      <div class="shop-grid">
-        <button class="shop-btn" data-action="noticeBoard"><span>📌</span>Notice Board</button>
-        <button class="shop-btn" data-action="market"><span>🛒</span>Market</button>
-        <button class="shop-btn" data-action="estate"><span>🏡</span>Estate Agency</button>
-        <button class="shop-btn" data-action="openFurniture"><span>🛋️</span>Furniture</button>
+      <div class="town-grid">
+        <button class="town-btn" data-act="noticeBoard"><span>📌</span>Notice Board</button>
+        <button class="town-btn" data-act="market"><span>🛒</span>Market</button>
+        <button class="town-btn" data-act="estate"><span>🏡</span>Estate Agency</button>
+        <button class="town-btn" data-act="furniture"><span>🛋️</span>Furniture Studio</button>
       </div>
     </div>
 
-    <div class="card">
-      <h2>ℹ️ Controls & Tips</h2>
-      <div style="font-size:12px;color:#c0ded0;line-height:1.6">
-        • <b>E / Space:</b> Talk, harvest & enter houses<br>
-        • <b>Sleep at night:</b> Restores full energy & advances day<br>
-        • <b>Ravi the Trader:</b> Arrives every 3rd day at the dock!<br>
-        • <b>1,000,000 Homes:</b> Discover unique house IDs at the agency!
+    <div class="panel-card">
+      <h2>🎣 Island Life Tips</h2>
+      <div style="font-size:12px;color:#c0dfcd;line-height:1.6">
+        • <b>Fishing:</b> Walk to the pond or harbour pier and press <b>Cast Rod</b>. When the bobber alerts <b>!</b>, reel in quickly!<br>
+        • <b>Sleeping:</b> Sleep on your home bed to recover energy and greet a new sunny morning.<br>
+        • <b>Ravi's Cart:</b> Ravi the Travelling Trader visits the pier every 3rd day!
       </div>
     </div>
   </aside>
 </main>
 
-<!-- Modals -->
+<!-- Unified Modal Window -->
 <div class="modal-layer" id="modalLayer">
-  <div class="modal">
+  <div class="modal-win">
     <div class="modal-head">
       <h3 id="modalTitle">Notice</h3>
-      <button class="close-btn" data-action="closeModal">✕</button>
+      <button class="modal-close" data-act="closeModal">✕</button>
     </div>
-    <div class="modal-body" id="modalBody"></div>
+    <div id="modalContent"></div>
   </div>
 </div>
 
-<!-- Login Form -->
+<!-- Welcome Registration -->
 <div class="login-layer" id="loginLayer">
-  <div class="login-card">
-    <h2>Welcome to Meadow Drift 🌿</h2>
-    <p>Enter your character name to start your peaceful island life.</p>
+  <div class="login-box">
+    <h2 style="font-family:'Playfair Display',serif;color:#fed876;margin-bottom:8px">Welcome to Meadow Drift 🌿</h2>
+    <p style="font-size:13px;color:#cbf5cf;margin-bottom:16px">Enter your character name to start your cozy island life.</p>
     <form id="loginForm">
-      <input class="name-input" id="playerName" placeholder="Your name (e.g. Robin)" maxlength="18" required autofocus>
-      <button class="start-btn" type="submit">Begin Adventure</button>
+      <input class="input-name" id="nameInput" placeholder="Your name (e.g. Robin)" maxlength="18" required autofocus>
+      <button class="btn-act btn-primary" style="width:100%;justify-content:center;padding:14px" type="submit">Step Onto Island</button>
     </form>
   </div>
 </div>
@@ -141,688 +369,837 @@ button:focus-visible,input:focus-visible{outline:3px solid #ffe08b;outline-offse
 (()=>{
 'use strict';
 
-const canvas=document.getElementById('gameCanvas');
-const ctx=canvas.getContext('2d');
-const W=960,H=620;
-const $=id=>document.getElementById(id);
-const keyState={up:false,down:false,left:false,right:false};
+const canvas = document.getElementById('gameCanvas');
+const ctx = canvas.getContext('2d');
+const W = 960, H = 620;
+const $ = id => document.getElementById(id);
+const keyState = { up: false, down: false, left: false, right: false };
 
-// Cozy Web Audio Synthesizer
-const SoundFX = {
+// --- Master Procedural Web Audio Engine ---
+const SoundEngine = {
   ctx: null,
+  enabled: true,
+  musicTimer: null,
+
   init() {
     if (!this.ctx) this.ctx = new (window.AudioContext || window.webkitAudioContext)();
   },
-  play(f, t, d, v=0.08) {
+
+  playTone(freq, type, duration, vol=0.08) {
+    if (!this.enabled) return;
     try {
       this.init();
-      const o = this.ctx.createOscillator(), g = this.ctx.createGain();
-      o.type = t;
-      o.frequency.setValueAtTime(f, this.ctx.currentTime);
-      g.gain.setValueAtTime(v, this.ctx.currentTime);
-      g.gain.exponentialRampToValueAtTime(0.0001, this.ctx.currentTime + d);
-      o.connect(g);
-      g.connect(this.ctx.destination);
-      o.start();
-      o.stop(this.ctx.currentTime + d);
+      const osc = this.ctx.createOscillator();
+      const gain = this.ctx.createGain();
+      osc.type = type;
+      osc.frequency.setValueAtTime(freq, this.ctx.currentTime);
+      gain.gain.setValueAtTime(vol, this.ctx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.0001, this.ctx.currentTime + duration);
+      osc.connect(gain);
+      gain.connect(this.ctx.destination);
+      osc.start();
+      osc.stop(this.ctx.currentTime + duration);
     } catch(e) {}
   },
-  talk() { this.play(587, 'sine', 0.15, 0.07); },
-  coin() {
-    this.play(987, 'sine', 0.08, 0.1);
-    setTimeout(() => this.play(1318, 'sine', 0.2, 0.1), 70);
+
+  footstep() { this.playTone(180 + Math.random() * 40, 'triangle', 0.05, 0.02); },
+  pop() { this.playTone(520, 'sine', 0.12, 0.08); setTimeout(() => this.playTone(780, 'sine', 0.16, 0.08), 50); },
+  coin() { this.playTone(987, 'sine', 0.1, 0.07); setTimeout(() => this.playTone(1318, 'sine', 0.22, 0.08), 80); },
+  door() { this.playTone(220, 'triangle', 0.15, 0.06); },
+  splash() { this.playTone(320, 'sine', 0.18, 0.09); setTimeout(() => this.playTone(190, 'sine', 0.25, 0.06), 70); },
+  biteAlert() { this.playTone(880, 'square', 0.12, 0.1); setTimeout(() => this.playTone(1174, 'square', 0.18, 0.1), 80); },
+
+  // Ghibli-Style Cozy Pentatonic Ambient Music
+  startMusic() {
+    if (this.musicTimer) return;
+    const chords = [
+      [261.63, 329.63, 392.00, 523.25], // C Major
+      [220.00, 261.63, 329.63, 440.00], // A Minor
+      [174.61, 220.00, 261.63, 349.23], // F Major
+      [196.00, 246.94, 293.66, 392.00]  // G Major
+    ];
+    let step = 0;
+    this.musicTimer = setInterval(() => {
+      if (!this.enabled) return;
+      const chord = chords[step % chords.length];
+      step++;
+      chord.forEach((note, idx) => {
+        setTimeout(() => this.playTone(note, 'sine', 1.8, 0.015), idx * 260);
+      });
+    }, 4200);
   },
-  harvest() {
-    this.play(523, 'triangle', 0.12, 0.08);
-    setTimeout(() => this.play(659, 'triangle', 0.15, 0.08), 60);
-  },
-  door() {
-    this.play(349, 'triangle', 0.25, 0.07);
-    setTimeout(() => this.play(440, 'sine', 0.35, 0.07), 100);
-  },
-  quest() {
-    [523, 659, 784, 1046].forEach((f, i) => setTimeout(() => this.play(f, 'triangle', 0.22, 0.09), i * 110));
+
+  stopMusic() {
+    if (this.musicTimer) {
+      clearInterval(this.musicTimer);
+      this.musicTimer = null;
+    }
   }
 };
 
-const particles = [];
-function addSparkle(x, y, color='#ffe066', count=6) {
-  for (let i = 0; i < count; i++) {
-    particles.push({
-      x, y,
-      vx: (Math.random() - 0.5) * 3,
-      vy: (Math.random() - 0.5) * 3 - 1,
-      r: Math.random() * 3 + 2,
-      c: color,
-      life: 25
-    });
-  }
-}
-
-let player={x:480,y:350,speed:3.2,face:1,bob:0};
-let inside=false,modalOpen=false,loginOpen=false,lastFrame=0,saveTimer=0,lastLocationText='';
-let moveTarget=null,targetInteract=false;
-
-const SAVE_KEY='meadowDriftDeluxe_save';
-
-const furnitureCatalog=[
- {name:'Cozy Armchair',cost:25,icon:'🛋️'},
- {name:'Oak Dining Table',cost:45,icon:'🍽️'},
- {name:'Vintage Bookshelf',cost:60,icon:'📚'},
- {name:'Brass Floor Lamp',cost:30,icon:'💡'},
- {name:'Potted Monstera',cost:20,icon:'🪴'},
- {name:'Feather Bed',cost:75,icon:'🛏️'},
- {name:'Retro TV',cost:65,icon:'📺'},
- {name:'Cast Iron Stove',cost:55,icon:'🍳'}
-];
-
-const citizens=[
- {id:'luna',name:'Luna',x:290,y:250,color:'#d48eb3',hair:'#463022',role:'Botanist',line:'The meadows smell sweetest after morning dew!'},
- {id:'milo',name:'Milo',x:610,y:245,color:'#6aa9d2',hair:'#7a4726',role:'Carpenter',line:'Looking for quality timber? The big oaks to the west are sturdy.'},
- {id:'ava',name:'Ava',x:330,y:430,color:'#e5a95d',hair:'#2b231d',role:'Baker',line:'Fresh berry pies require sweet forest berries!'},
- {id:'noah',name:'Noah',x:680,y:425,color:'#7ebd7e',hair:'#382b20',role:'Fisher',line:'The sea carries gifts from all around the archipelago.'},
- {id:'oliver',name:'Oliver',x:210,y:355,color:'#a68ed4',hair:'#5b4034',role:'Historian',line:'Every house on this island has a story going back generations.'},
- {id:'emma',name:'Emma',x:765,y:350,color:'#e58c77',hair:'#262426',role:'Florist',line:'Fresh blossoms brighten up any home interior!'},
- {id:'bram',name:'Bram',x:480,y:140,color:'#8ba895',hair:'#4f3a2b',role:'Mayor',line:'Welcome to our community! Make yourself at home.'},
- {id:'piper',name:'Piper',x:530,y:385,color:'#d47878',hair:'#2d231e',role:'Courier',line:'Check the Notice Board daily for fresh requests!'}
-];
-
-const travellingTrader={name:'Ravi',x:690,y:230,color:'#e0a553',hair:'#2d2015'};
-
-const resourceNodes=[
- {id:'tree',name:'Oak Tree',x:160,y:450,resource:'wood',icon:'🪵',label:'Chop Wood'},
- {id:'berries',name:'Berry Bush',x:810,y:460,resource:'berries',icon:'🫐',label:'Pick Berries'},
- {id:'flowers',name:'Wildflower Meadow',x:240,y:170,resource:'flowers',icon:'🌷',label:'Pick Flowers'}
-];
-
-function defaultGame(){
- return {
-  name:'Friend',day:1,coins:20,energy:100,clockMinutes:480,worldMinutes:0,
-  weather:'sunny',weatherNextChange:260,
-  inventory:{wood:2,berries:3,flowers:1},
-  furnitureOwned:['Cozy Armchair','Potted Monstera'],
-  placedFurniture:[{name:'Cozy Armchair',x:280,y:280},{name:'Potted Monstera',x:680,y:260}],
-  quests:[
-   {id:'q1',citizenId:'milo',title:'Timber for Milo',desc:'Gather 3 wood logs for the workshop.',req:{wood:3},reward:25,done:false},
-   {id:'q2',citizenId:'ava',title:'Pie Ingredients',desc:'Collect 4 wild berries for Ava.',req:{berries:4},reward:30,done:false}
+// --- Game State ---
+const state = {
+  user: null,
+  day: 1,
+  hour: 8,
+  minute: 0,
+  weather: 'Sunny',
+  coins: 25,
+  energy: 100,
+  location: 'outdoors', // 'outdoors' or 'home'
+  inventory: [
+    { id: 'apple', name: 'Crisp Apple', count: 3, icon: '🍎', price: 4 },
+    { id: 'daisy', name: 'Meadow Daisy', count: 2, icon: '🌼', price: 3 },
+    { id: 'fishing_rod', name: 'Bamboo Rod', count: 1, icon: '🎣', price: 0 }
   ],
-  dailyQuests:[
-   {title:'Daily Walk',desc:'Harvest 2 wildflowers today.',req:{flowers:2},reward:18,claimed:false}
+  quests: [
+    { id: 'q_greet', title: 'Island Greeting', desc: 'Speak with Mayor Oliver at the Town Hall.', done: false, reward: 20 },
+    { id: 'q_fish', title: 'First Catch', desc: 'Cast your fishing rod and catch any wild fish.', done: false, reward: 30 }
   ],
-  customHome:{number:104,name:'Meadow Villa',color:'#f7e4be'}
- };
-}
-
-let game=defaultGame();
-
-function safeNumber(v, fallback){return typeof v==='number'&&!isNaN(v)?v:fallback;}
-
-function loadGame(name){
- try{
-  const raw=localStorage.getItem(SAVE_KEY);
-  if(raw){
-   const s=JSON.parse(raw);
-   game=Object.assign(defaultGame(),s);
-   if(name)game.name=name;
-  } else if(name){
-   game.name=name;
-  }
- }catch(e){game=defaultGame();}
- loginOpen=false;
- $('loginLayer').classList.remove('show');
- updateUI();
-}
-
-function saveGame(){
- try{
-  localStorage.setItem(SAVE_KEY,JSON.stringify(game));
-  localStorage.setItem('meadowDriftDeluxe_last',game.name);
-  $('saveState').textContent='● Synced';
- }catch(e){}
-}
-
-function updateUI(){
- $('dayCount').textContent=game.day;
- const h=Math.floor(game.clockMinutes/60),m=Math.floor(game.clockMinutes%60);
- $('clockText').textContent=`${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}`;
- $('clockEmoji').textContent=h>=6&&h<18?'☀️':'🌙';
- $('weatherText').textContent=game.weather.charAt(0).toUpperCase()+game.weather.slice(1);
- $('weatherEmoji').textContent=game.weather==='sunny'?'☀️':game.weather==='rainy'?'🌧️':'🌤️';
- $('coinCount').textContent=game.coins;
- $('energyCount').textContent=Math.round(game.energy);
-
- const qList=$('sidebarQuestList');
- qList.innerHTML='';
- let count=0;
- game.quests.forEach(q=>{
-  if(q.done)return;
-  count++;
-  const div=document.createElement('div');
-  div.className='quest';
-  const resKey=Object.keys(q.req)[0];
-  const cur=game.inventory[resKey]||0,max=q.req[resKey];
-  div.innerHTML=`<div class="quest-top"><span>${q.title}</span><span style="color:#f7df94">+${q.reward}🪙</span></div>
-  <div class="quest-desc">${q.desc} (${cur}/${max})</div>
-  <div class="bar"><span style="width:${Math.min(100,(cur/max)*100)}%"></span></div>`;
-  qList.appendChild(div);
- });
- $('activeQuestCount').textContent=count;
-}
-
-function advanceWorldClock(dt){
- game.clockMinutes=(game.clockMinutes+dt*0.5)%1440;
- game.worldMinutes+=dt*0.5;
- if(game.worldMinutes>=game.weatherNextChange){
-  game.weatherNextChange=game.worldMinutes+200+Math.random()*300;
-  game.weather=['sunny','cloudy','rainy'][Math.floor(Math.random()*3)];
- }
- updateUI();
-}
-
-function traderIsHere(){
- return game.day%3===0;
-}
-
-function getNearby(){
- if(inside)return null;
- for(const c of citizens){
-  if(Math.hypot(player.x-c.x,player.y-c.y)<48)return {kind:'citizen',data:c,label:c.name};
- }
- if(traderIsHere()&&Math.hypot(player.x-travellingTrader.x,player.y-travellingTrader.y)<52){
-  return {kind:'trader',data:travellingTrader,label:'Ravi the Trader'};
- }
- for(const r of resourceNodes){
-  if(Math.hypot(player.x-r.x,player.y-r.y)<54)return {kind:'resource',data:r,label:r.name};
- }
- if(Math.hypot(player.x-180,player.y-190)<70)return {kind:'landmark',data:{action:'market'},label:'Meadow Market'};
- if(Math.hypot(player.x-480,player.y-185)<70)return {kind:'landmark',data:{action:'estate'},label:'Estate Office'};
- if(Math.hypot(player.x-780,player.y-190)<70)return {kind:'landmark',data:{action:'enterHome'},label:'Your Villa'};
- if(Math.hypot(player.x-480,player.y-480)<55)return {kind:'landmark',data:{action:'noticeBoard'},label:'Notice Board'};
- return null;
-}
-
-function harvestResource(node){
- SoundFX.harvest(); addSparkle(player.x, player.y, "#95e06c", 8);
- if(game.energy<5){
-  showMessage('Exhausted','You need to rest! Sleep at home to replenish your energy.');
-  return;
- }
- game.energy=Math.max(0,game.energy-5);
- game.inventory[node.resource]=(game.inventory[node.resource]||0)+1;
- showMessage(node.name,`Harvested 1 ${node.resource}! Checked your bag.`);
- updateUI();
- saveGame();
-}
-
-function completeQuest(q){
- SoundFX.quest(); addSparkle(player.x, player.y, "#ffd700", 12);
- q.done=true;
- game.coins+=q.reward;
- showMessage('Quest Complete!',`Completed "${q.title}" and earned ${q.reward} coins!`);
- updateUI();
- saveGame();
-}
-
-function talkToCitizen(c){
- SoundFX.talk();
- const q=game.quests.find(q=>q.citizenId===c.id&&!q.done);
- if(q){
-  const resKey=Object.keys(q.req)[0];
-  if((game.inventory[resKey]||0)>=q.req[resKey]){
-   game.inventory[resKey]-=q.req[resKey];
-   completeQuest(q);
-   return;
-  }
- }
- showMessage(`${c.name} (${c.role})`,c.line);
-}
-
-function talkToTrader(){
- SoundFX.talk();
- showModal('Ravi the Travelling Trader','<div class="quest"><b>Rare Exotic Decor</b><div class="quest-desc">Ravi sails between islands bringing unique furnishings!</div></div><div class="shop-grid"><button class="shop-btn" data-action="buyFurniture" data-index="6"><span>📺</span>Retro TV (65🪙)</button><button class="shop-btn" data-action="buyFurniture" data-index="7"><span>🍳</span>Cast Iron Stove (55🪙)</button></div>');
-}
-
-function showMessage(speaker,text){
- $('speakerName').textContent=speaker;
- $('speakerText').textContent=text;
-}
-
-function showModal(title,html){
- modalOpen=true;
- $('modalTitle').textContent=title;
- $('modalBody').innerHTML=html;
- $('modalLayer').classList.add('show');
-}
-
-function closeModal(){
- modalOpen=false;
- $('modalLayer').classList.remove('show');
-}
-
-function openMarket(){
- let html='<p>Trade raw island resources for gleaming coins!</p>';
- ['wood','berries','flowers'].forEach(r=>{
-  const count=game.inventory[r]||0;
-  const price=r==='wood'?8:r==='berries'?6:10;
-  html+=`<div class="list-card"><div><b>${r.toUpperCase()}</b> <span class="chip">Own: ${count}</span></div>
-  <button class="primary" data-action="sellResource" data-resource="${r}" ${count<=0?'disabled':''}>Sell for ${price}🪙</button></div>`;
- });
- showModal('🛒 Meadow Island Market',html);
-}
-
-function sellResource(r){
- const price=r==='wood'?8:r==='berries'?6:10;
- if((game.inventory[r]||0)>0){
-  game.inventory[r]--;
-  game.coins+=price;
-  SoundFX.coin();
-  openMarket();
-  updateUI();
-  saveGame();
- }
-}
-
-function openEstate(){
- let html=`<p>Your current house: <b>${game.customHome.name}</b> (No. ${game.customHome.number})</p>
- <p>Discover 1 of 1,000,000 procedural island homes!</p>
- <div style="display:flex;gap:8px;margin-bottom:12px">
-   <input type="number" id="houseSearch" min="1" max="1000000" placeholder="House # (1 - 1000000)" style="flex:1;padding:8px;border-radius:8px;border:1px solid #ffffff40;background:#ffffff15;color:#fff">
-   <button class="primary" onclick="searchHouse()">Search</button>
- </div>
- <div id="houseResult"></div>`;
- showModal('🏡 Island Estate Agency',html);
-}
-
-window.searchHouse=()=>{
- const num=Number($('houseSearch').value);
- if(num>=1&&num<=1000000){
-  const names=['Meadow Haven','Seaside Villa','Clover Cottage','Pine Lodge','Sunburst Manor','Breeze Villa'];
-  const name=names[num%names.length]+' #'+num;
-  $('houseResult').innerHTML=`<div class="list-card"><div><b>${name}</b><br><small>Cost: 50🪙</small></div><button class="secondary" onclick="purchaseHouse(${num},'${name}')">Purchase Title</button></div>`;
- }
+  homeDecor: [
+    { id: 'bed', name: 'Cozy Oak Bed', x: 260, y: 160, icon: '🛏️' },
+    { id: 'rug', name: 'Emerald Rug', x: 440, y: 300, icon: '🧶' },
+    { id: 'desk', name: 'Study Desk', x: 620, y: 160, icon: '🪵' }
+  ]
 };
 
-window.purchaseHouse=(num,name)=>{
- if(game.coins>=50){
-  game.coins-=50;
-  game.customHome={number:num,name:name};
-  SoundFX.coin();
-  showMessage('Estate Office',`Congratulations! You are now the proud owner of ${name}!`);
-  closeModal();
-  updateUI();
-  saveGame();
- } else {
-  alert('You need 50 coins to purchase this home title!');
- }
+// --- Player Character ---
+const player = {
+  x: 480,
+  y: 330,
+  speed: 3.4,
+  dir: 'down',
+  isMoving: false,
+  stepCycle: 0,
+  targetX: null,
+  targetY: null
 };
 
-function openFurniture(){
- let html='<div class="shop-grid">';
- furnitureCatalog.forEach((f,i)=>{
-  const owned=game.furnitureOwned.includes(f.name);
-  html+=`<div class="shop-btn"><span>${f.icon}</span><b>${f.name}</b><span class="chip">${owned?'OWNED':f.cost+'🪙'}</span>
-  <button class="primary" style="margin-top:6px;padding:5px 8px;font-size:11px" data-action="buyFurniture" data-index="${i}" ${owned||game.coins<f.cost?'disabled':''}>Buy</button></div>`;
- });
- html+='</div>';
- showModal('🛋️ Island Furniture Studio',html);
+// --- Fishing System ---
+const fishing = {
+  active: false,
+  state: 'idle', // 'casting', 'waiting', 'bite', 'caught'
+  timer: 0,
+  bobberX: 0,
+  bobberY: 0,
+  bobberRipple: 0,
+  caughtItem: null
+};
+
+// --- Wildlife (Butterflies & Night Fireflies) ---
+const critters = [];
+for (let i = 0; i < 14; i++) {
+  critters.push({
+    x: Math.random() * W,
+    y: Math.random() * H,
+    vx: (Math.random() - 0.5) * 0.8,
+    vy: (Math.random() - 0.5) * 0.8,
+    phase: Math.random() * Math.PI * 2,
+    size: Math.random() * 2 + 2
+  });
 }
 
-function buyFurniture(idx){
- const item=furnitureCatalog[idx];
- if(item&&game.coins>=item.cost&&!game.furnitureOwned.includes(item.name)){
-  game.coins-=item.cost;
-  game.furnitureOwned.push(item.name);
-  game.placedFurniture.push({name:item.name,x:300+(idx*45)%300,y:250+(idx*35)%200});
-  SoundFX.coin();
-  openFurniture();
-  updateUI();
-  saveGame();
- }
+// --- Citizens ---
+const citizens = [
+  { id: 'oliver', name: 'Oliver', title: 'Town Mayor', x: 480, y: 170, color: '#3b82f6', icon: '👔', speech: 'Good morning! Meadow Island flourishes with friendly faces and calm seas.' },
+  { id: 'lyra', name: 'Lyra', title: 'Botanist', x: 260, y: 280, color: '#ec4899', icon: '🌸', speech: 'The wild daisies around our meadow absorb morning dew beautifully!' },
+  { id: 'barnaby', name: 'Capt. Barnaby', title: 'Harbour Master', x: 800, y: 490, color: '#f59e0b', icon: '⚓', speech: 'Ahoy! The tide brings Golden Koi and Silver Bass near the pier today.' },
+  { id: 'hazel', name: 'Hazel', title: 'Baker', x: 720, y: 220, color: '#10b981', icon: '🥖', speech: 'Nothing beats fresh warm honeycomb rolls on a breezy morning.' }
+];
+
+// --- Buildings & Landmarks ---
+const worldObjects = [
+  { type: 'building', id: 'town_hall', name: 'Town Hall', x: 400, y: 80, w: 160, h: 90, color: '#2563eb', roof: '#1d4ed8' },
+  { type: 'building', id: 'bakery', name: "Hazel's Bakery", x: 670, y: 140, w: 120, h: 80, color: '#d97706', roof: '#b45309' },
+  { type: 'building', id: 'player_home', name: 'Your Villa', x: 180, y: 140, w: 130, h: 85, color: '#059669', roof: '#047857' },
+  // Pond & Water Areas
+  { type: 'pond', x: 220, y: 440, rx: 90, ry: 60 },
+  // Pier
+  { type: 'pier', x: 720, y: 480, w: 180, h: 50 }
+];
+
+// --- Flowers & Harvestables ---
+const harvestables = [
+  { id: 'f1', type: 'flower', x: 380, y: 360, harvested: false, name: 'Meadow Daisy', icon: '🌼' },
+  { id: 'f2', type: 'flower', x: 420, y: 400, harvested: false, name: 'Meadow Daisy', icon: '🌼' },
+  { id: 'f3', type: 'flower', x: 610, y: 340, harvested: false, name: 'Wild Lavender', icon: '🪻' },
+  { id: 'f4', type: 'flower', x: 580, y: 420, harvested: false, name: 'Wild Lavender', icon: '🪻' }
+];
+
+// --- Day / Night Lighting ---
+function getSkyLight() {
+  const h = state.hour + state.minute / 60;
+  if (h >= 5 && h < 8) return { r: 255, g: 190, b: 120, a: 0.25 }; // Dawn
+  if (h >= 8 && h < 17) return { r: 255, g: 255, b: 255, a: 0.0 }; // Daylight
+  if (h >= 17 && h < 20) return { r: 230, g: 110, b: 60, a: 0.35 }; // Sunset
+  return { r: 10, g: 20, b: 45, a: 0.65 }; // Night
 }
 
-function openNoticeBoard(){
- let html='<p>Daily island requests from town hall:</p>';
- game.dailyQuests.forEach((dq,i)=>{
-  html+=`<div class="list-card"><div><b>${dq.title}</b><div style="font-size:11px;color:#c0ded0">${dq.desc}</div></div>
-  <button class="primary" data-action="claimDaily" data-index="${i}" ${dq.claimed?'disabled':''}>${dq.claimed?'CLAIMED':'+'+dq.reward+'🪙'}</button></div>`;
- });
- showModal('📌 Island Notice Board',html);
+// --- Render Loop ---
+let lastTime = performance.now();
+function loop(now) {
+  const dt = (now - lastTime) / 1000;
+  lastTime = now;
+
+  update(dt);
+  render();
+  requestAnimationFrame(loop);
 }
 
-function claimDailyQuest(idx){
- const dq=game.dailyQuests[idx];
- if(dq&&!dq.claimed){
-  dq.claimed=true;
-  game.coins+=dq.reward;
-  SoundFX.quest();
-  openNoticeBoard();
-  updateUI();
-  saveGame();
- }
-}
-
-function openBag(){
- let html='<div class="shop-grid">';
- ['wood','berries','flowers'].forEach(r=>{
-  html+=`<div class="shop-btn"><span>${r==='wood'?'🪵':r==='berries'?'🫐':'🌷'}</span><b>${r.toUpperCase()}</b><span class="chip">${game.inventory[r]||0} in Bag</span></div>`;
- });
- html+='</div>';
- showModal('🎒 Inventory Backpack',html);
-}
-
-function openJournal(){
- let html='<p>Active and past goals across Meadow Drift:</p>';
- game.quests.forEach(q=>{
-  html+=`<div class="quest"><div class="quest-top"><span>${q.title}</span><span>${q.done?'✅ COMPLETE':'+'+q.reward+'🪙'}</span></div><div class="quest-desc">${q.desc}</div></div>`;
- });
- showModal('📜 Quest Journal',html);
-}
-
-function enterHome(){
- SoundFX.door();
- inside=true;
- player.x=480;player.y=480;
- $('homeQuickBtn').textContent='Exit Home';
- $('locationTag').textContent='🏠 '+game.customHome.name;
- showMessage('Home Sweet Home','Press E near bed to sleep & restore energy, or re-arrange your furniture.');
-}
-
-function exitHome(){
- SoundFX.door();
- inside=false;
- player.x=780;player.y=240;
- $('homeQuickBtn').textContent='Enter Home';
- $('locationTag').textContent='📍 Meadow Square';
-}
-
-function interact(){
- if(modalOpen){closeModal();return;}
- if(inside){
-  if(player.y>510){exitHome();return;}
-  if(Math.hypot(player.x-750,player.y-220)<80){
-   // Sleep in bed
-   game.day++;
-   game.energy=100;
-   game.clockMinutes=480;
-   SoundFX.quest();
-   showMessage('Restful Sleep',`Good morning! Day ${game.day} begins on Meadow Drift with 100% energy.`);
-   updateUI();
-   saveGame();
-   return;
+function update(dt) {
+  // Advance Clock
+  state.minute += dt * 8;
+  if (state.minute >= 60) {
+    state.minute = 0;
+    state.hour++;
+    if (state.hour >= 24) {
+      state.hour = 0;
+      state.day++;
+      $('dayText').textContent = state.day;
+    }
+    updateClockDisplay();
   }
-  showMessage('Interior','Decorate your 4-room villa or rest on the bed.');
-  return;
- }
- const n=getNearby();
- if(!n){showMessage('Meadow Island','Nothing to interact with right here. Stroll around!');return;}
- if(n.kind==='citizen')talkToCitizen(n.data);
- else if(n.kind==='trader')talkToTrader();
- else if(n.kind==='resource')harvestResource(n.data);
- else if(n.kind==='landmark'){
-  if(n.data.action==='enterHome')enterHome();
-  else if(n.data.action==='market')openMarket();
-  else if(n.data.action==='estate')openEstate();
-  else if(n.data.action==='noticeBoard')openNoticeBoard();
- }
-}
 
-// Drawing Island and Environment
-function drawWater(t){
- ctx.fillStyle='#72c4d0';ctx.fillRect(0,0,W,H);
- for(let row=0;row<9;row++){
-  const y=25+row*72+(Math.sin(t*.0006+row)*5);
-  ctx.strokeStyle='rgba(236,255,239,.23)';ctx.lineWidth=2;ctx.beginPath();
-  for(let x=-20;x<=W+20;x+=8){const yy=y+Math.sin(x*.022+t*.0012+row)*4;if(x===-20)ctx.moveTo(x,yy);else ctx.lineTo(x,yy);}ctx.stroke();
- }
- for(let i=0;i<22;i++){const x=(i*137+Math.sin(t*.0003+i)*23)%W;const y=(i*83+30)%H;ctx.fillStyle='rgba(255,255,255,.12)';ctx.beginPath();ctx.ellipse(x,y,10,3,-.2,0,Math.PI*2);ctx.fill();}
-}
+  // Player Movement
+  let dx = 0, dy = 0;
+  if (keyState.up) dy -= 1;
+  if (keyState.down) dy += 1;
+  if (keyState.left) dx -= 1;
+  if (keyState.right) dx += 1;
 
-function islandPath(){ctx.beginPath();ctx.moveTo(82,100);ctx.bezierCurveTo(165,40,335,48,435,70);ctx.bezierCurveTo(580,28,770,58,867,115);ctx.bezierCurveTo(942,165,934,360,884,472);ctx.bezierCurveTo(838,570,690,585,553,565);ctx.bezierCurveTo(405,602,198,565,104,500);ctx.bezierCurveTo(26,444,30,230,82,100);ctx.closePath();}
+  // Tap-to-move interpolation
+  if (player.targetX !== null && player.targetY !== null) {
+    const diffX = player.targetX - player.x;
+    const diffY = player.targetY - player.y;
+    const dist = Math.hypot(diffX, diffY);
+    if (dist > 5) {
+      dx = diffX / dist;
+      dy = diffY / dist;
+    } else {
+      player.targetX = null;
+      player.targetY = null;
+    }
+  }
 
-function drawIsland(){
- const wave = Math.sin(performance.now() * 0.003) * 4;
- ctx.save();
- islandPath();ctx.lineWidth=37+wave;ctx.strokeStyle='rgba(255,255,255,0.45)';ctx.stroke();
- islandPath();ctx.lineWidth=27;ctx.strokeStyle='#e8d59b';ctx.stroke();
- ctx.fillStyle='#91c978';ctx.fill();ctx.lineWidth=4;ctx.strokeStyle='#5d9e67';ctx.stroke();
- ctx.restore();
+  if (dx !== 0 || dy !== 0) {
+    player.isMoving = true;
+    const len = Math.hypot(dx, dy) || 1;
+    player.x += (dx / len) * player.speed;
+    player.y += (dy / len) * player.speed;
 
- // Grass tufts
- for(let i=0;i<85;i++){const x=75+(i*97)%810,y=92+(i*53)%450;const nx=(x-480)/445,ny=(y-315)/285;if(nx*nx+ny*ny<.92){ctx.strokeStyle=i%3?'#74b66b':'#a8d77e';ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(x,y);ctx.lineTo(x+3,y-6);ctx.moveTo(x+4,y);ctx.lineTo(x+7,y-5);ctx.stroke();}}
- // Cobblestone trails
- ctx.lineCap='round';ctx.lineJoin='round';ctx.strokeStyle='#d8c58f';ctx.lineWidth=42;ctx.beginPath();ctx.moveTo(180,290);ctx.bezierCurveTo(310,285,350,305,480,305);ctx.bezierCurveTo(615,305,700,285,780,290);ctx.stroke();
- ctx.beginPath();ctx.moveTo(480,210);ctx.bezierCurveTo(480,275,470,350,480,500);ctx.stroke();
- ctx.strokeStyle='#f0dfb5';ctx.lineWidth=3;ctx.setLineDash([8,12]);ctx.beginPath();ctx.moveTo(180,290);ctx.bezierCurveTo(310,285,350,305,480,305);ctx.bezierCurveTo(615,305,700,285,780,290);ctx.stroke();ctx.setLineDash([]);
- // Pond
- ctx.fillStyle='#69bdc5';ctx.beginPath();ctx.ellipse(720,330,62,35,-.2,0,Math.PI*2);ctx.fill();ctx.strokeStyle='#d8d18c';ctx.lineWidth=6;ctx.stroke();
- ctx.fillStyle='#d0e8ad';ctx.beginPath();ctx.ellipse(715,325,26,8,-.2,0,Math.PI*2);ctx.fill();
- // Flowers
- for(let i=0;i<27;i++){const x=90+(i*149)%780,y=100+(i*71)%445;ctx.fillStyle=['#f5c6d6','#fff0a5','#e7c4f0'][i%3];ctx.beginPath();ctx.arc(x,y,3,0,Math.PI*2);ctx.fill();ctx.fillStyle='#e3b85b';ctx.beginPath();ctx.arc(x,y,1.3,0,Math.PI*2);ctx.fill();}
-}
+    // Boundaries
+    player.x = Math.max(30, Math.min(W - 30, player.x));
+    player.y = Math.max(70, Math.min(H - 40, player.y));
 
-function drawTree(x,y,scale=1){
- const sway = Math.sin(performance.now() * 0.002 + x * 0.05) * 3 * scale;
- ctx.fillStyle='#0002';ctx.beginPath();ctx.ellipse(x,y+13,28*scale,8*scale,0,0,Math.PI*2);ctx.fill();
- ctx.fillStyle='#875a3b';ctx.fillRect(x-5*scale,y-25*scale,10*scale,38*scale);
- [[-15,-30,22,'#4f995c'],[10,-34,24,'#65aa61'],[-1,-53,22,'#78b96a'],[-25,-43,16,'#5ca35f']].forEach(a=>{
-  ctx.fillStyle=a[3];ctx.beginPath();ctx.arc(x+(a[0]+sway)*scale,y+a[1]*scale,a[2]*scale,0,Math.PI*2);ctx.fill();
- });
-}
+    // Direction
+    if (Math.abs(dx) > Math.abs(dy)) player.dir = dx > 0 ? 'right' : 'left';
+    else player.dir = dy > 0 ? 'down' : 'up';
 
-function drawBuilding(kind,x,y){
- ctx.fillStyle='#0002';ctx.beginPath();ctx.ellipse(x,y+28,73,17,0,0,Math.PI*2);ctx.fill();
- if(kind==='market'){
-  ctx.fillStyle='#e9d7ad';ctx.fillRect(x-56,y-5,112,47);ctx.fillStyle='#a86c48';ctx.fillRect(x-61,y-8,122,9);
-  ctx.fillStyle='#fff1d3';ctx.fillRect(x-51,y+4,102,33);
-  ctx.fillStyle='#d78a61';ctx.fillRect(x-52,y-29,104,25);
-  for(let i=0;i<5;i++){ctx.fillStyle=i%2?'#f2d89b':'#cf715d';ctx.fillRect(x-52+i*21,y-29,10,24);}
-  ctx.fillStyle='#76523b';ctx.fillRect(x-15,y+7,30,29);
-  ctx.font='bold 12px Arial';ctx.fillStyle='#fff';ctx.textAlign='center';ctx.fillText('MARKET',x,y-38);ctx.textAlign='left';
- }else if(kind==='estateOffice'){
-  ctx.fillStyle='#f1e9d4';ctx.fillRect(x-60,y-27,120,66);ctx.fillStyle='#5e927f';ctx.fillRect(x-66,y-34,132,12);
-  ctx.fillStyle='#9accc0';ctx.fillRect(x-47,y-15,27,29);ctx.fillRect(x+20,y-15,27,29);ctx.fillStyle='#fff2ce';ctx.fillRect(x-12,y+2,24,37);
-  ctx.font='bold 12px Arial';ctx.fillStyle='#fff';ctx.textAlign='center';ctx.fillText('ESTATE OFFICE',x,y-44);ctx.textAlign='left';
- }else if(kind==='home'){
-  ctx.fillStyle='#f6e2bd';ctx.fillRect(x-62,y-25,124,64);ctx.fillStyle='#b85e4a';ctx.fillRect(x-68,y-32,136,12);
-  ctx.fillStyle='#7a4c33';ctx.fillRect(x-14,y+3,28,36);
-  ctx.fillStyle='#bce7ea';ctx.fillRect(x-48,y-12,24,24);ctx.fillRect(x+24,y-12,24,24);
-  ctx.font='bold 12px Arial';ctx.fillStyle='#fff';ctx.textAlign='center';ctx.fillText(game.customHome.name,x,y-42);ctx.textAlign='left';
- }
-}
+    player.stepCycle += dt * 10;
+    if (Math.floor(player.stepCycle) % 4 === 0) SoundEngine.footstep();
 
-function drawPerson(x,y,name,color,hair,isPlayer=false,bob=0,hasQuest=false){
- const lift=Math.sin(bob)*2;
- ctx.fillStyle='#0002';ctx.beginPath();ctx.ellipse(x,y+5,15,6,0,0,Math.PI*2);ctx.fill();
- ctx.fillStyle=isPlayer?'#355eab':color;ctx.beginPath();ctx.roundRect(x-10,y-22+lift,20,23,7);ctx.fill();
- ctx.fillStyle='#f3c9a5';ctx.beginPath();ctx.arc(x,y-31+lift,9,0,Math.PI*2);ctx.fill();
- ctx.fillStyle=hair;ctx.beginPath();ctx.arc(x,y-35+lift,9,Math.PI,Math.PI*2);ctx.fill();ctx.fillRect(x-9,y-35+lift,4,8);
- if(isPlayer){ctx.fillStyle='#f1d57c';ctx.fillRect(x-8,y-48+lift,16,5);ctx.fillRect(x-5,y-54+lift,10,7);}
- ctx.font='bold 12px Arial';ctx.textAlign='center';ctx.lineWidth=3;ctx.strokeStyle='#f1f4d8';ctx.strokeText(name,x,y-57+lift);ctx.fillStyle='#284a38';ctx.fillText(name,x,y-57+lift);
- if(hasQuest){ctx.fillStyle='#f5dc8e';ctx.beginPath();ctx.arc(x+14,y-48+lift,9,0,Math.PI*2);ctx.fill();ctx.fillStyle='#3b4a31';ctx.font='bold 11px Arial';ctx.fillText('!',x+14,y-44+lift);}
- ctx.textAlign='left';
-}
-
-function drawTimeLighting(){
- const hour=Math.floor(game.clockMinutes/60);
- if(hour>=20||hour<5){ctx.fillStyle='rgba(15,25,55,.36)';ctx.fillRect(0,0,W,H);}
- else if(hour>=17&&hour<20){ctx.fillStyle='rgba(255,140,70,.14)';ctx.fillRect(0,0,W,H);}
- else if(hour>=5&&hour<8){ctx.fillStyle='rgba(255,210,130,.10)';ctx.fillRect(0,0,W,H);}
-}
-
-function drawWeather(t){
- if(game.weather==='sunny')return;
- if(game.weather==='cloudy'){
-  ctx.fillStyle='rgba(68,85,91,.10)';ctx.fillRect(0,0,W,H);
-  for(let i=0;i<5;i++){const x=(i*225+((t*.012)%180)-90);const y=58+(i%2)*26;ctx.fillStyle='rgba(241,247,245,.50)';ctx.beginPath();ctx.arc(x,y,24,0,Math.PI*2);ctx.arc(x+25,y-8,29,0,Math.PI*2);ctx.arc(x+53,y,23,0,Math.PI*2);ctx.fill();}
-  return;
- }
- ctx.fillStyle='rgba(39,61,81,.19)';ctx.fillRect(0,0,W,H);
- for(let i=0;i<100;i++){
-  const x=(i*97+(t*.34))%(W+40)-20;const y=(i*59+(t*.72))%(H+50)-25;
-  ctx.strokeStyle='rgba(222,241,255,.62)';ctx.lineWidth=1.4;ctx.beginPath();ctx.moveTo(x,y);ctx.lineTo(x-5,y+15);ctx.stroke();
- }
-}
-
-function drawHouse(t){
- ctx.fillStyle='#d8c49a';ctx.fillRect(0,0,W,H);
- ctx.fillStyle='#f3e7ca';ctx.fillRect(48,40,864,540);
- ctx.fillStyle='#b17e59';ctx.fillRect(48,40,864,28);ctx.fillRect(48,40,24,540);ctx.fillRect(888,40,24,540);ctx.fillRect(48,556,864,24);
- ctx.fillStyle='#d6b78a';ctx.fillRect(72,68,816,488);
- for(let y=115;y<540;y+=70){ctx.strokeStyle='#c9a477';ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(75,y);ctx.lineTo(885,y);ctx.stroke();}
-
- // Bed
- ctx.fillStyle='#835f49';ctx.fillRect(700,160,110,95);
- ctx.fillStyle='#f4eedb';ctx.fillRect(706,168,98,80);
- ctx.fillStyle='#d87a6c';ctx.fillRect(712,174,40,26);
-
- // Rug
- ctx.fillStyle='#7aa893';ctx.beginPath();ctx.ellipse(480,310,90,55,0,0,Math.PI*2);ctx.fill();
-
- // Placed furniture items
- game.placedFurniture.forEach(f=>{
-  ctx.fillStyle='#2c4c3b';ctx.font='bold 14px Arial';
-  ctx.fillText(f.name==='Cozy Armchair'?'🛋️':f.name==='Vintage Bookshelf'?'📚':f.name==='Potted Monstera'?'🪴':f.name==='Retro TV'?'📺':'🪑',f.x,f.y);
- });
-
- drawPerson(player.x,player.y,game.name,'#355eab','#463b35',true,player.bob,false);
-}
-
-function drawWorld(t){
- drawWater(t);drawIsland();
- drawTree(80,160,.65);drawTree(890,145,.75);drawTree(880,540,.8);drawTree(95,540,.65);
- drawBuilding('market',180,190);drawBuilding('estateOffice',480,185);drawBuilding('home',780,190);
-
- if(traderIsHere()){
-  ctx.fillStyle='#8b6746';ctx.fillRect(646,168,88,48);
-  ctx.fillStyle='#f1d69b';ctx.fillRect(652,175,76,35);
-  ctx.font='bold 11px Arial';ctx.fillStyle='#fff';ctx.fillText('RAVI TRADER',655,160);
-  drawPerson(travellingTrader.x,travellingTrader.y,travellingTrader.name,travellingTrader.color,travellingTrader.hair,false,t*.005,true);
- }
-
- // Notice Board
- ctx.fillStyle='#8c613f';ctx.fillRect(458,465,44,31);ctx.fillStyle='#e7d6a5';ctx.fillRect(462,468,36,21);ctx.fillStyle='#6b4933';ctx.font='bold 9px Arial';ctx.textAlign='center';ctx.fillText('NEWS',480,481);ctx.textAlign='left';
-
- // Resource Nodes
- resourceNodes.forEach(rn=>{
-  if(rn.id==='tree')drawTree(rn.x,rn.y,1.1);
-  else if(rn.id==='berries'){
-   ctx.fillStyle='#4f995c';ctx.beginPath();ctx.arc(rn.x,rn.y,22,0,Math.PI*2);ctx.fill();
-   for(let i=0;i<7;i++){ctx.fillStyle='#5c35b5';ctx.beginPath();ctx.arc(rn.x-10+(i*4)%20,rn.y-10+(i*5)%20,4,0,Math.PI*2);ctx.fill();}
+    // Cancel fishing if walked away
+    if (fishing.active) cancelFishing();
   } else {
-   for(let i=0;i<8;i++){ctx.fillStyle=['#ff6b8b','#ffd166','#06d6a0'][i%3];ctx.beginPath();ctx.arc(rn.x-12+i*5,rn.y-6+(i%2)*10,5,0,Math.PI*2);ctx.fill();}
+    player.isMoving = false;
   }
- });
 
- citizens.forEach(c=>{
-  const q=game.quests.find(q=>q.citizenId===c.id);
-  drawPerson(c.x,c.y,c.name,c.color,c.hair,false,t*.004+c.x*.03,!!(!q||!q.done));
- });
+  // Fishing Logic
+  if (fishing.active) {
+    fishing.bobberRipple += dt * 3;
+    if (fishing.state === 'waiting') {
+      fishing.timer -= dt;
+      if (fishing.timer <= 0) {
+        fishing.state = 'bite';
+        fishing.timer = 2.4; // 2.4s window to hook
+        SoundEngine.biteAlert();
+        setDialogue('🎣 Fish Alert!', 'A fish is biting hard! Press Cast Rod (F) NOW to reel it in!');
+      }
+    } else if (fishing.state === 'bite') {
+      fishing.timer -= dt;
+      if (fishing.timer <= 0) {
+        setDialogue('🎣 Slipped Away...', 'The fish wriggled off the hook. Cast again!');
+        cancelFishing();
+      }
+    }
+  }
 
- drawPerson(player.x,player.y,game.name||'YOU','#355eab','#463b35',true,player.bob,false);
-
- if(!inside)drawWeather(t);
- for (let i = particles.length - 1; i >= 0; i--) {
-   const p = particles[i];
-   ctx.fillStyle = p.c;
-   ctx.beginPath(); ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2); ctx.fill();
-   p.x += p.vx; p.y += p.vy; p.life--;
-   if (p.life <= 0) particles.splice(i, 1);
- }
- drawTimeLighting();
-
- const n=getNearby();
- if(n){
-  ctx.strokeStyle='rgba(255,247,190,.85)';ctx.lineWidth=2;ctx.setLineDash([5,5]);
-  ctx.beginPath();ctx.arc(player.x,player.y-15,34,0,Math.PI*2);ctx.stroke();ctx.setLineDash([]);
- }
+  // Update Critters
+  critters.forEach(c => {
+    c.x += c.vx;
+    c.y += c.vy;
+    c.phase += dt * 3;
+    if (c.x < 20 || c.x > W - 20) c.vx *= -1;
+    if (c.y < 80 || c.y > H - 20) c.vy *= -1;
+  });
 }
 
-function draw(t){
- if(inside)drawHouse(t);
- else drawWorld(t);
+function render() {
+  ctx.clearRect(0, 0, W, H);
+
+  if (state.location === 'outdoors') {
+    renderOutdoors();
+  } else {
+    renderInterior();
+  }
+
+  // Sky Lighting Filter
+  const sky = getSkyLight();
+  if (sky.a > 0.01) {
+    ctx.fillStyle = `rgba(${sky.r},${sky.g},${sky.b},${sky.a})`;
+    ctx.fillRect(0, 0, W, H);
+  }
+
+  // Night Lantern Glows
+  if (state.hour < 6 || state.hour >= 19) {
+    drawLanternGlow(480, 180, 110);
+    drawLanternGlow(740, 480, 90);
+    drawLanternGlow(200, 180, 80);
+  }
 }
 
-function updateMovement(dt){
- if(modalOpen||loginOpen)return;
- let dx=(keyState.right?1:0)-(keyState.left?1:0);
- let dy=(keyState.down?1:0)-(keyState.up?1:0);
- if(dx||dy){moveTarget=null;targetInteract=false;}
- else if(moveTarget){
-  dx=moveTarget.x-player.x;dy=moveTarget.y-player.y;
-  const dist=Math.hypot(dx,dy);
-  if(dist<5){moveTarget=null;if(targetInteract){targetInteract=false;interact();}return;}
-  dx/=dist;dy/=dist;
- } else return;
+function renderOutdoors() {
+  // Island Grass
+  ctx.fillStyle = '#2c6b4f';
+  ctx.fillRect(0, 0, W, H);
 
- const len=Math.hypot(dx,dy)||1;
- dx/=len;dy/=len;
- const spd=player.speed*dt;
- player.x=Math.max(50,Math.min(W-50,player.x+dx*spd));
- player.y=Math.max(80,Math.min(H-60,player.y+dy*spd));
- player.bob+=dt*0.22;
+  // Shoreline Ocean Water
+  ctx.fillStyle = '#1e4e69';
+  ctx.fillRect(W - 140, 420, 140, 200);
+
+  // Animated Surf Foam
+  ctx.fillStyle = 'rgba(255, 255, 255, 0.35)';
+  const wave = Math.sin(performance.now() * 0.003) * 6;
+  ctx.fillRect(W - 145 + wave, 420, 10, 200);
+
+  // Freshwater Pond
+  ctx.fillStyle = '#1e5f74';
+  ctx.beginPath();
+  ctx.ellipse(220, 440, 90, 60, 0, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.strokeStyle = '#38bdf8';
+  ctx.lineWidth = 3;
+  ctx.stroke();
+
+  // Pier
+  ctx.fillStyle = '#854d0e';
+  ctx.fillRect(720, 470, 160, 40);
+  ctx.fillStyle = '#a16207';
+  for (let i = 730; i < 880; i += 16) {
+    ctx.fillRect(i, 470, 2, 40);
+  }
+
+  // Harvestable Flowers
+  harvestables.forEach(f => {
+    if (!f.harvested) {
+      ctx.font = '20px sans-serif';
+      ctx.fillText(f.icon, f.x - 10, f.y + 8);
+    }
+  });
+
+  // Buildings
+  worldObjects.forEach(obj => {
+    if (obj.type === 'building') {
+      // Body
+      ctx.fillStyle = obj.color;
+      ctx.fillRect(obj.x, obj.y, obj.w, obj.h);
+      // Roof
+      ctx.fillStyle = obj.roof;
+      ctx.beginPath();
+      ctx.moveTo(obj.x - 10, obj.y);
+      ctx.lineTo(obj.x + obj.w / 2, obj.y - 32);
+      ctx.lineTo(obj.x + obj.w + 10, obj.y);
+      ctx.fill();
+      // Door
+      ctx.fillStyle = '#451a03';
+      ctx.fillRect(obj.x + obj.w / 2 - 14, obj.y + obj.h - 36, 28, 36);
+      // Name Tag
+      ctx.fillStyle = '#ffffff';
+      ctx.font = 'bold 11px Plus Jakarta Sans';
+      ctx.textAlign = 'center';
+      ctx.fillText(obj.name, obj.x + obj.w / 2, obj.y + obj.h + 16);
+    }
+  });
+
+  // Citizens
+  citizens.forEach(c => {
+    drawCharacter(c.x, c.y, c.color, c.icon);
+    ctx.fillStyle = '#fed876';
+    ctx.font = 'bold 11px Plus Jakarta Sans';
+    ctx.textAlign = 'center';
+    ctx.fillText(c.name, c.x, c.y - 28);
+  });
+
+  // Player Character
+  drawCharacter(player.x, player.y, '#10b981', '🧑', player.isMoving);
+
+  // Fishing Bobber
+  if (fishing.active) {
+    ctx.strokeStyle = 'rgba(255,255,255,0.7)';
+    ctx.lineWidth = 1.5;
+    ctx.beginPath();
+    ctx.moveTo(player.x, player.y - 10);
+    ctx.lineTo(fishing.bobberX, fishing.bobberY);
+    ctx.stroke();
+
+    // Ripple
+    ctx.strokeStyle = 'rgba(56, 189, 248, 0.6)';
+    ctx.beginPath();
+    ctx.arc(fishing.bobberX, fishing.bobberY, (fishing.bobberRipple % 1) * 16, 0, Math.PI * 2);
+    ctx.stroke();
+
+    // Float Bobber
+    ctx.fillStyle = '#ef4444';
+    ctx.beginPath();
+    ctx.arc(fishing.bobberX, fishing.bobberY, 5, 0, Math.PI * 2);
+    ctx.fill();
+
+    // Bite Alert '!'
+    if (fishing.state === 'bite') {
+      ctx.fillStyle = '#facc15';
+      ctx.font = 'bold 26px Orbitron, sans-serif';
+      ctx.textAlign = 'center';
+      ctx.fillText('!', fishing.bobberX, fishing.bobberY - 14);
+    }
+  }
+
+  // Critters (Butterflies by Day, Bioluminescent Fireflies by Night)
+  const isNight = state.hour < 6 || state.hour >= 19;
+  critters.forEach(c => {
+    ctx.fillStyle = isNight ? 'rgba(163, 230, 53, 0.85)' : 'rgba(253, 224, 71, 0.9)';
+    ctx.beginPath();
+    ctx.arc(c.x, c.y, c.size + Math.sin(c.phase), 0, Math.PI * 2);
+    ctx.fill();
+    if (isNight) {
+      ctx.fillStyle = 'rgba(163, 230, 53, 0.2)';
+      ctx.beginPath();
+      ctx.arc(c.x, c.y, c.size * 3.5, 0, Math.PI * 2);
+      ctx.fill();
+    }
+  });
 }
 
-function frame(t){
- const dt=lastFrame?Math.min((t-lastFrame)/16.667,2):1;
- lastFrame=t;
- advanceWorldClock(dt);
- updateMovement(dt);
- draw(t);
- requestAnimationFrame(frame);
+function renderInterior() {
+  // Cozy Wooden Floor
+  ctx.fillStyle = '#78350f';
+  ctx.fillRect(100, 80, W - 200, H - 160);
+
+  // Planks
+  ctx.fillStyle = '#92400e';
+  for (let y = 80; y < H - 80; y += 32) {
+    ctx.fillRect(100, y, W - 200, 2);
+  }
+
+  // Wall
+  ctx.fillStyle = '#451a03';
+  ctx.fillRect(100, 80, W - 200, 30);
+
+  // Furniture Items
+  state.homeDecor.forEach(d => {
+    ctx.font = '36px sans-serif';
+    ctx.textAlign = 'center';
+    ctx.fillText(d.icon, d.x, d.y);
+    ctx.fillStyle = '#fed876';
+    ctx.font = '11px Plus Jakarta Sans';
+    ctx.fillText(d.name, d.x, d.y + 24);
+  });
+
+  // Exit Mat
+  ctx.fillStyle = '#059669';
+  ctx.fillRect(W / 2 - 40, H - 95, 80, 15);
+  ctx.fillStyle = '#fff';
+  ctx.font = 'bold 10px Plus Jakarta Sans';
+  ctx.textAlign = 'center';
+  ctx.fillText('EXIT (E)', W / 2, H - 84);
+
+  // Player
+  drawCharacter(player.x, player.y, '#10b981', '🧑', player.isMoving);
 }
 
-// Event Listeners
-const keyMap={w:'up',arrowup:'up',s:'down',arrowdown:'down',a:'left',arrowleft:'left',d:'right',arrowright:'right'};
-document.addEventListener('keydown',e=>{
- const k=e.key.toLowerCase();
- if(keyMap[k]){keyState[keyMap[k]]=true;e.preventDefault();}
- if((k==='e'||k==='enter')&&!e.repeat){e.preventDefault();interact();}
- if(k==='m'&&!e.repeat){e.preventDefault();openJournal();}
- if(k==='i'&&!e.repeat){e.preventDefault();openBag();}
-});
-document.addEventListener('keyup',e=>{
- const k=e.key.toLowerCase();if(keyMap[k])keyState[keyMap[k]]=false;
+function drawCharacter(x, y, color, emoji, moving) {
+  // Shadow
+  ctx.fillStyle = 'rgba(0, 0, 0, 0.28)';
+  ctx.beginPath();
+  ctx.ellipse(x, y + 14, 14, 6, 0, 0, Math.PI * 2);
+  ctx.fill();
+
+  // Body
+  const bob = moving ? Math.sin(performance.now() * 0.015) * 2 : 0;
+  ctx.fillStyle = color;
+  ctx.beginPath();
+  ctx.arc(x, y + bob, 14, 0, Math.PI * 2);
+  ctx.fill();
+
+  // Face / Icon
+  ctx.font = '16px sans-serif';
+  ctx.textAlign = 'center';
+  ctx.fillText(emoji, x, y + 6 + bob);
+}
+
+function drawLanternGlow(x, y, radius) {
+  const g = ctx.createRadialGradient(x, y, 4, x, y, radius);
+  g.addColorStop(0, 'rgba(254, 216, 118, 0.45)');
+  g.addColorStop(1, 'rgba(254, 216, 118, 0.0)');
+  ctx.fillStyle = g;
+  ctx.beginPath();
+  ctx.arc(x, y, radius, 0, Math.PI * 2);
+  ctx.fill();
+}
+
+// --- Interaction System ---
+function handleInteract() {
+  SoundEngine.pop();
+
+  if (state.location === 'home') {
+    // Check Bed sleep
+    const bed = state.homeDecor.find(d => d.id === 'bed');
+    if (bed && Math.hypot(player.x - bed.x, player.y - bed.y) < 60) {
+      state.energy = 100;
+      state.day++;
+      state.hour = 7;
+      state.minute = 0;
+      $('dayText').textContent = state.day;
+      updateClockDisplay();
+      setDialogue('🛏️ Restful Sleep', 'You slept peacefully. Energy restored to 100% and a brand new day begins!');
+      return;
+    }
+    // Check Exit
+    if (player.y > H - 130 && Math.abs(player.x - W / 2) < 60) {
+      exitHome();
+      return;
+    }
+  } else {
+    // Check Citizens
+    for (const c of citizens) {
+      if (Math.hypot(player.x - c.x, player.y - c.y) < 55) {
+        setDialogue(c.name + ' (' + c.title + ')', c.speech);
+        if (c.id === 'oliver') completeQuest('q_greet');
+        return;
+      }
+    }
+
+    // Check Flowers
+    for (const f of harvestables) {
+      if (!f.harvested && Math.hypot(player.x - f.x, player.y - f.y) < 45) {
+        f.harvested = true;
+        addItem(f.name, 1, f.icon, 5);
+        setDialogue('🌿 Harvest Success', 'Picked 1x ' + f.name + '! Added to your backpack.');
+        return;
+      }
+    }
+
+    // Check Player Home Door
+    const home = worldObjects.find(o => o.id === 'player_home');
+    if (home && Math.hypot(player.x - (home.x + home.w / 2), player.y - (home.y + home.h)) < 55) {
+      enterHome();
+      return;
+    }
+  }
+
+  setDialogue('Meadow Breeze', 'Nothing close enough to interact with right now.');
+}
+
+// --- Fishing Rod Actions ---
+function handleFish() {
+  if (state.location !== 'outdoors') {
+    setDialogue('🎣 Fishing', 'You can only fish outdoors near the pond or sea pier!');
+    return;
+  }
+
+  // If already hooked during bite phase: REEL IN!
+  if (fishing.active && fishing.state === 'bite') {
+    reelInFish();
+    return;
+  }
+
+  if (fishing.active) {
+    cancelFishing();
+    return;
+  }
+
+  // Verify proximity to water or pier
+  const nearPond = Math.hypot(player.x - 220, player.y - 440) < 140;
+  const nearPier = player.x > 700 && player.y > 450;
+
+  if (!nearPond && !nearPier) {
+    setDialogue('🎣 Fishing', 'Step closer to the freshwater pond or the harbour pier to cast your rod.');
+    return;
+  }
+
+  fishing.active = true;
+  fishing.state = 'waiting';
+  fishing.timer = 2.0 + Math.random() * 3.5;
+  fishing.bobberX = nearPier ? 840 : 220 + (Math.random() - 0.5) * 40;
+  fishing.bobberY = nearPier ? 520 : 440 + (Math.random() - 0.5) * 30;
+
+  SoundEngine.splash();
+  setDialogue('🎣 Rod Cast', 'Bobber is in the water. Watch closely for the bite alert (!)...');
+}
+
+function reelInFish() {
+  fishing.active = false;
+  fishing.state = 'idle';
+  SoundEngine.pop();
+
+  const fishTypes = [
+    { name: 'Meadow Trout', icon: '🐟', price: 15 },
+    { name: 'Silver Bass', icon: '🐠', price: 22 },
+    { name: 'Drift Salmon', icon: '🐡', price: 35 },
+    { name: 'Golden Koi', icon: '✨', price: 75 }
+  ];
+  const caught = fishTypes[Math.floor(Math.random() * fishTypes.length)];
+  addItem(caught.name, 1, caught.icon, caught.price);
+  completeQuest('q_fish');
+  setDialogue('🏆 Rare Catch!', 'You reeled in a pristine ' + caught.name + ' (' + caught.icon + ') worth ' + caught.price + '🪙!');
+}
+
+function cancelFishing() {
+  fishing.active = false;
+  fishing.state = 'idle';
+}
+
+// --- Home Transition ---
+function enterHome() {
+  state.location = 'home';
+  player.x = W / 2;
+  player.y = H - 120;
+  player.targetX = null;
+  player.targetY = null;
+  SoundEngine.door();
+  $('locationBadge').textContent = '📍 Your Villa';
+  $('homeBtn').textContent = '🌿 Exit Home';
+  setDialogue('🏡 Your Villa', 'Welcome home! Cozy rugs, warm oak bed, and calm silence.');
+}
+
+function exitHome() {
+  state.location = 'outdoors';
+  player.x = 245;
+  player.y = 245;
+  player.targetX = null;
+  player.targetY = null;
+  SoundEngine.door();
+  $('locationBadge').textContent = '📍 Meadow Square';
+  $('homeBtn').textContent = '🏡 Enter Home';
+  setDialogue('Meadow Square', 'Stepped back into the fresh outdoor air.');
+}
+
+// --- Inventory & Economy ---
+function addItem(name, count, icon, price) {
+  const existing = state.inventory.find(i => i.name === name);
+  if (existing) existing.count += count;
+  else state.inventory.push({ id: name.toLowerCase().replace(/\s+/g, '_'), name, count, icon, price });
+}
+
+function setDialogue(speaker, text) {
+  $('speakerTitle').textContent = speaker;
+  $('speakerContent').textContent = text;
+}
+
+function updateClockDisplay() {
+  const hh = String(state.hour).padStart(2, '0');
+  const mm = String(Math.floor(state.minute)).padStart(2, '0');
+  $('clockText').textContent = `${hh}:${mm}`;
+  $('coinText').textContent = state.coins;
+  $('energyText').textContent = state.energy;
+  $('clockIcon').textContent = (state.hour >= 6 && state.hour < 19) ? '☀️' : '🌙';
+}
+
+function completeQuest(id) {
+  const q = state.quests.find(item => item.id === id);
+  if (q && !q.done) {
+    q.done = true;
+    state.coins += q.reward;
+    SoundEngine.coin();
+    updateClockDisplay();
+    renderQuests();
+    setDialogue('🏆 Quest Completed!', `Finished: ${q.title}! Reward: +${q.reward}🪙.`);
+  }
+}
+
+function renderQuests() {
+  const c = $('questListContainer');
+  c.innerHTML = state.quests.map(q => `
+    <div style="margin-bottom:8px;padding:8px;background:rgba(255,255,255,0.06);border-radius:10px;border:1px solid ${q.done ? '#4ade80' : 'rgba(255,255,255,0.1)'}">
+      <b>${q.done ? '✅' : '📌'} ${q.title}</b> (+${q.reward}🪙)<br>
+      <span style="font-size:12px;color:#c0ded0">${q.desc}</span>
+    </div>
+  `).join('');
+}
+
+// --- Modals System ---
+function showModal(title, html) {
+  $('modalTitle').textContent = title;
+  $('modalContent').innerHTML = html;
+  $('modalLayer').classList.add('show');
+}
+function closeModal() {
+  $('modalLayer').classList.remove('show');
+}
+
+// Modal Content Generators
+function showBackpack() {
+  let h = `<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:10px">`;
+  state.inventory.forEach(item => {
+    h += `<div style="background:rgba(0,0,0,0.3);padding:12px;border-radius:12px;border:1px solid var(--border);text-align:center">
+      <div style="font-size:32px">${item.icon}</div>
+      <b>${item.name}</b><br>
+      <small style="color:var(--gold)">Qty: ${item.count} • Val: ${item.price}🪙</small>
+    </div>`;
+  });
+  h += `</div>`;
+  showModal('🎒 Backpack Inventory', h);
+}
+
+function showNoticeBoard() {
+  showModal('📌 Town Notice Board', `
+    <p style="margin-bottom:14px;color:#cbf5cf">Daily tasks posted by the island council:</p>
+    <div style="display:flex;flex-direction:column;gap:10px">
+      <div style="padding:12px;background:rgba(0,0,0,0.3);border-radius:12px;border:1px solid var(--border)">
+        <b>🌾 Deliver 2x Meadow Daisies to Lyra</b> (+30🪙)<br>
+        <small style="color:#c0ded0">Status: In Progress</small>
+      </div>
+      <div style="padding:12px;background:rgba(0,0,0,0.3);border-radius:12px;border:1px solid var(--border)">
+        <b>🐟 Catch 1x Golden Koi for Harbour Archive</b> (+100🪙)<br>
+        <small style="color:#c0ded0">Status: Unclaimed</small>
+      </div>
+    </div>
+  `);
+}
+
+function showMarket() {
+  let h = `<p style="margin-bottom:12px;color:#cbf5cf">Sell fresh harvest and fish to the island general store:</p>`;
+  h += `<div style="display:flex;flex-direction:column;gap:8px">`;
+  state.inventory.filter(i => i.price > 0).forEach(item => {
+    h += `<div style="display:flex;justify-content:space-between;align-items:center;padding:10px;background:rgba(0,0,0,0.3);border-radius:10px">
+      <span>${item.icon} <b>${item.name}</b> (x${item.count})</span>
+      <button class="btn-act btn-primary" style="padding:6px 14px;font-size:12px" onclick="window.sellItem('${item.name}')">Sell 1 (+${item.price}🪙)</button>
+    </div>`;
+  });
+  h += `</div>`;
+  showModal('🛒 Oliver’s General Market', h);
+}
+
+window.sellItem = name => {
+  const it = state.inventory.find(i => i.name === name);
+  if (it && it.count > 0) {
+    it.count--;
+    state.coins += it.price;
+    if (it.count <= 0) state.inventory = state.inventory.filter(i => i !== it);
+    SoundEngine.coin();
+    updateClockDisplay();
+    showMarket();
+  }
+};
+
+function showEstateAgency() {
+  showModal('🏡 Island Estate Agency', `
+    <p style="margin-bottom:12px;color:#cbf5cf">Explore 1,000,000 procedural plots on the Meadow archipelago:</p>
+    <div style="padding:14px;background:rgba(0,0,0,0.3);border-radius:14px;border:1px solid var(--gold);text-align:center">
+      <div style="font-size:28px">🏖️</div>
+      <b style="color:var(--gold)">Plot #${Math.floor(Math.random() * 900000 + 100000)} — Seaside Bluff</b><br>
+      <span style="font-size:12px;color:#c0ded0">Coords: ${Math.floor(Math.random()*400)}°N, ${Math.floor(Math.random()*400)}°W</span><br>
+      <small style="display:inline-block;margin-top:6px;color:#4ade80">Ownership Deed: Verified</small>
+    </div>
+  `);
+}
+
+function showFurnitureStudio() {
+  showModal('🛋️ Furniture Studio', `
+    <p style="margin-bottom:12px;color:#cbf5cf">Handcrafted wooden furniture for your personal villa:</p>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+      <div style="padding:10px;background:rgba(0,0,0,0.3);border-radius:10px;text-align:center">
+        <div style="font-size:24px">🪴</div><b>Fern Pot</b><br><small>15🪙</small>
+      </div>
+      <div style="padding:10px;background:rgba(0,0,0,0.3);border-radius:10px;text-align:center">
+        <div style="font-size:24px">🪵</div><b>Oak Bookshelf</b><br><small>40🪙</small>
+      </div>
+    </div>
+  `);
+}
+
+// --- Event Listeners ---
+window.addEventListener('keydown', e => {
+  if (['ArrowUp', 'KeyW'].includes(e.code)) keyState.up = true;
+  if (['ArrowDown', 'KeyS'].includes(e.code)) keyState.down = true;
+  if (['ArrowLeft', 'KeyA'].includes(e.code)) keyState.left = true;
+  if (['ArrowRight', 'KeyD'].includes(e.code)) keyState.right = true;
+  if (e.code === 'KeyE') handleInteract();
+  if (e.code === 'KeyF') handleFish();
 });
 
-document.querySelectorAll('[data-pad]').forEach(btn=>{
- const key=btn.dataset.pad;
- btn.addEventListener('pointerdown',e=>{e.preventDefault();keyState[key]=true;});
- btn.addEventListener('pointerup',()=>keyState[key]=false);
- btn.addEventListener('pointerleave',()=>keyState[key]=false);
+window.addEventListener('keyup', e => {
+  if (['ArrowUp', 'KeyW'].includes(e.code)) keyState.up = false;
+  if (['ArrowDown', 'KeyS'].includes(e.code)) keyState.down = false;
+  if (['ArrowLeft', 'KeyA'].includes(e.code)) keyState.left = false;
+  if (['ArrowRight', 'KeyD'].includes(e.code)) keyState.right = false;
 });
 
-document.addEventListener('click',e=>{
- const btn=e.target.closest('[data-action]');
- if(!btn)return;
- const act=btn.dataset.action;
- if(act==='interact')interact();
- else if(act==='journal')openJournal();
- else if(act==='bag')openBag();
- else if(act==='enterHome')enterHome();
- else if(act==='market')openMarket();
- else if(act==='estate')openEstate();
- else if(act==='openFurniture')openFurniture();
- else if(act==='noticeBoard')openNoticeBoard();
- else if(act==='closeModal')closeModal();
- else if(act==='claimDaily')claimDailyQuest(Number(btn.dataset.index));
- else if(act==='buyFurniture')buyFurniture(Number(btn.dataset.index));
- else if(act==='sellResource')sellResource(btn.dataset.resource);
+// Canvas Tap-to-walk
+canvas.addEventListener('pointerdown', e => {
+  const r = canvas.getBoundingClientRect();
+  player.targetX = (e.clientX - r.left) * (W / r.width);
+  player.targetY = (e.clientY - r.top) * (H / r.height);
 });
 
-canvas.addEventListener('click',e=>{
- if(modalOpen||loginOpen)return;
- const r=canvas.getBoundingClientRect();
- moveTarget={x:(e.clientX-r.left)*W/r.width,y:(e.clientY-r.top)*H/r.height};
+// Action buttons
+document.querySelectorAll('[data-act]').forEach(btn => {
+  btn.addEventListener('click', () => {
+    const act = btn.getAttribute('data-act');
+    if (act === 'interact') handleInteract();
+    if (act === 'fish') handleFish();
+    if (act === 'bag') showBackpack();
+    if (act === 'journal') showModal('📜 Quest Journal', $('questListContainer').outerHTML);
+    if (act === 'toggleHome') state.location === 'home' ? exitHome() : enterHome();
+    if (act === 'noticeBoard') showNoticeBoard();
+    if (act === 'market') showMarket();
+    if (act === 'estate') showEstateAgency();
+    if (act === 'furniture') showFurnitureStudio();
+    if (act === 'closeModal') closeModal();
+  });
 });
 
-$('loginForm').addEventListener('submit',e=>{
- e.preventDefault();
- const name=$('playerName').value.trim();
- if(name)loadGame(name);
+// Mobile D-Pad Binds
+document.querySelectorAll('.dbtn').forEach(b => {
+  const k = b.getAttribute('data-k');
+  b.addEventListener('pointerdown', e => { e.preventDefault(); keyState[k] = true; });
+  b.addEventListener('pointerup', e => { e.preventDefault(); keyState[k] = false; });
+  b.addEventListener('pointercancel', e => { e.preventDefault(); keyState[k] = false; });
 });
 
-loadGame(localStorage.getItem('meadowDriftDeluxe_last')||'Friend');
-requestAnimationFrame(frame);
+// Audio Toggle
+$('soundToggleBtn').addEventListener('click', () => {
+  SoundEngine.enabled = !SoundEngine.enabled;
+  $('soundToggleBtn').textContent = SoundEngine.enabled ? '🔊 Audio: ON' : '🔈 Audio: OFF';
+  if (SoundEngine.enabled) SoundEngine.startMusic();
+  else SoundEngine.stopMusic();
+});
+
+// User Registration
+$('loginForm').addEventListener('submit', e => {
+  e.preventDefault();
+  const name = $('nameInput').value.trim();
+  if (name) {
+    state.user = name;
+    localStorage.setItem('meadow_user', name);
+    $('loginLayer').classList.remove('show');
+    SoundEngine.init();
+    SoundEngine.startMusic();
+    setDialogue('Oliver (Town Mayor)', `Welcome to Meadow Island, ${name}! Take your time exploring the meadows, cast your fishing rod, and visit the town market.`);
+  }
+});
+
+const prevUser = localStorage.getItem('meadow_user');
+if (prevUser) {
+  state.user = prevUser;
+  SoundEngine.init();
+  SoundEngine.startMusic();
+} else {
+  $('loginLayer').classList.add('show');
+}
+
+renderQuests();
+updateClockDisplay();
+requestAnimationFrame(loop);
 })();
 </script>
 </body>
