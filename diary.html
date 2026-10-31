@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>My Diary</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;600&family=Literata:opsz,wght@7..72,400;7..72,600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --page:#F3F5F1; --sheet:#FBFCFA; --ink:#1E2B2F; --muted:#5C6B70; --rule:#D5DDD8;
+  --accent:#2F5D62; --accent-ink:#fff; --danger:#A23B3B; --sel:#E4ECE8;
+  --ui:"Hanken Grotesk",system-ui,sans-serif; --write:"Literata",Georgia,serif;
+  color-scheme:light;
+}
+@media (prefers-color-scheme:dark){
+  :root{--page:#12191B; --sheet:#192225; --ink:#E4ECEA; --muted:#93A5A8; --rule:#2B3A3D;
+    --accent:#7FB7BC; --accent-ink:#0F1A1C; --danger:#E08A8A; --sel:#223034; color-scheme:dark;}
+}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{background:var(--page);color:var(--ink);font:16px/1.5 var(--ui);min-height:100vh}
+[hidden]{display:none!important}
+button,input,textarea{font:inherit;color:inherit}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+
+.btn{background:var(--accent);color:var(--accent-ink);border:0;border-radius:6px;padding:.6rem 1.1rem;font-weight:600;cursor:pointer}
+.btn:disabled{opacity:.6;cursor:default}
+.btn.quiet{background:transparent;color:var(--accent);border:1px solid var(--rule)}
+.msg{min-height:1.5rem;margin:.75rem 0 0;font-size:.9rem;color:var(--muted)}
+.msg.error{color:var(--danger)}
+
+/* Auth */
+#auth{display:grid;place-items:center;min-height:100vh;padding:1.5rem}
+.auth-card{width:100%;max-width:380px;background:var(--sheet);border:1px solid var(--rule);border-radius:10px;padding:2rem}
+.auth-card h1{font:600 2rem/1.15 var(--write);margin:0 0 .25rem}
+.auth-card p{margin:0 0 1.5rem;color:var(--muted)}
+label{display:block;font-size:.9rem;font-weight:500;margin:0 0 .25rem}
+input[type=email],input[type=password],input[type=date],input[type=text]{
+  width:100%;padding:.6rem .7rem;border:1px solid var(--rule);border-radius:6px;background:var(--page);margin-bottom:1rem}
+.row{display:flex;gap:.6rem;flex-wrap:wrap}
+
+/* App */
+#app header{display:flex;justify-content:space-between;align-items:center;gap:1rem;padding:.9rem 1.5rem;border-bottom:1px solid var(--rule)}
+#app header strong{font:600 1.25rem var(--write)}
+#app header span{color:var(--muted);font-size:.9rem;margin-right:.75rem}
+.layout{display:grid;grid-template-columns:280px 1fr;gap:1.5rem;max-width:1000px;margin:0 auto;padding:1.5rem}
+aside h2{font-size:1rem;margin:0 0 .75rem;font-weight:600}
+#list{list-style:none;margin:.75rem 0 0;padding:0;max-height:70vh;overflow:auto}
+#list button{display:block;width:100%;text-align:left;background:none;border:0;border-left:3px solid transparent;padding:.6rem .75rem;cursor:pointer;border-radius:0 6px 6px 0}
+#list button[aria-current=true]{background:var(--sel);border-left-color:var(--accent)}
+#list .d{display:block;font-weight:600;font-size:.9rem}
+#list .p{display:block;color:var(--muted);font-size:.85rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.empty{color:var(--muted);font-size:.9rem;padding:.5rem 0}
+
+.sheet{background:var(--sheet);border:1px solid var(--rule);border-radius:10px;padding:1.5rem}
+.sheet .title{font:600 1.4rem var(--write);border:0;background:transparent;padding:.25rem 0;margin:0 0 .5rem;border-bottom:1px solid var(--rule);border-radius:0}
+.sheet input[type=date]{width:auto;margin-bottom:.75rem}
+#content{width:100%;min-height:50vh;resize:vertical;border:0;background-color:transparent;
+  font:400 1.05rem/2rem var(--write);padding:0;margin-bottom:1rem;
+  background-image:repeating-linear-gradient(transparent,transparent calc(2rem - 1px),var(--rule) calc(2rem - 1px),var(--rule) 2rem);
+  background-attachment:local}
+#content:focus-visible{outline:none}
+
+@media (max-width:760px){
+  .layout{grid-template-columns:1fr;padding:1rem}
+  #list{max-height:200px}
+  #app header{padding:.75rem 1rem}
+}
+</style>
+</head>
+<body>
+
+<main id="auth" hidden>
+  <div class="auth-card">
+    <h1>My diary</h1>
+    <p>Sign in to read and write your entries.</p>
+    <div>
+      <label for="email">Email</label>
+      <input id="email" type="email" autocomplete="email">
+      <label for="password">Password</label>
+      <input id="password" type="password" autocomplete="current-password" minlength="6">
+      <div class="row">
+        <button class="btn" id="signin">Sign in</button>
+        <button class="btn quiet" id="signup">Create account</button>
+      </div>
+      <p class="msg" id="authMsg" role="status"></p>
+    </div>
+  </div>
+</main>
+
+<div id="app" hidden>
+  <header>
+    <strong>My diary</strong>
+    <div><span id="who"></span><button class="btn quiet" id="signout">Sign out</button></div>
+  </header>
+  <div class="layout">
+    <aside>
+      <h2>Your entries</h2>
+      <button class="btn quiet" id="newEntry">Write today’s entry</button>
+      <ul id="list"></ul>
+    </aside>
+    <section class="sheet">
+      <label for="date">Date</label>
+      <input id="date" type="date">
+      <input id="title" class="title" type="text" placeholder="Title (optional)" aria-label="Title">
+      <textarea id="content" placeholder="What happened today?" aria-label="Entry"></textarea>
+      <button class="btn" id="save">Save entry</button>
+      <p class="msg" id="saveMsg" role="status"></p>
+    </section>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
+<script>
+// 1. Paste your project values (Supabase dashboard → Project Settings → API).
+//    Use the anon/public key only. Never put the service_role key in a web page.
+const SUPABASE_URL = 'https://cpdzzjvntkquwpibeosd.supabase.co';
+const SUPABASE_ANON_KEY = 'sb_publishable_wTrIDAFqTNDivXWGcagoWg_fYNb5Zio';
+
+const db = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+const $ = id => document.getElementById(id);
+let user = null;
+let entries = [];
+
+const today = () => new Date().toLocaleDateString('en-CA'); // YYYY-MM-DD, local time
+const fmt = d => new Date(d + 'T00:00:00').toLocaleDateString(undefined,
+  { weekday: 'short', day: 'numeric', month: 'short', year: 'numeric' });
+
+function say(el, text, isError) {
+  el.textContent = text || '';
+  el.classList.toggle('error', !!isError);
+}
+
+/* ---------- Auth ---------- */
+async function credentials() {
+  const email = $('email').value.trim(), password = $('password').value;
+  if (!email || password.length < 6) {
+    say($('authMsg'), 'Enter your email and a password of at least 6 characters.', true);
+    return null;
+  }
+  return { email, password };
+}
+
+$('signin').onclick = async () => {
+  const c = await credentials(); if (!c) return;
+  say($('authMsg'), 'Signing in…');
+  const { error } = await db.auth.signInWithPassword(c);
+  if (error) say($('authMsg'), error.message, true);
+};
+
+$('signup').onclick = async () => {
+  const c = await credentials(); if (!c) return;
+  say($('authMsg'), 'Creating your account…');
+  const { data, error } = await db.auth.signUp(c);
+  if (error) return say($('authMsg'), error.message, true);
+  if (!data.session) say($('authMsg'), 'Check your email to confirm your account, then sign in.');
+};
+
+$('signout').onclick = () => db.auth.signOut();
+
+db.auth.onAuthStateChange((_event, session) => {
+  user = session ? session.user : null;
+  $('auth').hidden = !!user;
+  $('app').hidden = !user;
+  if (user) {
+    $('who').textContent = user.email;
+    loadEntries();
+  } else {
+    entries = [];
+    $('password').value = '';
+    say($('authMsg'), '');
+  }
+});
+
+/* ---------- Entries ---------- */
+async function loadEntries(selectDate) {
+  const { data, error } = await db.from('diary_entries')
+    .select('id, entry_date, title, content')
+    .order('entry_date', { ascending: false });
+  if (error) return say($('saveMsg'), error.message, true);
+  entries = data;
+  renderList();
+  openDate(selectDate || $('date').value || today());
+}
+
+function renderList() {
+  const ul = $('list');
+  ul.replaceChildren();
+  if (!entries.length) {
+    const li = document.createElement('li');
+    li.className = 'empty';
+    li.textContent = 'No entries yet. Write your first one.';
+    ul.append(li);
+    return;
+  }
+  for (const e of entries) {
+    const li = document.createElement('li');
+    const b = document.createElement('button');
+    b.dataset.date = e.entry_date;
+    const d = document.createElement('span'); d.className = 'd'; d.textContent = fmt(e.entry_date);
+    const p = document.createElement('span'); p.className = 'p';
+    p.textContent = e.title || e.content.split('\n')[0] || '(empty)';
+    b.append(d, p);
+    b.onclick = () => openDate(e.entry_date);
+    li.append(b);
+    ul.append(li);
+  }
+}
+
+function openDate(date) {
+  const e = entries.find(x => x.entry_date === date);
+  $('date').value = date;
+  $('title').value = e ? (e.title || '') : '';
+  $('content').value = e ? e.content : '';
+  say($('saveMsg'), '');
+  document.querySelectorAll('#list button').forEach(b =>
+    b.setAttribute('aria-current', b.dataset.date === date));
+}
+
+$('date').onchange = () => openDate($('date').value || today());
+$('newEntry').onclick = () => openDate(today());
+
+$('save').onclick = async () => {
+  const entry_date = $('date').value;
+  if (!entry_date) return say($('saveMsg'), 'Pick a date first.', true);
+  $('save').disabled = true;
+  say($('saveMsg'), 'Saving…');
+  const { error } = await db.from('diary_entries').upsert({
+    user_id: user.id,
+    entry_date,
+    title: $('title').value.trim() || null,
+    content: $('content').value
+  }, { onConflict: 'user_id,entry_date' });
+  $('save').disabled = false;
+  if (error) return say($('saveMsg'), error.message, true);
+  await loadEntries(entry_date);
+  say($('saveMsg'), 'Saved.');
+};
+</script>
+</body>
+</html>
