@@ -1,642 +1,271 @@
 <!DOCTYPE html>
-<html lang="en" class="scroll-smooth">
+<html lang="en" data-theme="light">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Arnaw Choudhary | Game Developer & Coding Prodigy</title>
-    <!-- Tailwind CSS -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <!-- FontAwesome Icons -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <!-- Google Fonts: Orbitron & Inter -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Orbitron:wght@500;700;800;900&display=swap" rel="stylesheet">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Arnaw Industry | Games by Arnaw Choudhary</title>
+<meta name="description" content="Arnaw Industry is the home of browser games built by Arnaw Choudhary: racing, drifting, platforming, chases and puzzles.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Cpath d='M32 3l25 14.5v29L32 61 7 46.500v-29z' fill='%232F5BFF'/%3E%3Cpath d='M20 44L32 18l12 26' fill='none' stroke='white' stroke-width='6' stroke-linejoin='round' stroke-linecap='round'/%3E%3Crect x='28' y='36' width='8' height='8' fill='%23FFB020'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Sora:wght@500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#F3F5F9; --surface:#FFFFFF; --surface2:#E9EDF5; --text:#0E1A2E; --muted:#51607A;
+  --line:#D6DCE8; --accent:#2F5BFF; --accent-ink:#FFFFFF; --spark:#FFB020; --shadow:0 10px 30px rgba(14,26,46,.08);
+  --display:'Sora','Segoe UI',system-ui,sans-serif; --body:'Inter','Segoe UI',system-ui,sans-serif;
+}
+:root[data-theme="dark"]{
+  --bg:#0A1120; --surface:#111B31; --surface2:#17233E; --text:#E9EEFA; --muted:#9AA8C4;
+  --line:#243252; --accent:#6F8DFF; --accent-ink:#0A1120; --spark:#FFC24D; --shadow:0 10px 30px rgba(0,0,0,.45);
+}
+*{box-sizing:border-box;margin:0}
+html{scroll-behavior:smooth;scroll-padding-top:84px}
+body{font-family:var(--body);background:var(--bg);color:var(--text);line-height:1.65;transition:background .3s,color .3s}
+a{color:inherit;text-decoration:none}
+:focus-visible{outline:3px solid var(--accent);outline-offset:3px;border-radius:6px}
+.wrap{max-width:1120px;margin:0 auto;padding:0 24px}
 
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    fontFamily: {
-                        orbitron: ['Orbitron', 'sans-serif'],
-                        sans: ['Inter', 'sans-serif'],
-                    },
-                    colors: {
-                        darkBg: '#090A0F',
-                        cardBg: 'rgba(18, 20, 32, 0.7)',
-                        neonCyan: '#00f3ff',
-                        neonPurple: '#9d4edd',
-                        neonPink: '#ff007f',
-                        neonBlue: '#3a86ff',
-                        neonGreen: '#06d6a0',
-                    },
-                    animation: {
-                        'pulse-glow': 'pulseGlow 3s infinite alternate',
-                        'float': 'float 4s ease-in-out infinite',
-                        'shimmer': 'shimmer 2.5s infinite linear',
-                    },
-                    keyframes: {
-                        pulseGlow: {
-                            '0%': { boxShadow: '0 0 15px rgba(0, 243, 255, 0.2), inset 0 0 15px rgba(0, 243, 255, 0.1)' },
-                            '100%': { boxShadow: '0 0 30px rgba(157, 78, 221, 0.6), inset 0 0 20px rgba(157, 78, 221, 0.3)' }
-                        },
-                        float: {
-                            '0%, 100%': { transform: 'translateY(0px)' },
-                            '50%': { transform: 'translateY(-12px)' }
-                        },
-                        shimmer: {
-                            '0%': { backgroundPosition: '-200% 0' },
-                            '100%': { backgroundPosition: '200% 0' }
-                        }
-                    }
-                }
-            }
-        }
-    </script>
+/* Header */
+header{position:sticky;top:0;z-index:20;background:color-mix(in srgb,var(--bg) 88%,transparent);backdrop-filter:blur(12px);border-bottom:1px solid var(--line)}
+.bar{display:flex;align-items:center;justify-content:space-between;height:68px;gap:16px}
+.brand{display:flex;align-items:center;gap:12px}
+.brand svg{width:40px;height:40px;flex:none}
+.brand-text{display:flex;flex-direction:column;line-height:1.05}
+.brand-text b{font-family:var(--display);font-size:1.15rem;font-weight:800;letter-spacing:-.02em}
+.brand-text span{font-size:.72rem;color:var(--muted);letter-spacing:.14em}
+nav{display:flex;align-items:center;gap:4px}
+nav a{padding:8px 14px;border-radius:999px;font-weight:500;font-size:.95rem;color:var(--muted);transition:background .2s,color .2s}
+nav a:hover{background:var(--surface2);color:var(--text)}
+.toggle{width:42px;height:42px;border-radius:50%;border:1px solid var(--line);background:var(--surface);color:var(--text);cursor:pointer;display:grid;place-items:center;margin-left:8px}
+.toggle:hover{border-color:var(--accent)}
+.toggle svg{width:20px;height:20px}
+.sun{display:none}
+:root[data-theme="dark"] .sun{display:block}
+:root[data-theme="dark"] .moon{display:none}
 
-    <style>
-        /* Custom Glassmorphism Styling */
-        .glass-card {
-            background: rgba(18, 22, 38, 0.65);
-            backdrop-filter: blur(16px);
-            -webkit-backdrop-filter: blur(16px);
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
-        }
+/* Hero */
+.hero{padding:88px 0 72px;display:grid;grid-template-columns:1.15fr .85fr;gap:56px;align-items:center}
+.hero h1{font-family:var(--display);font-size:clamp(2.4rem,5.2vw,4rem);line-height:1.04;letter-spacing:-.035em;font-weight:800;max-width:14ch}
+.hero p{margin-top:22px;color:var(--muted);font-size:1.1rem;max-width:52ch}
+.cta{display:flex;flex-wrap:wrap;gap:12px;margin-top:32px}
+.btn{display:inline-flex;align-items:center;justify-content:center;padding:13px 24px;border-radius:12px;font-weight:600;border:1px solid var(--line);background:var(--surface);transition:transform .15s,border-color .2s}
+.btn:hover{transform:translateY(-2px);border-color:var(--accent)}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.badge{justify-self:center;width:min(100%,360px);aspect-ratio:1;border-radius:36px;background:var(--surface);border:1px solid var(--line);box-shadow:var(--shadow);display:grid;place-items:center;position:relative;overflow:hidden}
+.badge::before{content:"";position:absolute;inset:0;background-image:linear-gradient(var(--line) 1px,transparent 1px),linear-gradient(90deg,var(--line) 1px,transparent 1px);background-size:32px 32px;opacity:.55}
+.badge svg{position:relative;width:62%;animation:rise .9s cubic-bezier(.2,.8,.2,1) both}
+@keyframes rise{from{opacity:0;transform:translateY(18px) scale(.94)}to{opacity:1;transform:none}}
 
-        .glass-nav {
-            background: rgba(9, 10, 15, 0.85);
-            backdrop-filter: blur(12px);
-            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-        }
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--line);border:1px solid var(--line);border-radius:18px;overflow:hidden;margin-bottom:96px}
+.stats div{background:var(--surface);padding:22px 24px}
+.stats b{display:block;font-family:var(--display);font-size:1.6rem;letter-spacing:-.02em}
+.stats span{color:var(--muted);font-size:.9rem}
 
-        /* Neon Glow Utility Effects */
-        .text-glow-cyan {
-            text-shadow: 0 0 12px rgba(0, 243, 255, 0.7), 0 0 24px rgba(0, 243, 255, 0.3);
-        }
+/* Sections */
+section{padding-bottom:96px}
+h2{font-family:var(--display);font-size:clamp(1.7rem,3.4vw,2.4rem);letter-spacing:-.03em;line-height:1.15}
+.lead{color:var(--muted);margin-top:12px;max-width:60ch}
 
-        .text-glow-purple {
-            text-shadow: 0 0 12px rgba(157, 78, 221, 0.7), 0 0 24px rgba(157, 78, 221, 0.3);
-        }
+/* Games */
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:22px;margin-top:36px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:20px;overflow:hidden;display:flex;flex-direction:column;transition:transform .2s,box-shadow .2s,border-color .2s}
+.card:hover{transform:translateY(-4px);box-shadow:var(--shadow);border-color:var(--c)}
+.art{height:120px;background:linear-gradient(135deg,var(--c),color-mix(in srgb,var(--c) 45%,#0E1A2E));display:flex;align-items:flex-end;justify-content:space-between;padding:16px 20px;color:#fff}
+.art b{font-family:var(--display);font-size:3.2rem;line-height:.8;opacity:.95}
+.art span{font-size:.85rem;font-weight:600;background:rgba(255,255,255,.18);padding:4px 12px;border-radius:999px}
+.body{padding:22px 22px 24px;display:flex;flex-direction:column;gap:12px;flex:1}
+.body h3{font-family:var(--display);font-size:1.3rem;letter-spacing:-.02em}
+.body p{color:var(--muted);font-size:.95rem;flex:1}
+.tags{display:flex;flex-wrap:wrap;gap:8px}
+.tags span{font-size:.8rem;padding:4px 10px;border-radius:8px;background:var(--surface2);color:var(--muted)}
+.play{align-self:flex-start;margin-top:6px;padding:10px 20px;border-radius:10px;background:var(--text);color:var(--bg);font-weight:600;font-size:.95rem}
+.card:hover .play{background:var(--c);color:#fff}
 
-        .glow-border {
-            position: relative;
-        }
+/* About */
+.about{display:grid;grid-template-columns:.8fr 1.2fr;gap:48px;align-items:start}
+.id{background:var(--surface);border:1px solid var(--line);border-radius:20px;padding:28px}
+.avatar{width:72px;height:72px;border-radius:20px;background:var(--accent);color:var(--accent-ink);display:grid;place-items:center;font-family:var(--display);font-weight:800;font-size:1.9rem}
+.id h3{font-family:var(--display);margin-top:16px}
+.id>p{color:var(--muted);font-size:.95rem}
+.facts{display:grid;gap:14px;margin-top:22px;padding-top:22px;border-top:1px solid var(--line)}
+.facts span{display:block;color:var(--muted);font-size:.85rem}
+.facts b{font-weight:600}
+.about-text p{color:var(--muted);margin-top:16px;max-width:62ch}
+.about-text h2+p{margin-top:20px}
 
-        .glow-border::before {
-            content: '';
-            position: absolute;
-            top: -1px; left: -1px; right: -1px; bottom: -1px;
-            background: linear-gradient(45deg, #00f3ff, #9d4edd, #ff007f);
-            border-radius: inherit;
-            z-index: -1;
-            opacity: 0;
-            transition: opacity 0.3s ease-in-out;
-        }
+footer{border-top:1px solid var(--line);padding:36px 0;color:var(--muted);font-size:.9rem}
+footer .wrap{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:16px}
+footer .brand svg{width:30px;height:30px}
+footer .brand b{font-size:1rem;color:var(--text)}
 
-        .glow-border:hover::before {
-            opacity: 1;
-        }
-
-        /* Grid Background Pattern */
-        .bg-grid-pattern {
-            background-size: 40px 40px;
-            background-image: 
-                linear-gradient(to right, rgba(255, 255, 255, 0.03) 1px, transparent 1px),
-                linear-gradient(to bottom, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
-        }
-
-        /* Custom Scrollbar */
-        ::-webkit-scrollbar {
-            width: 8px;
-        }
-        ::-webkit-scrollbar-track {
-            background: #090A0F;
-        }
-        ::-webkit-scrollbar-thumb {
-            background: #1f2438;
-            border-radius: 4px;
-        }
-        ::-webkit-scrollbar-thumb:hover {
-            background: #00f3ff;
-        }
-    </style>
+@media (max-width:860px){
+  .hero{grid-template-columns:1fr;padding-top:56px}
+  .badge{width:min(70%,280px);order:-1;justify-self:start}
+  .stats{grid-template-columns:repeat(2,1fr)}
+  .about{grid-template-columns:1fr}
+  nav a{padding:8px 10px;font-size:.88rem}
+}
+@media (max-width:640px){
+  nav a:not(.keep){display:none}
+  .grid{grid-template-columns:1fr}
+}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important;scroll-behavior:auto}}
+</style>
 </head>
+<body>
 
-<body class="bg-darkBg text-gray-100 font-sans antialiased selection:bg-neonCyan selection:text-black min-h-screen overflow-x-hidden relative bg-grid-pattern">
+<!-- Logo symbol reused via <symbol> -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="logo" viewBox="0 0 64 64">
+    <path d="M32 3l25 14.5v29L32 61 7 46.500v-29z" fill="var(--accent)"/>
+    <path d="M32 3l25 14.5v29L32 61" fill="#000" opacity=".12"/>
+    <path d="M19.500 45L32 18l12.500 27" fill="none" stroke="#fff" stroke-width="6" stroke-linejoin="round" stroke-linecap="round"/>
+    <rect x="27.500" y="35.500" width="9" height="9" rx="1.500" fill="var(--spark)"/>
+  </symbol>
+</svg>
 
-    <!-- Interactive Background Canvas for Particles -->
-    <canvas id="particleCanvas" class="fixed inset-0 pointer-events-none z-0 opacity-40"></canvas>
+<header>
+  <div class="wrap bar">
+    <a class="brand" href="#top" aria-label="Arnaw Industry home">
+      <svg role="img" aria-hidden="true"><use href="#logo"/></svg>
+      <span class="brand-text"><b>Arnaw Industry</b><span>GAME STUDIO</span></span>
+    </a>
+    <nav aria-label="Main">
+      <a class="keep" href="#games">Games</a>
+      <a href="#about">About</a>
+      <a class="keep" href="#contact">Contact</a>
+      <button class="toggle" id="theme" aria-label="Switch between light and dark mode" title="Switch theme">
+        <svg class="moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.800A9 9 0 1111.200 3a7 7 0 009.800 9.800z"/></svg>
+        <svg class="sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.900 4.900l1.400 1.400M17.700 17.700l1.400 1.400M2 12h2M20 12h2M4.900 19.100l1.400-1.400M17.700 6.300l1.400-1.400"/></svg>
+      </button>
+    </nav>
+  </div>
+</header>
 
-    <!-- Navigation Header -->
-    <header class="fixed top-0 left-0 w-full z-50 glass-nav transition-all duration-300">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
-            <!-- Brand Logo -->
-            <a href="#" class="flex items-center gap-3 group">
-                <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-neonCyan via-neonBlue to-neonPurple p-[2px] shadow-lg shadow-neonCyan/20 group-hover:shadow-neonCyan/50 transition-all duration-300">
-                    <div class="w-full h-full bg-darkBg rounded-[10px] flex items-center justify-center">
-                        <i class="fa-solid fa-gamepad text-neonCyan group-hover:scale-110 transition-transform"></i>
-                    </div>
-                </div>
-                <span class="font-orbitron font-extrabold text-xl sm:text-2xl tracking-wider text-white">
-                    ARNAW<span class="text-neonCyan">.STUDIOS</span>
-                </span>
-            </a>
-
-            <!-- Desktop Nav Links -->
-            <nav class="hidden md:flex items-center gap-8 font-medium text-sm tracking-wide">
-                <a href="#games" class="hover:text-neonCyan transition-colors flex items-center gap-2">
-                    <i class="fa-solid fa-gamepad text-xs text-neonCyan"></i> Games Showcase
-                </a>
-                <a href="#about" class="hover:text-neonCyan transition-colors flex items-center gap-2">
-                    <i class="fa-solid fa-user-ninja text-xs text-neonPurple"></i> About Developer
-                </a>
-                <a href="#skills" class="hover:text-neonCyan transition-colors flex items-center gap-2">
-                    <i class="fa-solid fa-code text-xs text-neonPink"></i> Tech Stack
-                </a>
-                <a href="#contact" class="px-5 py-2.5 rounded-full bg-gradient-to-r from-neonCyan to-neonBlue text-black font-semibold hover:shadow-lg hover:shadow-neonCyan/30 hover:scale-105 transition-all">
-                    Get in Touch
-                </a>
-            </nav>
-
-            <!-- Mobile Menu Toggle Button -->
-            <button id="mobileMenuBtn" class="md:hidden text-gray-300 hover:text-white focus:outline-none p-2">
-                <i class="fa-solid fa-bars-staggered text-2xl"></i>
-            </button>
+<main id="top">
+  <div class="wrap">
+    <div class="hero">
+      <div>
+        <h1>Games built with real code and real care.</h1>
+        <p>Arnaw Industry is the studio of Arnaw Choudhary. Racing, drifting, platforming, chases and puzzles, all playable in your browser with nothing to install.</p>
+        <div class="cta">
+          <a class="btn primary" href="#games">Play the games</a>
+          <a class="btn" href="#about">Meet the creator</a>
         </div>
+      </div>
+      <div class="badge"><svg viewBox="0 0 64 64" role="img" aria-label="Arnaw Industry logo"><use href="#logo"/></svg></div>
+    </div>
 
-        <!-- Mobile Navigation Menu Dropdown -->
-        <div id="mobileMenu" class="hidden md:hidden glass-card border-b border-gray-800 px-6 py-4 flex flex-col gap-4">
-            <a href="#games" class="mobile-link text-gray-300 hover:text-neonCyan py-2 border-b border-gray-800/50">Games Showcase</a>
-            <a href="#about" class="mobile-link text-gray-300 hover:text-neonCyan py-2 border-b border-gray-800/50">About Developer</a>
-            <a href="#skills" class="mobile-link text-gray-300 hover:text-neonCyan py-2 border-b border-gray-800/50">Tech Stack</a>
-            <a href="#contact" class="mobile-link text-neonCyan font-semibold py-2">Get in Touch</a>
+    <div class="stats">
+      <div><b>5</b><span>Published games</span></div>
+      <div><b>Browser</b><span>Play instantly</span></div>
+      <div><b>Physics</b><span>Core specialty</span></div>
+      <div><b>Jaipur</b><span>Where it's built</span></div>
+    </div>
+
+    <section id="games">
+      <h2>Game collection</h2>
+      <p class="lead">Pick a game and start playing.</p>
+      <div class="grid">
+
+        <article class="card" style="--c:#2E9E5B">
+          <div class="art"><b>M</b><span>Nature racing</span></div>
+          <div class="body">
+            <h3>Meadow Drift</h3>
+            <p>Smooth drifting through scenic grassy meadows and winding country tracks. Master precision cornering and slide your way to the top leaderboard times.</p>
+            <div class="tags"><span>Drift physics</span><span>Scenic tracks</span><span>Time trials</span></div>
+            <a class="play" href="https://arnawchoudhary.github.io/games/meadow-drift.html">Play Meadow Drift</a>
+          </div>
+        </article>
+
+        <article class="card" style="--c:#E04B3A">
+          <div class="art"><b>R</b><span>Arcade runner</span></div>
+          <div class="body">
+            <h3>Mario Runner</h3>
+            <p>A side-scrolling endless runner. Jump over obstacles, dodge enemies, collect power-ups and beat your high score.</p>
+            <div class="tags"><span>Endless running</span><span>Leaderboard</span><span>Physics engine</span></div>
+            <a class="play" href="https://arnawchoudhary.github.io/games/mario-runner.html">Play Mario Runner</a>
+          </div>
+        </article>
+
+        <article class="card" style="--c:#2F5BFF">
+          <div class="art"><b>Q</b><span>High speed</span></div>
+          <div class="body">
+            <h3>Racing Quest</h3>
+            <p>High-speed racing with custom tracks and cars. Take sharp drift turns, hit the nitro boosters and outpace AI racers to win the championship.</p>
+            <div class="tags"><span>Custom tracks</span><span>Nitro boost</span><span>Speed physics</span></div>
+            <a class="play" href="https://arnawchoudhary.github.io/games/racing-quest.HTML">Play Racing Quest</a>
+          </div>
+        </article>
+
+        <article class="card" style="--c:#6B4BDB">
+          <div class="art"><b>P</b><span>Action simulation</span></div>
+          <div class="body">
+            <h3>Police Pursuit</h3>
+            <p>A cop chase simulation. Control patrol units, set road barricades, weave through heavy traffic and restore order in an open city.</p>
+            <div class="tags"><span>Cop chase</span><span>Dynamic traffic</span><span>Strategy</span></div>
+            <a class="play" href="https://arnawchoudhary.github.io/games/police-pursuit.HTML">Play Police Pursuit</a>
+          </div>
+        </article>
+
+        <article class="card" style="--c:#C98A00">
+          <div class="art"><b>T</b><span>Puzzle and trivia</span></div>
+          <div class="body">
+            <h3>Treasure Quiz</h3>
+            <p>A trivia and puzzle game about uncovering hidden riches. Solve riddles, unlock chest combinations and test your knowledge across multiple levels.</p>
+            <div class="tags"><span>Brain teasers</span><span>Trivia</span><span>Treasure rewards</span></div>
+            <a class="play" href="https://arnawchoudhary.github.io/games/treasure-quiz.HTML">Play Treasure Quiz</a>
+          </div>
+        </article>
+
+      </div>
+    </section>
+
+    <section id="about" class="about">
+      <div class="id">
+        <div class="avatar" aria-hidden="true">A</div>
+        <h3>Arnaw Choudhary</h3>
+        <p>Game developer and coder</p>
+        <div class="facts">
+          <div><span>School</span><b>Gopal Sharma Memorial School, Jaipur</b></div>
+          <div><span>Specialty</span><b>Logic and game physics</b></div>
         </div>
-    </header>
+      </div>
+      <div class="about-text">
+        <h2>Coder, innovator and game maker</h2>
+        <p>I turn creative ideas into interactive experiences. From retro platformers like Mario Runner to high-speed police chases, fresh drift courses in Meadow Drift and brain-testing quizzes, I enjoy working with physics, artificial intelligence, game mechanics and clean code.</p>
+        <p>My goal is to build games that are fun to play and teach something along the way, for players anywhere in the world.</p>
+      </div>
+    </section>
 
-    <!-- Main Content Wrapper -->
-    <main class="relative z-10 pt-20">
+    <section id="contact">
+      <h2>Get in touch</h2>
+      <p class="lead">Found a bug or have an idea for the next game? Reach out through GitHub.</p>
+      <div class="cta"><a class="btn primary" href="https://github.com/arnawchoudhary">Visit GitHub profile</a></div>
+    </section>
+  </div>
+</main>
 
-        <!-- Hero Section -->
-        <section class="min-h-[90vh] flex items-center justify-center px-4 sm:px-6 lg:px-8 py-16 relative overflow-hidden">
-            <!-- Background Glow Orbs -->
-            <div class="absolute top-1/4 left-10 w-72 h-72 bg-neonCyan/10 rounded-full blur-3xl pointer-events-none"></div>
-            <div class="absolute bottom-10 right-10 w-96 h-96 bg-neonPurple/15 rounded-full blur-3xl pointer-events-none"></div>
+<footer>
+  <div class="wrap">
+    <a class="brand" href="#top"><svg aria-hidden="true"><use href="#logo"/></svg><span class="brand-text"><b>Arnaw Industry</b></span></a>
+    <span>&copy; 2026 Arnaw Industry. All rights reserved.</span>
+  </div>
+</footer>
 
-            <div class="max-w-5xl mx-auto text-center relative z-10">
-                <!-- Badge -->
-                <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full glass-card border-neonCyan/30 mb-8 animate-float">
-                    <span class="w-2.5 h-2.5 rounded-full bg-neonCyan animate-ping"></span>
-                    <span class="font-orbitron text-xs sm:text-sm text-neonCyan tracking-widest uppercase">
-                        GRADE 6 CODE PRODIGY & GAME CREATOR
-                    </span>
-                </div>
-
-                <!-- Main Headline -->
-                <h1 class="font-orbitron text-4xl sm:text-6xl lg:text-7xl font-black tracking-tight text-white mb-6 leading-tight">
-                    NEXT-GEN GAMES BUILT BY <br>
-                    <span class="bg-gradient-to-r from-neonCyan via-neonBlue to-neonPurple bg-clip-text text-transparent text-glow-cyan">
-                        ARNAW CHOUDHARY
-                    </span>
-                </h1>
-
-                <!-- Subtitle -->
-                <p class="max-w-2xl mx-auto text-base sm:text-xl text-gray-400 font-light mb-10 leading-relaxed">
-                    Crafting immersive gameplay, fast-paced action, and mind-bending logic puzzles right from <span class="text-white font-medium">Gopal Sharma Memorial School, Jaipur</span>.
-                </p>
-
-                <!-- Call To Action Buttons -->
-                <div class="flex flex-col sm:flex-row items-center justify-center gap-4 sm:gap-6 mb-16">
-                    <a href="#games" class="w-full sm:w-auto px-8 py-4 rounded-xl bg-gradient-to-r from-neonCyan via-neonBlue to-neonPurple text-black font-orbitron font-extrabold text-sm tracking-wider uppercase shadow-lg shadow-neonCyan/25 hover:shadow-neonCyan/50 hover:scale-105 transition-all flex items-center justify-center gap-3">
-                        <i class="fa-solid fa-rocket"></i> Explore My Games
-                    </a>
-                    <a href="#about" class="w-full sm:w-auto px-8 py-4 rounded-xl glass-card text-white font-orbitron font-bold text-sm tracking-wider uppercase border-white/20 hover:border-neonCyan hover:text-neonCyan hover:scale-105 transition-all flex items-center justify-center gap-3">
-                        <i class="fa-solid fa-gamepad"></i> Meet The Creator
-                    </a>
-                </div>
-
-                <!-- Key Stats Grid -->
-                <div class="grid grid-cols-2 md:grid-cols-4 gap-4 max-w-4xl mx-auto">
-                    <div class="glass-card p-4 sm:p-6 rounded-2xl text-center border-white/5 hover:border-neonCyan/40 transition-colors">
-                        <div class="font-orbitron text-3xl sm:text-4xl font-extrabold text-neonCyan mb-1">5+</div>
-                        <div class="text-xs sm:text-sm text-gray-400 font-medium">Published Games</div>
-                    </div>
-                    <div class="glass-card p-4 sm:p-6 rounded-2xl text-center border-white/5 hover:border-neonPurple/40 transition-colors">
-                        <div class="font-orbitron text-3xl sm:text-4xl font-extrabold text-neonPurple mb-1">Grade 6</div>
-                        <div class="text-xs sm:text-sm text-gray-400 font-medium">Young Developer</div>
-                    </div>
-                    <div class="glass-card p-4 sm:p-6 rounded-2xl text-center border-white/5 hover:border-neonPink/40 transition-colors">
-                        <div class="font-orbitron text-3xl sm:text-4xl font-extrabold text-neonPink mb-1">100%</div>
-                        <div class="text-xs sm:text-sm text-gray-400 font-medium">Passion & Code</div>
-                    </div>
-                    <div class="glass-card p-4 sm:p-6 rounded-2xl text-center border-white/5 hover:border-neonBlue/40 transition-colors">
-                        <div class="font-orbitron text-3xl sm:text-4xl font-extrabold text-neonBlue mb-1">Jaipur</div>
-                        <div class="text-xs sm:text-sm text-gray-400 font-medium">GSMS Student</div>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- Games Showcase Section -->
-        <section id="games" class="py-20 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto relative">
-            <div class="flex flex-col md:flex-row md:items-end justify-between mb-16">
-                <div>
-                    <div class="flex items-center gap-2 text-neonCyan font-orbitron text-xs sm:text-sm font-semibold tracking-widest uppercase mb-2">
-                        <i class="fa-solid fa-gamepad"></i> Featured Portfolio
-                    </div>
-                    <h2 class="font-orbitron text-3xl sm:text-5xl font-extrabold text-white tracking-tight">
-                        MY GAME <span class="text-neonCyan">COLLECTION</span>
-                    </h2>
-                </div>
-                <p class="text-gray-400 max-w-md mt-4 md:mt-0 text-sm">
-                    Select any game card below to jump straight into action! Links are fully customizable and ready for deployment.
-                </p>
-            </div>
-
-            <!-- Games Grid -->
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-
-                <!-- Game Card: Meadow Drift (NEW) -->
-                <div class="glass-card rounded-3xl overflow-hidden group hover:-translate-y-2 transition-all duration-300 flex flex-col justify-between border-white/10 hover:border-emerald-400/50 hover:shadow-xl hover:shadow-emerald-400/10">
-                    <div>
-                        <!-- Game Header Visual -->
-                        <div class="h-48 sm:h-56 bg-gradient-to-br from-emerald-600/30 via-teal-500/20 to-darkBg relative flex items-center justify-center overflow-hidden border-b border-white/10">
-                            <div class="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-emerald-500/20 via-transparent to-transparent"></div>
-                            <div class="text-center z-10 p-6 transform group-hover:scale-110 transition-transform duration-500">
-                                <div class="w-20 h-20 mx-auto mb-3 rounded-2xl bg-emerald-600/30 flex items-center justify-center border border-emerald-500/50 shadow-lg shadow-emerald-500/20">
-                                    <i class="fa-solid fa-wind text-4xl text-emerald-300"></i>
-                                </div>
-                            </div>
-                            <!-- Tag -->
-                            <div class="absolute top-4 right-4 bg-emerald-500/20 border border-emerald-500/40 text-emerald-300 font-orbitron text-xs font-semibold px-3 py-1 rounded-full">
-                                Nature Racing
-                            </div>
-                        </div>
-
-                        <!-- Game Details -->
-                        <div class="p-6 sm:p-8">
-                            <h3 class="font-orbitron text-2xl font-bold text-white mb-2 group-hover:text-emerald-300 transition-colors">
-                                Meadow Drift
-                            </h3>
-                            <p class="text-gray-400 text-sm leading-relaxed mb-6">
-                                Smooth drifting action through scenic grassy meadows and winding country tracks! Master precision cornering, glide past nature scenery, and slide your way to top leaderboard times.
-                            </p>
-
-                            <!-- Features List -->
-                            <div class="flex flex-wrap gap-2 mb-6">
-                                <span class="bg-white/5 text-gray-300 text-xs px-2.5 py-1 rounded-md border border-white/5">Drift Physics</span>
-                                <span class="bg-white/5 text-gray-300 text-xs px-2.5 py-1 rounded-md border border-white/5">Scenic Tracks</span>
-                                <span class="bg-white/5 text-gray-300 text-xs px-2.5 py-1 rounded-md border border-white/5">Time Trials</span>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Game Button -->
-                    <div class="px-6 sm:px-8 pb-6 sm:pb-8">
-                        <a href="meadow-drift.html" target="_blank" class="w-full py-3.5 px-6 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-500 text-black font-orbitron font-bold text-xs tracking-wider uppercase hover:opacity-90 transition-all flex items-center justify-center gap-2 shadow-lg shadow-emerald-500/20">
-                            <span>Play Meadow Drift</span>
-                            <i class="fa-solid fa-arrow-right text-sm group-hover:translate-x-1 transition-transform"></i>
-                        </a>
-                    </div>
-                </div>
-
-                <!-- Game Card 1: Mario Runner -->
-                <div class="glass-card rounded-3xl overflow-hidden group hover:-translate-y-2 transition-all duration-300 flex flex-col justify-between border-white/10 hover:border-neonCyan/50 hover:shadow-xl hover:shadow-neonCyan/10">
-                    <div>
-                        <!-- Game Header Visual -->
-                        <div class="h-48 sm:h-56 bg-gradient-to-br from-red-600/30 via-orange-500/20 to-darkBg relative flex items-center justify-center overflow-hidden border-b border-white/10">
-                            <div class="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-red-500/20 via-transparent to-transparent"></div>
-                            <div class="text-center z-10 p-6 transform group-hover:scale-110 transition-transform duration-500">
-                                <div class="w-20 h-20 mx-auto mb-3 rounded-2xl bg-red-600/30 flex items-center justify-center border border-red-500/50 shadow-lg shadow-red-500/20">
-                                    <i class="fa-solid fa-person-running text-4xl text-red-400"></i>
-                                </div>
-                            </div>
-                            <div class="absolute top-4 right-4 bg-red-500/20 border border-red-500/40 text-red-300 font-orbitron text-xs font-semibold px-3 py-1 rounded-full">
-                                Arcade Runner
-                            </div>
-                        </div>
-
-                        <!-- Game Details -->
-                        <div class="p-6 sm:p-8">
-                            <h3 class="font-orbitron text-2xl font-bold text-white mb-2 group-hover:text-neonCyan transition-colors">
-                                Mario Runner
-                            </h3>
-                            <p class="text-gray-400 text-sm leading-relaxed mb-6">
-                                Side-scrolling endless action adventure game! Jump over dynamic obstacles, dodge enemies, collect power-ups, and beat high scores in this fast-paced platformer.
-                            </p>
-
-                            <!-- Features List -->
-                            <div class="flex flex-wrap gap-2 mb-6">
-                                <span class="bg-white/5 text-gray-300 text-xs px-2.5 py-1 rounded-md border border-white/5">Endless Running</span>
-                                <span class="bg-white/5 text-gray-300 text-xs px-2.5 py-1 rounded-md border border-white/5">Score Leaderboard</span>
-                                <span class="bg-white/5 text-gray-300 text-xs px-2.5 py-1 rounded-md border border-white/5">Physics Engine</span>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Game Button -->
-                    <div class="px-6 sm:px-8 pb-6 sm:pb-8">
-                        <a href="mario-runner.html" target="_blank" class="w-full py-3.5 px-6 rounded-xl bg-gradient-to-r from-red-600 to-orange-500 text-white font-orbitron font-bold text-xs tracking-wider uppercase hover:opacity-90 transition-all flex items-center justify-center gap-2 shadow-lg shadow-red-600/20">
-                            <span>Play Mario Runner</span>
-                            <i class="fa-solid fa-arrow-right text-sm group-hover:translate-x-1 transition-transform"></i>
-                        </a>
-                    </div>
-                </div>
-
-                <!-- Game Card 2: Racing Quest -->
-                <div class="glass-card rounded-3xl overflow-hidden group hover:-translate-y-2 transition-all duration-300 flex flex-col justify-between border-white/10 hover:border-neonCyan/50 hover:shadow-xl hover:shadow-neonCyan/10">
-                    <div>
-                        <!-- Game Header Visual -->
-                        <div class="h-48 sm:h-56 bg-gradient-to-br from-blue-600/30 via-cyan-500/20 to-darkBg relative flex items-center justify-center overflow-hidden border-b border-white/10">
-                            <div class="text-center z-10 p-6 transform group-hover:scale-110 transition-transform duration-500">
-                                <div class="w-20 h-20 mx-auto mb-3 rounded-2xl bg-cyan-600/30 flex items-center justify-center border border-cyan-500/50 shadow-lg shadow-cyan-500/20">
-                                    <i class="fa-solid fa-car-side text-4xl text-neonCyan"></i>
-                                </div>
-                            </div>
-                            <div class="absolute top-4 right-4 bg-neonCyan/20 border border-neonCyan/40 text-neonCyan font-orbitron text-xs font-semibold px-3 py-1 rounded-full">
-                                High Speed
-                            </div>
-                        </div>
-
-                        <!-- Game Details -->
-                        <div class="p-6 sm:p-8">
-                            <h3 class="font-orbitron text-2xl font-bold text-white mb-2 group-hover:text-neonCyan transition-colors">
-                                Racing Quest
-                            </h3>
-                            <p class="text-gray-400 text-sm leading-relaxed mb-6">
-                                High-speed octane racing with custom tracks and cars! Master sharp drift turns, hit nitro boosters, and outpace artificial intelligence racers to take home the championship trophy.
-                            </p>
-
-                            <!-- Features List -->
-                            <div class="flex flex-wrap gap-2 mb-6">
-                                <span class="bg-white/5 text-gray-300 text-xs px-2.5 py-1 rounded-md border border-white/5">Custom Tracks</span>
-                                <span class="bg-white/5 text-gray-300 text-xs px-2.5 py-1 rounded-md border border-white/5">Nitro Boost</span>
-                                <span class="bg-white/5 text-gray-300 text-xs px-2.5 py-1 rounded-md border border-white/5">Speed Physics</span>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Game Button -->
-                    <div class="px-6 sm:px-8 pb-6 sm:pb-8">
-                        <a href="racing-quest.HTML" target="_blank" class="w-full py-3.5 px-6 rounded-xl bg-gradient-to-r from-neonCyan to-neonBlue text-black font-orbitron font-bold text-xs tracking-wider uppercase hover:opacity-90 transition-all flex items-center justify-center gap-2 shadow-lg shadow-neonCyan/20">
-                            <span>Play Racing Quest</span>
-                            <i class="fa-solid fa-arrow-right text-sm group-hover:translate-x-1 transition-transform"></i>
-                        </a>
-                    </div>
-                </div>
-
-                <!-- Game Card 3: Police Pursuit -->
-                <div class="glass-card rounded-3xl overflow-hidden group hover:-translate-y-2 transition-all duration-300 flex flex-col justify-between border-white/10 hover:border-neonPurple/50 hover:shadow-xl hover:shadow-neonPurple/10">
-                    <div>
-                        <!-- Game Header Visual -->
-                        <div class="h-48 sm:h-56 bg-gradient-to-br from-purple-600/30 via-indigo-500/20 to-darkBg relative flex items-center justify-center overflow-hidden border-b border-white/10">
-                            <div class="text-center z-10 p-6 transform group-hover:scale-110 transition-transform duration-500">
-                                <div class="w-20 h-20 mx-auto mb-3 rounded-2xl bg-purple-600/30 flex items-center justify-center border border-purple-500/50 shadow-lg shadow-purple-500/20">
-                                    <i class="fa-solid fa-shield-halved text-4xl text-neonPurple"></i>
-                                </div>
-                            </div>
-                            <div class="absolute top-4 right-4 bg-neonPurple/20 border border-neonPurple/40 text-purple-300 font-orbitron text-xs font-semibold px-3 py-1 rounded-full">
-                                Action Simulation
-                            </div>
-                        </div>
-
-                        <!-- Game Details -->
-                        <div class="p-6 sm:p-8">
-                            <h3 class="font-orbitron text-2xl font-bold text-white mb-2 group-hover:text-neonPurple transition-colors">
-                                Police Pursuit
-                            </h3>
-                            <p class="text-gray-400 text-sm leading-relaxed mb-6">
-                                High-stakes action cop chase simulation! Control patrol units, deploy road barricades, maneuver through heavy traffic, and restore order in an expansive open city simulation.
-                            </p>
-
-                            <!-- Features List -->
-                            <div class="flex flex-wrap gap-2 mb-6">
-                                <span class="bg-white/5 text-gray-300 text-xs px-2.5 py-1 rounded-md border border-white/5">Cop Chase AI</span>
-                                <span class="bg-white/5 text-gray-300 text-xs px-2.5 py-1 rounded-md border border-white/5">Dynamic Traffic</span>
-                                <span class="bg-white/5 text-gray-300 text-xs px-2.5 py-1 rounded-md border border-white/5">Action Strategy</span>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Game Button -->
-                    <div class="px-6 sm:px-8 pb-6 sm:pb-8">
-                        <a href="police-pursuit.HTML" target="_blank" class="w-full py-3.5 px-6 rounded-xl bg-gradient-to-r from-neonPurple to-pink-600 text-white font-orbitron font-bold text-xs tracking-wider uppercase hover:opacity-90 transition-all flex items-center justify-center gap-2 shadow-lg shadow-neonPurple/20">
-                            <span>Play Police Pursuit</span>
-                            <i class="fa-solid fa-arrow-right text-sm group-hover:translate-x-1 transition-transform"></i>
-                        </a>
-                    </div>
-                </div>
-
-                <!-- Game Card 4: Treasure Quiz -->
-                <div class="glass-card rounded-3xl overflow-hidden group hover:-translate-y-2 transition-all duration-300 flex flex-col justify-between border-white/10 hover:border-amber-400/50 hover:shadow-xl hover:shadow-amber-400/10">
-                    <div>
-                        <!-- Game Header Visual -->
-                        <div class="h-48 sm:h-56 bg-gradient-to-br from-amber-500/30 via-yellow-500/20 to-darkBg relative flex items-center justify-center overflow-hidden border-b border-white/10">
-                            <div class="text-center z-10 p-6 transform group-hover:scale-110 transition-transform duration-500">
-                                <div class="w-20 h-20 mx-auto mb-3 rounded-2xl bg-amber-500/30 flex items-center justify-center border border-amber-400/50 shadow-lg shadow-amber-400/20">
-                                    <i class="fa-solid fa-gem text-4xl text-amber-300"></i>
-                                </div>
-                            </div>
-                            <div class="absolute top-4 right-4 bg-amber-400/20 border border-amber-400/40 text-amber-300 font-orbitron text-xs font-semibold px-3 py-1 rounded-full">
-                                Puzzle & Trivia
-                            </div>
-                        </div>
-
-                        <!-- Game Details -->
-                        <div class="p-6 sm:p-8">
-                            <h3 class="font-orbitron text-2xl font-bold text-white mb-2 group-hover:text-amber-300 transition-colors">
-                                Treasure Quiz
-                            </h3>
-                            <p class="text-gray-400 text-sm leading-relaxed mb-6">
-                                Mind-bending trivia & puzzle game to uncover hidden riches! Solve tricky riddles, unlock secret chest combinations, and test your knowledge across multiple challenging levels.
-                            </p>
-
-                            <!-- Features List -->
-                            <div class="flex flex-wrap gap-2 mb-6">
-                                <span class="bg-white/5 text-gray-300 text-xs px-2.5 py-1 rounded-md border border-white/5">Brain Teasers</span>
-                                <span class="bg-white/5 text-gray-300 text-xs px-2.5 py-1 rounded-md border border-white/5">Trivia Quizzes</span>
-                                <span class="bg-white/5 text-gray-300 text-xs px-2.5 py-1 rounded-md border border-white/5">Treasure Rewards</span>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Game Button -->
-                    <div class="px-6 sm:px-8 pb-6 sm:pb-8">
-                        <a href="treasure-quiz.HTML" target="_blank" class="w-full py-3.5 px-6 rounded-xl bg-gradient-to-r from-amber-500 to-yellow-400 text-black font-orbitron font-bold text-xs tracking-wider uppercase hover:opacity-90 transition-all flex items-center justify-center gap-2 shadow-lg shadow-amber-500/20">
-                            <span>Play Treasure Quiz</span>
-                            <i class="fa-solid fa-arrow-right text-sm group-hover:translate-x-1 transition-transform"></i>
-                        </a>
-                    </div>
-                </div>
-
-            </div>
-        </section>
-
-        <!-- About The Developer Section -->
-        <section id="about" class="py-20 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto relative">
-            <div class="glass-card rounded-3xl p-8 sm:p-12 border-white/10 relative overflow-hidden">
-                <!-- Background Accent Light -->
-                <div class="absolute -right-20 -bottom-20 w-80 h-80 bg-neonCyan/10 rounded-full blur-3xl pointer-events-none"></div>
-
-                <div class="grid grid-cols-1 lg:grid-cols-12 gap-10 items-center">
-                    
-                    <!-- Avatar / Visual Representation -->
-                    <div class="lg:col-span-5 flex justify-center">
-                        <div class="relative w-64 h-64 sm:w-80 sm:h-80">
-                            <!-- Outer Rotating Glowing Border -->
-                            <div class="absolute inset-0 rounded-3xl bg-gradient-to-tr from-neonCyan via-neonPurple to-neonPink p-[3px] animate-pulse-glow">
-                                <div class="w-full h-full bg-darkBg rounded-[22px] flex items-center justify-center overflow-hidden">
-                                    <div class="text-center p-6">
-                                        <div class="w-24 h-24 mx-auto mb-4 rounded-full bg-gradient-to-tr from-neonCyan to-neonPurple p-[2px]">
-                                            <div class="w-full h-full bg-darkBg rounded-full flex items-center justify-center">
-                                                <i class="fa-solid fa-code text-4xl text-neonCyan"></i>
-                                            </div>
-                                        </div>
-                                        <h4 class="font-orbitron font-bold text-white text-lg">Arnaw Choudhary</h4>
-                                        <p class="text-xs text-neonCyan mt-1 font-mono">Game Developer & Coder</p>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Developer Narrative -->
-                    <div class="lg:col-span-7">
-                        <div class="flex items-center gap-2 text-neonPurple font-orbitron text-xs sm:text-sm font-semibold tracking-widest uppercase mb-3">
-                            <i class="fa-solid fa-user-astronaut"></i> Meet The Creator
-                        </div>
-                        <h2 class="font-orbitron text-3xl sm:text-4xl font-extrabold text-white mb-6">
-                            Passionate Coder, Innovator & <span class="text-neonCyan">Game Expert</span>
-                        </h2>
-
-                        <p class="text-gray-300 text-base leading-relaxed mb-4">
-                            Hello! I am <span class="text-white font-semibold">Arnaw Choudhary</span>, a Grade 6 student studying at <span class="text-white font-semibold">Gopal Sharma Memorial School, Jaipur</span>. My passion lies in transforming creative ideas into interactive digital experiences.
-                        </p>
-
-                        <p class="text-gray-400 text-sm leading-relaxed mb-8">
-                            From designing retro arcade platformers like <span class="text-neonCyan">Mario Runner</span> to simulating high-speed police chases, fresh drift courses like <span class="text-emerald-300">Meadow Drift</span>, and building brain-testing quizzes, I love exploring physics, artificial intelligence, game mechanics, and clean code logic. My mission is to build entertaining and educational games that inspire players worldwide.
-                        </p>
-
-                        <!-- Highlights Badge Grid -->
-                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                            <div class="flex items-center gap-3 p-3.5 rounded-xl bg-white/5 border border-white/5">
-                                <div class="w-10 h-10 rounded-lg bg-neonCyan/20 flex items-center justify-center text-neonCyan">
-                                    <i class="fa-solid fa-graduation-cap"></i>
-                                </div>
-                                <div>
-                                    <div class="text-xs text-gray-400">Schooling</div>
-                                    <div class="text-sm font-semibold text-white">GSMS Jaipur (Grade 6)</div>
-                                </div>
-                            </div>
-
-                            <div class="flex items-center gap-3 p-3.5 rounded-xl bg-white/5 border border-white/5">
-                                <div class="w-10 h-10 rounded-lg bg-neonPurple/20 flex items-center justify-center text-neonPurple">
-                                    <i class="fa-solid fa-brain"></i>
-                                </div>
-                                <div>
-                                    <div class="text-xs text-gray-400">Specialty</div>
-                                    <div class="text-sm font-semibold text-white">Logic & Game Physics</div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- Footer Section -->
-        <footer id="contact" class="py-12 border-t border-gray-800/80 glass-nav text-center relative z-10">
-            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                <div class="flex items-center justify-center gap-3 mb-4">
-                    <div class="w-8 h-8 rounded-lg bg-gradient-to-tr from-neonCyan to-neonPurple p-[2px]">
-                        <div class="w-full h-full bg-darkBg rounded-[6px] flex items-center justify-center">
-                            <i class="fa-solid fa-gamepad text-neonCyan text-xs"></i>
-                        </div>
-                    </div>
-                    <span class="font-orbitron font-extrabold text-lg text-white">
-                        ARNAW<span class="text-neonCyan">.STUDIOS</span>
-                    </span>
-                </div>
-                <p class="text-gray-400 text-sm mb-6">
-                    Designed & Developed with passion by Arnaw Choudhary • Gopal Sharma Memorial School, Jaipur
-                </p>
-                <p class="text-xs text-gray-500">
-                    &copy; 2026 Arnaw Studios. All rights reserved.
-                </p>
-            </div>
-        </footer>
-
-    </main>
-
-    <!-- JavaScript for Mobile Menu and Particle Animation -->
-    <script>
-        // Mobile Menu Toggle
-        const mobileMenuBtn = document.getElementById('mobileMenuBtn');
-        const mobileMenu = document.getElementById('mobileMenu');
-        const mobileLinks = document.querySelectorAll('.mobile-link');
-
-        mobileMenuBtn.addEventListener('click', () => {
-            mobileMenu.classList.toggle('hidden');
-        });
-
-        mobileLinks.forEach(link => {
-            link.addEventListener('click', () => {
-                mobileMenu.classList.add('hidden');
-            });
-        });
-
-        // Background Particle Canvas
-        const canvas = document.getElementById('particleCanvas');
-        const ctx = canvas.getContext('2d');
-
-        function resizeCanvas() {
-            canvas.width = window.innerWidth;
-            canvas.height = window.innerHeight;
-        }
-        window.addEventListener('resize', resizeCanvas);
-        resizeCanvas();
-
-        const particlesArray = [];
-        const numberOfParticles = 40;
-
-        class Particle {
-            constructor() {
-                this.x = Math.random() * canvas.width;
-                this.y = Math.random() * canvas.height;
-                this.size = Math.random() * 2 + 1;
-                this.speedX = (Math.random() - 0.5) * 0.5;
-                this.speedY = (Math.random() - 0.5) * 0.5;
-                this.color = Math.random() > 0.5 ? '#00f3ff' : '#9d4edd';
-            }
-            update() {
-                this.x += this.speedX;
-                this.y += this.speedY;
-                if (this.x > canvas.width) this.x = 0;
-                if (this.x < 0) this.x = canvas.width;
-                if (this.y > canvas.height) this.y = 0;
-                if (this.y < 0) this.y = canvas.height;
-            }
-            draw() {
-                ctx.fillStyle = this.color;
-                ctx.beginPath();
-                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
-                ctx.fill();
-            }
-        }
-
-        for (let i = 0; i < numberOfParticles; i++) {
-            particlesArray.push(new Particle());
-        }
-
-        function animateParticles() {
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            particlesArray.forEach(particle => {
-                particle.update();
-                particle.draw();
-            });
-            requestAnimationFrame(animateParticles);
-        }
-        animateParticles();
-    </script>
+<script>
+(function(){
+  var root=document.documentElement, key='arnaw-theme', saved=null;
+  try{saved=localStorage.getItem(key);}catch(e){}
+  var dark=window.matchMedia&&window.matchMedia('(prefers-color-scheme: dark)').matches;
+  root.setAttribute('data-theme', saved || (dark?'dark':'light'));
+  document.getElementById('theme').addEventListener('click',function(){
+    var next=root.getAttribute('data-theme')==='dark'?'light':'dark';
+    root.setAttribute('data-theme',next);
+    try{localStorage.setItem(key,next);}catch(e){}
+  });
+})();
+</script>
 </body>
 </html>
