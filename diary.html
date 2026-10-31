@@ -114,73 +114,215 @@ aside h2{font-size:1rem;margin:0 0 .75rem;font-weight:600}
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
 <script>
-// 1. Paste your project values (Supabase dashboard → Project Settings → API).
-//    Use the anon/public key only. Never put the service_role key in a web page.
+// Supabase project settings. Use only the publishable/anon key.
+// Never put a service_role or secret key in this file.
 const SUPABASE_URL = 'https://cpdzzjvntkquwpibeosd.supabase.co';
 const SUPABASE_ANON_KEY = 'sb_publishable_wTrIDAFqTNDivXWGcagoWg_fYNb5Zio';
 
-const db = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+if (!window.supabase || typeof window.supabase.createClient !== 'function') {
+  document.getElementById('auth').hidden = false;
+  document.getElementById('authMsg').textContent = 'The Supabase library did not load. Check your internet connection and refresh this page.';
+  throw new Error('Supabase JS library unavailable');
+}
+
+const db = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
+  auth: {
+    autoRefreshToken: true,
+    persistSession: true,
+    detectSessionInUrl: true
+  }
+});
+
 const $ = id => document.getElementById(id);
+
 let user = null;
 let entries = [];
+let authBusy = false;
+let loadToken = 0;
 
-const today = () => new Date().toLocaleDateString('en-CA'); // YYYY-MM-DD, local time
-const fmt = d => new Date(d + 'T00:00:00').toLocaleDateString(undefined,
-  { weekday: 'short', day: 'numeric', month: 'short', year: 'numeric' });
+const today = () => {
+  const d = new Date();
+  return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+};
+
+const fmt = d => new Date(d + 'T00:00:00').toLocaleDateString(undefined, {
+  weekday: 'short',
+  day: 'numeric',
+  month: 'short',
+  year: 'numeric'
+});
 
 function say(el, text, isError) {
   el.textContent = text || '';
   el.classList.toggle('error', !!isError);
 }
 
-/* ---------- Auth ---------- */
-async function credentials() {
-  const email = $('email').value.trim(), password = $('password').value;
-  if (!email || password.length < 6) {
-    say($('authMsg'), 'Enter your email and a password of at least 6 characters.', true);
+function setAuthBusy(busy) {
+  authBusy = busy;
+  $('signin').disabled = busy;
+  $('signup').disabled = busy;
+}
+
+/* ---------- Authentication ---------- */
+
+function credentials() {
+  const email = $('email').value.trim().toLowerCase();
+  const password = $('password').value;
+
+  if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) || password.length < 6) {
+    say($('authMsg'), 'Enter a valid email and a password of at least 6 characters.', true);
     return null;
   }
+
   return { email, password };
 }
 
 $('signin').onclick = async () => {
-  const c = await credentials(); if (!c) return;
+  if (authBusy) return;
+
+  const c = credentials();
+  if (!c) return;
+
+  setAuthBusy(true);
   say($('authMsg'), 'Signing in…');
-  const { error } = await db.auth.signInWithPassword(c);
-  if (error) say($('authMsg'), error.message, true);
+
+  try {
+    const { data, error } = await db.auth.signInWithPassword(c);
+
+    if (error) {
+      say($('authMsg'), error.message, true);
+    } else if (data.session) {
+      say($('authMsg'), 'Signed in. Opening your diary…');
+    } else {
+      say($('authMsg'), 'Sign-in did not return an active session. Please try again.', true);
+    }
+  } catch (err) {
+    say($('authMsg'), err.message || 'Could not sign in. Please try again.', true);
+  } finally {
+    setAuthBusy(false);
+  }
 };
 
 $('signup').onclick = async () => {
-  const c = await credentials(); if (!c) return;
+  if (authBusy) return;
+
+  const c = credentials();
+  if (!c) return;
+
+  setAuthBusy(true);
   say($('authMsg'), 'Creating your account…');
-  const { data, error } = await db.auth.signUp(c);
-  if (error) return say($('authMsg'), error.message, true);
-  if (!data.session) say($('authMsg'), 'Check your email to confirm your account, then sign in.');
+
+  try {
+    const signupOptions = {};
+
+    if (window.location.protocol === 'http:' || window.location.protocol === 'https:') {
+      signupOptions.emailRedirectTo = window.location.origin + window.location.pathname;
+    }
+
+    const { data, error } = await db.auth.signUp({
+      email: c.email,
+      password: c.password,
+      options: signupOptions
+    });
+
+    if (error) {
+      say($('authMsg'), error.message, true);
+      return;
+    }
+
+    if (data.session) {
+      say($('authMsg'), 'Account created successfully. Opening your diary…');
+    } else if (data.user) {
+      say($('authMsg'), 'Account created! Check your inbox (and spam folder) for the confirmation email. Confirm it, then return and sign in.');
+    } else {
+      say($('authMsg'), 'Supabase did not return an account. Please try again.', true);
+    }
+  } catch (err) {
+    say($('authMsg'), err.message || 'Could not create your account. Please try again.', true);
+  } finally {
+    setAuthBusy(false);
+  }
 };
 
-$('signout').onclick = () => db.auth.signOut();
+$('signout').onclick = async () => {
+  $('signout').disabled = true;
+
+  try {
+    const { error } = await db.auth.signOut();
+    if (error) say($('saveMsg'), error.message, true);
+  } catch (err) {
+    say($('saveMsg'), err.message || 'Could not sign out.', true);
+  } finally {
+    $('signout').disabled = false;
+  }
+};
+
+/* ---------- Session handling ---------- */
 
 db.auth.onAuthStateChange((_event, session) => {
+  applySession(session);
+});
+
+function applySession(session) {
   user = session ? session.user : null;
+
+  const thisUserId = user?.id || null;
+  const token = ++loadToken;
+
   $('auth').hidden = !!user;
   $('app').hidden = !user;
+
   if (user) {
-    $('who').textContent = user.email;
-    loadEntries();
+    $('who').textContent = user.email || '';
+
+    setTimeout(() => {
+      if (user && user.id === thisUserId && token === loadToken) {
+        loadEntries(undefined, thisUserId).catch(err => {
+          say($('saveMsg'), err.message, true);
+        });
+      }
+    }, 0);
+
   } else {
     entries = [];
     $('password').value = '';
+    $('who').textContent = '';
+    $('list').replaceChildren();
+    $('title').value = '';
+    $('content').value = '';
+    $('date').value = today();
+
     say($('authMsg'), '');
+    say($('saveMsg'), '');
   }
+}
+
+// Restore an existing login session when the page opens.
+db.auth.getSession().then(({ data, error }) => {
+  if (error) throw error;
+  applySession(data.session);
+}).catch(err => {
+  $('auth').hidden = false;
+  say($('authMsg'), err.message || 'Could not restore your sign-in session.', true);
 });
 
-/* ---------- Entries ---------- */
-async function loadEntries(selectDate) {
+/* ---------- Diary entries ---------- */
+
+async function loadEntries(selectDate, expectedUserId = user?.id) {
+  if (!user || !expectedUserId || user.id !== expectedUserId) return;
+
   const { data, error } = await db.from('diary_entries')
     .select('id, entry_date, title, content')
     .order('entry_date', { ascending: false });
-  if (error) return say($('saveMsg'), error.message, true);
-  entries = data;
+
+  if (error) {
+    say($('saveMsg'), error.message, true);
+    return;
+  }
+
+  if (!user || user.id !== expectedUserId) return;
+
+  entries = data || [];
   renderList();
   openDate(selectDate || $('date').value || today());
 }
@@ -188,6 +330,7 @@ async function loadEntries(selectDate) {
 function renderList() {
   const ul = $('list');
   ul.replaceChildren();
+
   if (!entries.length) {
     const li = document.createElement('li');
     li.className = 'empty';
@@ -195,15 +338,24 @@ function renderList() {
     ul.append(li);
     return;
   }
+
   for (const e of entries) {
     const li = document.createElement('li');
     const b = document.createElement('button');
+
     b.dataset.date = e.entry_date;
-    const d = document.createElement('span'); d.className = 'd'; d.textContent = fmt(e.entry_date);
-    const p = document.createElement('span'); p.className = 'p';
-    p.textContent = e.title || e.content.split('\n')[0] || '(empty)';
+
+    const d = document.createElement('span');
+    d.className = 'd';
+    d.textContent = fmt(e.entry_date);
+
+    const p = document.createElement('span');
+    p.className = 'p';
+    p.textContent = e.title || (e.content || '').split('\n')[0] || '(empty)';
+
     b.append(d, p);
     b.onclick = () => openDate(e.entry_date);
+
     li.append(b);
     ul.append(li);
   }
@@ -211,32 +363,66 @@ function renderList() {
 
 function openDate(date) {
   const e = entries.find(x => x.entry_date === date);
+
   $('date').value = date;
   $('title').value = e ? (e.title || '') : '';
   $('content').value = e ? e.content : '';
+
   say($('saveMsg'), '');
-  document.querySelectorAll('#list button').forEach(b =>
-    b.setAttribute('aria-current', b.dataset.date === date));
+
+  document.querySelectorAll('#list button').forEach(b => {
+    b.setAttribute('aria-current', b.dataset.date === date);
+  });
 }
 
 $('date').onchange = () => openDate($('date').value || today());
+
 $('newEntry').onclick = () => openDate(today());
 
+/* ---------- Save entry ---------- */
+
 $('save').onclick = async () => {
+  if (!user) {
+    return say($('saveMsg'), 'Please sign in before saving an entry.', true);
+  }
+
   const entry_date = $('date').value;
-  if (!entry_date) return say($('saveMsg'), 'Pick a date first.', true);
+
+  if (!entry_date) {
+    return say($('saveMsg'), 'Pick a date first.', true);
+  }
+
   $('save').disabled = true;
   say($('saveMsg'), 'Saving…');
-  const { error } = await db.from('diary_entries').upsert({
-    user_id: user.id,
-    entry_date,
-    title: $('title').value.trim() || null,
-    content: $('content').value
-  }, { onConflict: 'user_id,entry_date' });
-  $('save').disabled = false;
-  if (error) return say($('saveMsg'), error.message, true);
-  await loadEntries(entry_date);
-  say($('saveMsg'), 'Saved.');
+
+  try {
+    const savingUserId = user.id;
+
+    const { error } = await db.from('diary_entries').upsert({
+      user_id: savingUserId,
+      entry_date,
+      title: $('title').value.trim() || null,
+      content: $('content').value
+    }, {
+      onConflict: 'user_id,entry_date'
+    });
+
+    if (error) {
+      say($('saveMsg'), error.message, true);
+      return;
+    }
+
+    await loadEntries(entry_date, savingUserId);
+
+    if (user && user.id === savingUserId) {
+      say($('saveMsg'), 'Saved.');
+    }
+
+  } catch (err) {
+    say($('saveMsg'), err.message || 'Could not save this entry.', true);
+  } finally {
+    $('save').disabled = false;
+  }
 };
 </script>
 </body>
