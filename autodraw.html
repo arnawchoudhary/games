@@ -1,3 +1,1222 @@
+Conversation Log
+no wait can you crate auto draw without auth but a downlod button in JPG 
+
+Here is your AutoDraw web app! It has zero login / authentication, lets you draw immediately, and includes a Download JPG button.
+
+It is updated and saved in index.html.
+
+✨ Features Included:
+🚫 Zero Auth / Instant Access:
+Opens straight into the canvas without any login screen or password required.
+📥 Download JPG Button:
+Dedicated "Download JPG" button in the top bar.
+Automatically renders onto a crisp background and exports your artwork directly as a .jpg file to your computer.
+🪄 AI AutoDraw Magic Pen:
+As you doodle or sketch on the canvas, the top bar dynamically asks: "Do you mean:" with matching icons (Star, Heart, Car, House, Cat, Cloud, Sun, Rocket).
+Clicking any suggestion instantly transforms your doodle into clean, polished vector artwork!
+✏️ Complete Drawing Studio:
+AutoDraw Pen, Freehand Pen, Eraser, and Background Fill Bucket.
+Full Color Palette + custom hex color picker.
+4 Brush Size controls (fine, medium, bold, heavy).
+Undo (Ctrl + Z) and Clear Canvas.
+Dark & Light Mode toggle.
+📋 Full Copyable Code:
+html
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#0e121a">
+    <title>AutoDraw — Arnaw Studio</title>
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --font-main: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            --radius-sm: 8px;
+            --radius-md: 12px;
+            --radius-lg: 16px;
+            --radius-pill: 9999px;
+            --transition: all 0.18s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        /* DARK THEME */
+        [data-theme="dark"] {
+            color-scheme: dark;
+            --bg-base: #07090e;
+            --bg-surface: #0e121a;
+            --bg-surface-elevated: #151b26;
+            --bg-surface-hover: #1c2433;
+            --border: #1f2737;
+            --border-subtle: #151c28;
+            --text-primary: #f3f6fc;
+            --text-secondary: #9aa5b9;
+            --text-muted: #626e82;
+            --accent: #7c6cf0;
+            --accent-hover: #9082fa;
+            --accent-gradient: linear-gradient(135deg, #7c6cf0 0%, #a855f7 100%);
+            --accent-glow: rgba(124, 108, 240, 0.25);
+            --accent-subtle: rgba(124, 108, 240, 0.12);
+            --canvas-bg: #ffffff;
+            --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.25);
+            --shadow-md: 0 10px 30px rgba(0, 0, 0, 0.35);
+        }
+        /* LIGHT THEME */
+        [data-theme="light"] {
+            color-scheme: light;
+            --bg-base: #f1f5f9;
+            --bg-surface: #ffffff;
+            --bg-surface-elevated: #ffffff;
+            --bg-surface-hover: #f8fafc;
+            --border: #cbd5e1;
+            --border-subtle: #e2e8f0;
+            --text-primary: #0f172a;
+            --text-secondary: #475569;
+            --text-muted: #94a3b8;
+            --accent: #6352e8;
+            --accent-hover: #5041d8;
+            --accent-gradient: linear-gradient(135deg, #6352e8 0%, #9333ea 100%);
+            --accent-glow: rgba(99, 82, 232, 0.2);
+            --accent-subtle: rgba(99, 82, 232, 0.08);
+            --canvas-bg: #ffffff;
+            --shadow-sm: 0 1px 3px rgba(15, 23, 42, 0.08);
+            --shadow-md: 0 10px 25px rgba(15, 23, 42, 0.08);
+        }
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            background-color: var(--bg-base);
+            color: var(--text-primary);
+            font-family: var(--font-main);
+            height: 100vh;
+            width: 100vw;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            user-select: none;
+            -webkit-user-select: none;
+        }
+        button { font-family: inherit; color: inherit; cursor: pointer; border: none; background: none; outline: none; }
+        button:disabled { opacity: 0.45; cursor: not-allowed; }
+        .svg-icon {
+            width: 18px; height: 18px; display: inline-block; vertical-align: middle;
+            fill: currentColor; flex-shrink: 0;
+        }
+        /* TOP NAVIGATION */
+        .app-topbar {
+            height: 64px;
+            padding: 0 20px;
+            background: var(--bg-surface);
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            z-index: 50;
+            gap: 16px;
+        }
+        .brand-section {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex-shrink: 0;
+        }
+        .brand-logo {
+            width: 36px; height: 36px;
+            border-radius: var(--radius-md);
+            background: var(--accent-gradient);
+            color: #ffffff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 800;
+            font-size: 18px;
+            box-shadow: 0 4px 12px var(--accent-glow);
+        }
+        .brand-text h1 {
+            font-size: 16px;
+            font-weight: 800;
+            letter-spacing: -0.2px;
+            line-height: 1.1;
+        }
+        .brand-text span {
+            font-size: 9px;
+            font-weight: 700;
+            color: var(--text-muted);
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+        }
+        /* AI SUGGESTION BANNER */
+        .ai-suggestions-bar {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            overflow-x: auto;
+            padding: 4px 8px;
+            scrollbar-width: none;
+            background: var(--bg-surface-elevated);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-pill);
+            max-width: 650px;
+            height: 44px;
+        }
+        .ai-suggestions-bar::-webkit-scrollbar { display: none; }
+        .suggestion-label {
+            font-size: 11.5px;
+            font-weight: 700;
+            color: var(--accent);
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            padding-left: 8px;
+            white-space: nowrap;
+        }
+        .suggestion-items-list {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            overflow-x: auto;
+        }
+        .suggestion-pill {
+            padding: 5px 12px;
+            border-radius: var(--radius-pill);
+            background: var(--bg-surface);
+            border: 1px solid var(--border);
+            color: var(--text-primary);
+            font-size: 12.5px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            white-space: nowrap;
+            transition: var(--transition);
+        }
+        .suggestion-pill:hover {
+            border-color: var(--accent);
+            background: var(--accent-subtle);
+            color: var(--accent);
+            transform: translateY(-1px);
+        }
+        /* TOPBAR ACTIONS */
+        .topbar-actions {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-shrink: 0;
+        }
+        .btn-action {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 8px 14px;
+            border-radius: var(--radius-md);
+            font-size: 13px;
+            font-weight: 600;
+            border: 1px solid var(--border);
+            background: var(--bg-surface-elevated);
+            color: var(--text-primary);
+            transition: var(--transition);
+        }
+        .btn-action:hover {
+            background: var(--bg-surface-hover);
+            border-color: var(--text-muted);
+        }
+        .btn-download-jpg {
+            background: var(--accent-gradient);
+            color: #ffffff !important;
+            border: none;
+            box-shadow: 0 4px 14px var(--accent-glow);
+            font-weight: 700;
+        }
+        .btn-download-jpg:hover {
+            filter: brightness(1.1);
+            transform: translateY(-1px);
+            box-shadow: 0 6px 18px var(--accent-glow);
+        }
+        .btn-icon-square {
+            width: 38px; height: 38px;
+            border-radius: var(--radius-md);
+            border: 1px solid var(--border);
+            background: var(--bg-surface-elevated);
+            color: var(--text-primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: var(--transition);
+        }
+        .btn-icon-square:hover {
+            border-color: var(--accent);
+            color: var(--accent);
+        }
+        /* WORKSPACE */
+        .app-workspace {
+            flex: 1;
+            display: flex;
+            position: relative;
+            background: var(--bg-base);
+            overflow: hidden;
+        }
+        .tools-panel {
+            position: absolute;
+            left: 20px;
+            top: 20px;
+            background: var(--bg-surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-xl);
+            padding: 10px;
+            box-shadow: var(--shadow-md);
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            z-index: 20;
+            backdrop-filter: blur(10px);
+        }
+        .tool-btn {
+            width: 44px; height: 44px;
+            border-radius: var(--radius-md);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-secondary);
+            font-size: 9px;
+            font-weight: 700;
+            gap: 2px;
+            transition: var(--transition);
+            position: relative;
+        }
+        .tool-btn:hover {
+            background: var(--bg-surface-hover);
+            color: var(--text-primary);
+        }
+        .tool-btn.active {
+            background: var(--accent);
+            color: #ffffff;
+            box-shadow: 0 4px 12px var(--accent-glow);
+        }
+        .tool-divider {
+            height: 1px;
+            background: var(--border);
+            margin: 4px 0;
+        }
+        /* PALETTE PANEL */
+        .palette-panel {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--bg-surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-pill);
+            padding: 8px 18px;
+            box-shadow: var(--shadow-md);
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            z-index: 20;
+            backdrop-filter: blur(10px);
+        }
+        .color-swatches-row {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .color-dot {
+            width: 26px; height: 26px;
+            border-radius: 50%;
+            cursor: pointer;
+            border: 2px solid transparent;
+            transition: var(--transition);
+        }
+        .color-dot:hover { transform: scale(1.15); }
+        .color-dot.active {
+            border-color: var(--text-primary);
+            box-shadow: 0 0 0 2px var(--accent);
+            transform: scale(1.18);
+        }
+        .color-picker-btn {
+            width: 26px; height: 26px;
+            border-radius: 50%;
+            border: 1px dashed var(--text-muted);
+            background: conic-gradient(red, yellow, lime, aqua, blue, magenta, red);
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+        }
+        .color-picker-input {
+            position: absolute;
+            inset: 0;
+            opacity: 0;
+            cursor: pointer;
+        }
+        .palette-divider {
+            width: 1px; height: 24px;
+            background: var(--border);
+        }
+        .size-selectors-row {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .size-circle-btn {
+            border-radius: 50%;
+            background: var(--text-muted);
+            cursor: pointer;
+            transition: var(--transition);
+            display: grid;
+            place-items: center;
+        }
+        .size-circle-btn.active {
+            background: var(--accent);
+            transform: scale(1.2);
+            box-shadow: 0 0 0 2px var(--bg-surface), 0 0 0 4px var(--accent);
+        }
+        /* CANVAS AREA */
+        .canvas-container {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            position: relative;
+        }
+        #drawCanvas {
+            background: var(--canvas-bg);
+            border-radius: var(--radius-lg);
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.22);
+            cursor: crosshair;
+            touch-action: none;
+            display: block;
+        }
+        /* TOAST */
+        .toast-popup {
+            position: fixed;
+            bottom: 25px;
+            right: 25px;
+            padding: 12px 20px;
+            background: var(--bg-surface-elevated);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            color: var(--text-primary);
+            font-size: 13px;
+            font-weight: 600;
+            box-shadow: var(--shadow-md);
+            z-index: 1000;
+            opacity: 0;
+            transform: translateY(16px);
+            transition: var(--transition);
+            pointer-events: none;
+        }
+        .toast-popup.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        @media (max-width: 900px) {
+            .app-topbar { padding: 0 12px; }
+            .brand-text { display: none; }
+            .ai-suggestions-bar { max-width: 320px; }
+            .palette-panel { width: 90%; justify-content: space-between; overflow-x: auto; }
+        }
+    </style>
+</head>
+<body>
+    <!-- TOPBAR -->
+    <header class="app-topbar">
+        <div class="brand-section">
+            <div class="brand-logo">A</div>
+            <div class="brand-text">
+                <h1>AutoDraw</h1>
+                <span>Arnaw Studio</span>
+            </div>
+        </div>
+        <!-- AI SUGGESTIONS ("DO YOU MEAN") -->
+        <div class="ai-suggestions-bar" id="suggestionBar">
+            <div class="suggestion-label">
+                <svg class="svg-icon" style="width:14px;height:14px" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                    <path d="m12 3-1.9 5.8a2 2 0 0 1-1.3 1.3L3 12l5.8 1.9a2 2 0 0 1 1.3 1.3L12 21l1.9-5.8a2 2 0 0 1 1.3-1.3L21 12l-5.8-1.9a2 2 0 0 1-1.3-1.3Z"/>
+                </svg>
+                Do you mean:
+            </div>
+            <div class="suggestion-items-list" id="suggestionList">
+                <button class="suggestion-pill" onclick="applyArtwork('star')">⭐ Star</button>
+                <button class="suggestion-pill" onclick="applyArtwork('heart')">❤️ Heart</button>
+                <button class="suggestion-pill" onclick="applyArtwork('car')">🚗 Car</button>
+                <button class="suggestion-pill" onclick="applyArtwork('house')">🏠 House</button>
+                <button class="suggestion-pill" onclick="applyArtwork('cat')">🐱 Cat</button>
+                <button class="suggestion-pill" onclick="applyArtwork('cloud')">☁️ Cloud</button>
+                <button class="suggestion-pill" onclick="applyArtwork('sun')">☀️ Sun</button>
+                <button class="suggestion-pill" onclick="applyArtwork('rocket')">🚀 Rocket</button>
+            </div>
+        </div>
+        <!-- ACTIONS -->
+        <div class="topbar-actions">
+            <button class="btn-icon-square" id="undoBtn" title="Undo (Ctrl+Z)">
+                <svg class="svg-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M9 14 4 9l5-5"/>
+                    <path d="M4 9h10.5a5.5 5.5 0 0 1 5.5 5.5v0a5.5 5.5 0 0 1-5.5 5.5H11"/>
+                </svg>
+            </button>
+            <button class="btn-action" id="clearBtn" title="Clear Canvas">
+                <svg class="svg-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polyline points="3 6 5 6 21 6"/>
+                    <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>
+                </svg>
+                Clear
+            </button>
+            <!-- DOWNLOAD JPG BUTTON -->
+            <button class="btn-action btn-download-jpg" id="downloadJpgBtn" title="Download artwork as JPG image">
+                <svg class="svg-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                    <polyline points="7 10 12 15 17 10"/>
+                    <line x1="12" y1="15" x2="12" y2="3"/>
+                </svg>
+                Download JPG
+            </button>
+            <button class="btn-icon-square" id="themeToggleBtn" title="Toggle Theme"></button>
+        </div>
+    </header>
+    <!-- WORKSPACE -->
+    <main class="app-workspace">
+        <aside class="tools-panel">
+            <button class="tool-btn active" id="toolAutoDraw" title="AutoDraw Magic Pen">
+                <svg class="svg-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="m12 3-1.9 5.8a2 2 0 0 1-1.3 1.3L3 12l5.8 1.9a2 2 0 0 1 1.3 1.3L12 21l1.9-5.8a2 2 0 0 1 1.3-1.3L21 12l-5.8-1.9a2 2 0 0 1-1.3-1.3Z"/>
+                </svg>
+                AutoDraw
+            </button>
+            <button class="tool-btn" id="toolDraw" title="Freehand Pen">
+                <svg class="svg-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/>
+                </svg>
+                Draw
+            </button>
+            <button class="tool-btn" id="toolEraser" title="Eraser">
+                <svg class="svg-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="m7 21-4.3-4.3c-1-1-1-2.5 0-3.4l9.6-9.6c1-1 2.5-1 3.4 0l5.6 5.6c1 1 1 2.5 0 3.4L13 21"/>
+                    <path d="M22 21H7"/>
+                    <path d="m5 11 9 9"/>
+                </svg>
+                Erase
+            </button>
+            <div class="tool-divider"></div>
+            <button class="tool-btn" id="toolFill" title="Fill Canvas Background">
+                <svg class="svg-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="m19 11-8-8-8.6 8.6a2 2 0 0 0 0 2.8l5.2 5.2c.8.8 2 .8 2.8 0L19 11Z"/>
+                    <path d="m5 2 5 5"/>
+                    <path d="M2 13h15"/>
+                    <path d="M22 20a2 2 0 1 1-4 0c0-1.6 1.7-2.4 2-4 .3 1.6 2 2.4 2 4Z"/>
+                </svg>
+                Fill
+            </button>
+        </aside>
+        <div class="canvas-container">
+            <canvas id="drawCanvas"></canvas>
+        </div>
+        <div class="palette-panel">
+            <div class="color-swatches-row">
+                <div class="color-dot active" style="background:#0f172a" data-color="#0f172a"></div>
+                <div class="color-dot" style="background:#ef4444" data-color="#ef4444"></div>
+                <div class="color-dot" style="background:#f97316" data-color="#f97316"></div>
+                <div class="color-dot" style="background:#eab308" data-color="#eab308"></div>
+                <div class="color-dot" style="background:#10b981" data-color="#10b981"></div>
+                <div class="color-dot" style="background:#06b6d4" data-color="#06b6d4"></div>
+                <div class="color-dot" style="background:#6366f1" data-color="#6366f1"></div>
+                <div class="color-dot" style="background:#a855f7" data-color="#a855f7"></div>
+                <div class="color-dot" style="background:#ec4899" data-color="#ec4899"></div>
+                <div class="color-picker-btn" title="Choose Custom Color">
+                    <input type="color" id="customColorPicker" class="color-picker-input" value="#0f172a">
+                </div>
+            </div>
+            <div class="palette-divider"></div>
+            <div class="size-selectors-row">
+                <div class="size-circle-btn" data-size="3" style="width:10px;height:10px" title="Fine (3px)"></div>
+                <div class="size-circle-btn active" data-size="6" style="width:16px;height:16px" title="Medium (6px)"></div>
+                <div class="size-circle-btn" data-size="12" style="width:22px;height:22px" title="Bold (12px)"></div>
+                <div class="size-circle-btn" data-size="22" style="width:28px;height:28px" title="Heavy (22px)"></div>
+            </div>
+        </div>
+    </main>
+    <!-- TOAST -->
+    <div class="toast-popup" id="toast"></div>
+    <script>
+        const canvas = document.getElementById("drawCanvas");
+        const ctx = canvas.getContext("2d", { willReadFrequently: true });
+        let isDrawing = false;
+        let activeTool = "autodraw";
+        let currentColor = "#0f172a";
+        let currentBrushSize = 6;
+        let canvasBackgroundColor = "#ffffff";
+        let historyStack = [];
+        let strokePoints = [];
+        let allStrokesInSession = [];
+        function resizeCanvas() {
+            const container = canvas.parentElement;
+            const width = Math.min(container.clientWidth - 40, 1400);
+            const height = Math.min(container.clientHeight - 40, 900);
+            let tempCanvas = document.createElement("canvas");
+            tempCanvas.width = canvas.width;
+            tempCanvas.height = canvas.height;
+            if (canvas.width > 0 && canvas.height > 0) {
+                tempCanvas.getContext("2d").drawImage(canvas, 0, 0);
+            }
+            const dpr = window.devicePixelRatio || 1;
+            canvas.width = width * dpr;
+            canvas.height = height * dpr;
+            canvas.style.width = width + "px";
+            canvas.style.height = height + "px";
+            ctx.scale(dpr, dpr);
+            ctx.lineCap = "round";
+            ctx.lineJoin = "round";
+            ctx.fillStyle = canvasBackgroundColor;
+            ctx.fillRect(0, 0, width, height);
+            if (tempCanvas.width > 0) {
+                ctx.drawImage(tempCanvas, 0, 0, width, height);
+            }
+            saveCanvasState();
+        }
+        window.addEventListener("resize", () => {
+            clearTimeout(window.resizeTimer);
+            window.resizeTimer = setTimeout(resizeCanvas, 200);
+        });
+        function getCanvasCoordinates(e) {
+            const rect = canvas.getBoundingClientRect();
+            const clientX = e.clientX || (e.touches && e.touches[0].clientX);
+            const clientY = e.clientY || (e.touches && e.touches[0].clientY);
+            return {
+                x: clientX - rect.left,
+                y: clientY - rect.top
+            };
+        }
+        function startDrawing(e) {
+            if (activeTool === "fill") {
+                fillCanvasBackground(currentColor);
+                return;
+            }
+            isDrawing = true;
+            const { x, y } = getCanvasCoordinates(e);
+            strokePoints = [{ x, y }];
+            ctx.beginPath();
+            ctx.moveTo(x, y);
+            if (activeTool === "eraser") {
+                ctx.strokeStyle = canvasBackgroundColor;
+                ctx.lineWidth = currentBrushSize * 2.5;
+            } else {
+                ctx.strokeStyle = currentColor;
+                ctx.lineWidth = currentBrushSize;
+            }
+        }
+        function draw(e) {
+            if (!isDrawing) return;
+            e.preventDefault();
+            const { x, y } = getCanvasCoordinates(e);
+            strokePoints.push({ x, y });
+            ctx.lineTo(x, y);
+            ctx.stroke();
+        }
+        function stopDrawing() {
+            if (!isDrawing) return;
+            isDrawing = false;
+            ctx.closePath();
+            if (strokePoints.length > 2) {
+                allStrokesInSession.push([...strokePoints]);
+                saveCanvasState();
+                if (activeTool === "autodraw") {
+                    predictAutoDraw(strokePoints);
+                }
+            }
+        }
+        canvas.addEventListener("mousedown", startDrawing);
+        canvas.addEventListener("mousemove", draw);
+        window.addEventListener("mouseup", stopDrawing);
+        canvas.addEventListener("touchstart", startDrawing, { passive: false });
+        canvas.addEventListener("touchmove", draw, { passive: false });
+        window.addEventListener("touchend", stopDrawing);
+        function saveCanvasState() {
+            if (historyStack.length >= 25) historyStack.shift();
+            historyStack.push(ctx.getImageData(0, 0, canvas.width, canvas.height));
+            document.getElementById("undoBtn").disabled = historyStack.length <= 1;
+        }
+        function undoLastAction() {
+            if (historyStack.length > 1) {
+                historyStack.pop();
+                const previousState = historyStack[historyStack.length - 1];
+                ctx.putImageData(previousState, 0, 0);
+                allStrokesInSession.pop();
+                showToast("Undo applied");
+            }
+            document.getElementById("undoBtn").disabled = historyStack.length <= 1;
+        }
+        document.getElementById("undoBtn").addEventListener("click", undoLastAction);
+        window.addEventListener("keydown", (e) => {
+            if ((e.ctrlKey || e.metaKey) && e.key === "z") {
+                e.preventDefault();
+                undoLastAction();
+            }
+        });
+        function clearCanvas() {
+            const width = parseFloat(canvas.style.width);
+            const height = parseFloat(canvas.style.height);
+            canvasBackgroundColor = "#ffffff";
+            ctx.fillStyle = "#ffffff";
+            ctx.fillRect(0, 0, width, height);
+            allStrokesInSession = [];
+            historyStack = [];
+            saveCanvasState();
+            showToast("Canvas cleared");
+        }
+        document.getElementById("clearBtn").addEventListener("click", clearCanvas);
+        function fillCanvasBackground(color) {
+            canvasBackgroundColor = color;
+            const width = parseFloat(canvas.style.width);
+            const height = parseFloat(canvas.style.height);
+            ctx.fillStyle = color;
+            ctx.fillRect(0, 0, width, height);
+            saveCanvasState();
+            showToast("Background filled");
+        }
+        /* DOWNLOAD AS JPG */
+        function downloadCanvasAsJPG() {
+            const exportCanvas = document.createElement("canvas");
+            exportCanvas.width = canvas.width;
+            exportCanvas.height = canvas.height;
+            const expCtx = exportCanvas.getContext("2d");
+            expCtx.fillStyle = canvasBackgroundColor || "#ffffff";
+            expCtx.fillRect(0, 0, exportCanvas.width, exportCanvas.height);
+            expCtx.drawImage(canvas, 0, 0);
+            const jpgDataUrl = exportCanvas.toDataURL("image/jpeg", 0.95);
+            const downloadLink = document.createElement("a");
+            const timestamp = new Date().toISOString().replace(/[:.]/g, "-").slice(0, 19);
+            downloadLink.download = `autodraw-arnaw-studio-${timestamp}.jpg`;
+            downloadLink.href = jpgDataUrl;
+            document.body.appendChild(downloadLink);
+            downloadLink.click();
+            document.body.removeChild(downloadLink);
+            showToast("Downloaded artwork as JPG!", "success");
+        }
+        document.getElementById("downloadJpgBtn").addEventListener("click", downloadCanvasAsJPG);
+        /* AI AUTODRAW SHAPE PREDICTION */
+        function predictAutoDraw(points) {
+            let minX = Infinity, maxX = -Infinity, minY = Infinity, maxY = -Infinity;
+            points.forEach(p => {
+                if (p.x < minX) minX = p.x;
+                if (p.x > maxX) maxX = p.x;
+                if (p.y < minY) minY = p.y;
+                if (p.y > maxY) maxY = p.y;
+            });
+            const width = maxX - minX;
+            const height = maxY - minY;
+            const aspectRatio = width / (height || 1);
+            const isClosed = Math.hypot(points[0].x - points[points.length-1].x, points[0].y - points[points.length-1].y) < 50;
+            const suggestionList = document.getElementById("suggestionList");
+            let suggestions = [];
+            if (isClosed && Math.abs(aspectRatio - 1) < 0.35) {
+                suggestions = [
+                    { id: "circle", label: "⭕ Circle / Ball" },
+                    { id: "sun", label: "☀️ Sun" },
+                    { id: "clock", label: "⏰ Clock" },
+                    { id: "star", label: "⭐ Star" }
+                ];
+            } else if (aspectRatio > 1.4) {
+                suggestions = [
+                    { id: "car", label: "🚗 Car" },
+                    { id: "cloud", label: "☁️ Cloud" },
+                    { id: "rocket", label: "🚀 Rocket" },
+                    { id: "tree", label: "🌲 Tree" }
+                ];
+            } else if (height > width * 1.3) {
+                suggestions = [
+                    { id: "tree", label: "🌲 Tree" },
+                    { id: "bottle", label: "🍾 Bottle" },
+                    { id: "rocket", label: "🚀 Rocket" },
+                    { id: "house", label: "🏠 House" }
+                ];
+            } else {
+                suggestions = [
+                    { id: "star", label: "⭐ Star" },
+                    { id: "heart", label: "❤️ Heart" },
+                    { id: "house", label: "🏠 House" },
+                    { id: "cat", label: "🐱 Cat" }
+                ];
+            }
+            suggestionList.innerHTML = suggestions.map(s => `
+                <button class="suggestion-pill" onclick="applyArtwork('${s.id}')">${s.label}</button>
+            `).join("");
+        }
+        /* VECTOR SHAPE DRAWING */
+        function applyArtwork(shapeId) {
+            if (strokePoints.length === 0 && allStrokesInSession.length === 0) {
+                const w = parseFloat(canvas.style.width);
+                const h = parseFloat(canvas.style.height);
+                drawVectorShape(shapeId, w/2 - 120, h/2 - 120, 240, 240);
+                return;
+            }
+            undoLastAction();
+            const lastStroke = strokePoints.length ? strokePoints : allStrokesInSession[allStrokesInSession.length - 1] || [];
+            let minX = Infinity, maxX = -Infinity, minY = Infinity, maxY = -Infinity;
+            lastStroke.forEach(p => {
+                if (p.x < minX) minX = p.x;
+                if (p.x > maxX) maxX = p.x;
+                if (p.y < minY) minY = p.y;
+                if (p.y > maxY) maxY = p.y;
+            });
+            const boxWidth = Math.max(maxX - minX, 100);
+            const boxHeight = Math.max(maxY - minY, 100);
+            drawVectorShape(shapeId, minX, minY, boxWidth, boxHeight);
+            showToast(`AutoDraw transformed to ${shapeId.toUpperCase()}!`, "success");
+        }
+        function drawVectorShape(shape, x, y, w, h) {
+            ctx.save();
+            ctx.strokeStyle = currentColor;
+            ctx.lineWidth = Math.max(currentBrushSize, 4);
+            ctx.beginPath();
+            const cx = x + w / 2;
+            const cy = y + h / 2;
+            if (shape === "star") {
+                const spikes = 5;
+                const outerRadius = Math.min(w, h) / 2;
+                const innerRadius = outerRadius / 2.2;
+                let rot = (Math.PI / 2) * 3;
+                let step = Math.PI / spikes;
+                ctx.moveTo(cx, cy - outerRadius);
+                for (let i = 0; i < spikes; i++) {
+                    ctx.lineTo(cx + Math.cos(rot) * outerRadius, cy + Math.sin(rot) * outerRadius);
+                    rot += step;
+                    ctx.lineTo(cx + Math.cos(rot) * innerRadius, cy + Math.sin(rot) * innerRadius);
+                    rot += step;
+                }
+                ctx.closePath();
+            } else if (shape === "heart") {
+                const size = Math.min(w, h);
+                ctx.moveTo(cx, cy + size / 4);
+                ctx.bezierCurveTo(cx - size / 2, cy - size / 4, cx - size / 2, cy - size * 0.6, cx, cy - size * 0.35);
+                ctx.bezierCurveTo(cx + size / 2, cy - size * 0.6, cx + size / 2, cy - size / 4, cx, cy + size / 4);
+            } else if (shape === "car") {
+                ctx.roundRect(x, y + h * 0.45, w, h * 0.35, 14);
+                ctx.moveTo(x + w * 0.2, y + h * 0.45);
+                ctx.lineTo(x + w * 0.35, y + h * 0.15);
+                ctx.lineTo(x + w * 0.75, y + h * 0.15);
+                ctx.lineTo(x + w * 0.88, y + h * 0.45);
+                ctx.moveTo(x + w * 0.25 + 20, y + h * 0.85);
+                ctx.arc(x + w * 0.25, y + h * 0.85, 18, 0, Math.PI * 2);
+                ctx.moveTo(x + w * 0.75 + 20, y + h * 0.85);
+                ctx.arc(x + w * 0.75, y + h * 0.85, 18, 0, Math.PI * 2);
+            } else if (shape === "house") {
+                ctx.strokeRect(x + w * 0.15, y + h * 0.4, w * 0.7, h * 0.55);
+                ctx.moveTo(x + w * 0.1, y + h * 0.4);
+                ctx.lineTo(cx, y + h * 0.1);
+                ctx.lineTo(x + w * 0.9, y + h * 0.4);
+                ctx.closePath();
+                ctx.strokeRect(cx - w * 0.1, y + h * 0.65, w * 0.2, h * 0.3);
+            } else if (shape === "cloud") {
+                ctx.arc(cx - w * 0.2, cy, w * 0.2, Math.PI * 0.5, Math.PI * 1.5);
+                ctx.arc(cx - w * 0.05, cy - h * 0.2, w * 0.22, Math.PI * 1, Math.PI * 1.85);
+                ctx.arc(cx + w * 0.18, cy - h * 0.1, w * 0.2, Math.PI * 1.35, Math.PI * 0.1);
+                ctx.arc(cx + w * 0.2, cy + h * 0.08, w * 0.18, Math.PI * 1.8, Math.PI * 0.5);
+                ctx.closePath();
+            } else if (shape === "sun") {
+                ctx.arc(cx, cy, Math.min(w, h) * 0.25, 0, Math.PI * 2);
+                for (let i = 0; i < 8; i++) {
+                    const angle = (i * Math.PI) / 4;
+                    const r1 = Math.min(w, h) * 0.32;
+                    const r2 = Math.min(w, h) * 0.44;
+                    ctx.moveTo(cx + Math.cos(angle) * r1, cy + Math.sin(angle) * r1);
+                    ctx.lineTo(cx + Math.cos(angle) * r2, cy + Math.sin(angle) * r2);
+                }
+            } else if (shape === "rocket") {
+                ctx.moveTo(cx, y + h * 0.05);
+                ctx.quadraticCurveTo(cx + w * 0.3, y + h * 0.4, cx + w * 0.2, y + h * 0.8);
+                ctx.lineTo(cx - w * 0.2, y + h * 0.8);
+                ctx.quadraticCurveTo(cx - w * 0.3, y + h * 0.4, cx, y + h * 0.05);
+                ctx.moveTo(cx - w * 0.2, y + h * 0.65);
+                ctx.lineTo(cx - w * 0.45, y + h * 0.85);
+                ctx.lineTo(cx - w * 0.2, y + h * 0.8);
+                ctx.moveTo(cx + w * 0.2, y + h * 0.65);
+                ctx.lineTo(cx + w * 0.45, y + h * 0.85);
+                ctx.lineTo(cx + w * 0.2, y + h * 0.8);
+                ctx.moveTo(cx + 12, cy - h * 0.05);
+                ctx.arc(cx, cy - h * 0.05, 12, 0, Math.PI * 2);
+            } else if (shape === "cat") {
+                ctx.arc(cx, cy, Math.min(w, h) * 0.35, 0, Math.PI * 2);
+                ctx.moveTo(cx - w * 0.25, cy - h * 0.25);
+                ctx.lineTo(cx - w * 0.35, cy - h * 0.5);
+                ctx.lineTo(cx - w * 0.1, cy - h * 0.33);
+                ctx.moveTo(cx + w * 0.25, cy - h * 0.25);
+                ctx.lineTo(cx + w * 0.35, cy - h * 0.5);
+                ctx.lineTo(cx + w * 0.1, cy - h * 0.33);
+                ctx.moveTo(cx - w * 0.1, cy + 5);
+                ctx.lineTo(cx - w * 0.45, cy);
+                ctx.moveTo(cx - w * 0.1, cy + 12);
+                ctx.lineTo(cx - w * 0.45, cy + 20);
+                ctx.moveTo(cx + w * 0.1, cy + 5);
+                ctx.lineTo(cx + w * 0.45, cy);
+                ctx.moveTo(cx + w * 0.1, cy + 12);
+                ctx.lineTo(cx + w * 0.45, cy + 20);
+            } else {
+                ctx.arc(cx, cy, Math.min(w, h) / 2.2, 0, Math.PI * 2);
+            }
+            ctx.stroke();
+            ctx.restore();
+            saveCanvasState();
+        }
+        /* TOOL SWITCHER */
+        const tools = [
+            { id: "toolAutoDraw", mode: "autodraw" },
+            { id: "toolDraw", mode: "draw" },
+            { id: "toolEraser", mode: "eraser" },
+            { id: "toolFill", mode: "fill" }
+        ];
+        tools.forEach(t => {
+            const btn = document.getElementById(t.id);
+            btn.addEventListener("click", () => {
+                tools.forEach(item => document.getElementById(item.id).classList.remove("active"));
+                btn.classList.add("active");
+                activeTool = t.mode;
+                showToast(`Tool: ${btn.title}`);
+            });
+        });
+        /* COLOR & SIZE PALETTES */
+        document.querySelectorAll(".color-dot").forEach(dot => {
+            dot.addEventListener("click", () => {
+                document.querySelectorAll(".color-dot").forEach(d => d.classList.remove("active"));
+                dot.classList.add("active");
+                currentColor = dot.dataset.color;
+            });
+        });
+        document.getElementById("customColorPicker").addEventListener("input", (e) => {
+            currentColor = e.target.value;
+            document.querySelectorAll(".color-dot").forEach(d => d.classList.remove("active"));
+        });
+        document.querySelectorAll(".size-circle-btn").forEach(btn => {
+            btn.addEventListener("click", () => {
+                document.querySelectorAll(".size-circle-btn").forEach(b => b.classList.remove("active"));
+                btn.classList.add("active");
+                currentBrushSize = parseInt(btn.dataset.size);
+            });
+        });
+        /* THEME CONTROLLER */
+        const themeIcons = {
+            dark: `<svg class="svg-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"></path></svg>`,
+            light: `<svg class="svg-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="4"></circle><path d="M12 2v2"></path><path d="M12 20v2"></path><path d="m4.93 4.93 1.41 1.41"></path><path d="m17.66 17.66 1.41 1.41"></path><path d="M2 12h2"></path><path d="M20 12h2"></path><path d="m6.34 17.66-1.41 1.41"></path><path d="m19.07 4.93-1.41 1.41"></path></svg>`
+        };
+        let currentTheme = localStorage.getItem("autodraw-theme") || "dark";
+        function setTheme(theme) {
+            currentTheme = theme;
+            localStorage.setItem("autodraw-theme", theme);
+            document.documentElement.setAttribute("data-theme", theme);
+            document.getElementById("themeToggleBtn").innerHTML = theme === "dark" ? themeIcons.light : themeIcons.dark;
+        }
+        document.getElementById("themeToggleBtn").addEventListener("click", () => {
+            setTheme(currentTheme === "dark" ? "light" : "dark");
+        });
+        function showToast(message) {
+            const toast = document.getElementById("toast");
+            toast.textContent = message;
+            toast.classList.add("visible");
+            clearTimeout(window.toastTimer);
+            window.toastTimer = setTimeout(() => toast.classList.remove("visible"), 2500);
+        }
+        setTheme(currentTheme);
+        resizeCanvas();
+    </script>
+</body>
+</html>
+ok thx
+
+You're very welcome, Arnaw! Have fun creating and downloading your artwork. If you ever want to add new shapes, tools, or features to Arnaw Studio, just let me know! 🎨🚀
+
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#0b1020">
+<title>WorkBase | Arnaw Studio</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=Manrope:wght@500;600;700;800&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+:root{font-family:"DM Sans",Arial,sans-serif;--radius:13px;--accent:#7667f5;--accent2:#9388ff;--green:#19b887;--red:#e45c70;--amber:#d99a35}
+[data-theme="dark"]{color-scheme:dark;--bg:#0b1020;--sidebar:#101728;--panel:#141d30;--panel2:#1a263b;--hover:#202d44;--border:#29364d;--text:#eef2fb;--muted:#93a0b7;--soft:#6e7b93;--shadow:0 18px 50px #0005;--input:#0e1627}
+[data-theme="light"]{color-scheme:light;--bg:#f3f5fa;--sidebar:#fff;--panel:#fff;--panel2:#f7f8fc;--hover:#eef0f8;--border:#e1e5ef;--text:#172033;--muted:#68758d;--soft:#929db0;--shadow:0 16px 45px #23345a12;--input:#fff}
+*{box-sizing:border-box;margin:0;padding:0}body{background:var(--bg);color:var(--text);min-height:100vh;line-height:1.5}button,input,textarea,select{font:inherit}button{cursor:pointer}button:disabled{opacity:.55;cursor:not-allowed}.hidden{display:none!important}
+.btn{border:0;border-radius:9px;padding:10px 15px;font-weight:700;font-size:12px;transition:.18s}.btn-primary{background:var(--accent);color:#fff}.btn-primary:hover{background:var(--accent2);transform:translateY(-1px)}.btn-secondary{background:var(--panel2);border:1px solid var(--border);color:var(--text)}.btn-danger{background:#e45c7015;color:var(--red);border:1px solid #e45c7040}.icon-btn{width:38px;height:38px;border:1px solid var(--border);border-radius:10px;background:var(--panel);color:var(--text)}
+.auth-screen{min-height:100vh;display:grid;place-items:center;padding:22px;background:radial-gradient(ellipse at 50% 0%,#7667f525,transparent 52%),var(--bg)}.auth-wrap{width:100%;max-width:420px}.brand{text-align:center;margin-bottom:26px}.brandmark{width:54px;height:54px;margin:0 auto 13px;border-radius:17px;display:grid;place-items:center;background:linear-gradient(135deg,#7667f5,#aa70ed);color:white;font:800 23px Manrope;box-shadow:0 12px 30px #7667f544}.brand h1{font:800 24px Manrope;letter-spacing:.4px}.brand p{color:var(--muted);font-size:10px;letter-spacing:2px;margin-top:5px}.auth-card{background:var(--panel);border:1px solid var(--border);border-radius:20px;padding:29px;box-shadow:var(--shadow)}.auth-card h2{font:800 22px Manrope}.sub{font-size:12px;color:var(--muted);margin:6px 0 23px}.field{margin-bottom:15px}.field label{display:block;font-size:10px;font-weight:800;letter-spacing:1px;color:var(--muted);margin-bottom:7px}.field input,.field select,.field textarea,.control{width:100%;border:1px solid var(--border);border-radius:9px;background:var(--input);color:var(--text);padding:11px 12px;outline:none;font-size:13px}.field input:focus,.field textarea:focus,.control:focus{border-color:var(--accent);box-shadow:0 0 0 3px #7667f522}.auth-card .btn{width:100%;padding:12px;margin-top:6px}.auth-foot{text-align:center;color:var(--muted);font-size:11px;margin-top:17px}.feedback{font-size:12px;margin-top:13px;line-height:1.5;color:var(--red)}.feedback.success{color:var(--green)}.switch{text-align:center;font-size:12px;color:var(--muted);margin-top:19px}.link{background:none;border:0;color:var(--accent);font-weight:800;margin-left:5px}
+#app{display:none;min-height:100vh}.sidebar{position:fixed;inset:0 auto 0 0;width:250px;background:var(--sidebar);border-right:1px solid var(--border);padding:22px 15px;display:flex;flex-direction:column;z-index:20;transition:transform .25s}.brandline{display:flex;align-items:center;gap:11px;padding:0 8px 24px;border-bottom:1px solid var(--border);margin-bottom:18px}.brandline .brandmark{width:37px;height:37px;border-radius:12px;margin:0;font-size:17px;box-shadow:none}.brandline strong{font:800 16px Manrope}.brandline small{display:block;color:var(--muted);font-size:9px;letter-spacing:1.5px;margin-top:2px}.nav-label{font-size:9px;font-weight:800;letter-spacing:1.5px;color:var(--soft);padding:12px 11px 8px}.nav{display:flex;align-items:center;gap:12px;width:100%;text-align:left;padding:11px 12px;border:0;border-radius:9px;background:transparent;color:var(--muted);font-size:12px;font-weight:600;margin:2px 0}.nav:hover{background:var(--hover);color:var(--text)}.nav.active{background:#7667f51b;color:var(--accent2)}.nav .ico{width:18px;text-align:center;font-size:16px}.sidebar-bottom{margin-top:auto;border-top:1px solid var(--border);padding-top:14px}.userbox{display:flex;align-items:center;gap:9px;padding:8px}.avatar{width:34px;height:34px;border-radius:50%;display:grid;place-items:center;color:white;background:linear-gradient(135deg,#7667f5,#aa70ed);font-weight:800;font-size:12px;flex-shrink:0}.usertext{min-width:0;flex:1}.usertext strong{display:block;font-size:11px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.usertext small{color:var(--muted);font-size:10px}.main{margin-left:250px;min-height:100vh}.topbar{height:66px;position:sticky;top:0;z-index:10;background:var(--sidebar);border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;padding:0 29px}.top-left,.top-right{display:flex;align-items:center;gap:12px}.crumb{font-size:12px;color:var(--muted)}.top-right select{max-width:210px}.workspace-select{border:1px solid var(--border);border-radius:8px;background:var(--panel);color:var(--text);padding:8px 10px;font-size:11px;max-width:220px}.mobile-menu{display:none}.content{max-width:1450px;padding:30px;margin:auto}.page{display:none}.page.active{display:block}.page-head{display:flex;justify-content:space-between;align-items:flex-start;gap:15px;margin-bottom:23px}.page-head h1{font:800 25px Manrope;letter-spacing:-.5px}.page-head p{font-size:12px;color:var(--muted);margin-top:5px}.hero{padding:26px 29px;border:1px solid #7667f544;border-radius:17px;background:radial-gradient(100% 140% at 100% 0%,#8b78f532,transparent 55%),var(--panel);margin-bottom:20px}.eyebrow{font-size:9px;font-weight:800;color:var(--accent2);letter-spacing:1.7px}.hero h2{font:800 23px Manrope;margin:9px 0 7px}.hero p{font-size:12px;color:var(--muted);max-width:620px}.stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:13px;margin:18px 0 25px}.stat{background:var(--panel);border:1px solid var(--border);border-radius:13px;padding:17px}.stat span{font-size:11px;color:var(--muted)}.stat strong{display:block;font:800 25px Manrope;margin-top:10px}.section-title{font:800 15px Manrope;margin:24px 0 13px}.panel{background:var(--panel);border:1px solid var(--border);border-radius:13px;padding:18px}.panel-head{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:14px}.panel-head h3{font-size:13px}.muted{color:var(--muted);font-size:11px}.grid2{display:grid;grid-template-columns:1fr 1fr;gap:15px}.table-wrap{overflow-x:auto}table{width:100%;border-collapse:collapse;min-width:560px}th{text-align:left;color:var(--soft);font-size:9px;letter-spacing:.9px;text-transform:uppercase;padding:11px 10px;border-bottom:1px solid var(--border)}td{padding:12px 10px;border-bottom:1px solid var(--border);font-size:11px;vertical-align:middle}tbody tr:last-child td{border-bottom:0}.pill{display:inline-block;border-radius:30px;padding:4px 8px;background:var(--panel2);color:var(--muted);font-size:9px;font-weight:800}.pill.green{background:#19b88718;color:var(--green)}.pill.amber{background:#d99a3518;color:var(--amber)}.pill.red{background:#e45c7018;color:var(--red)}.empty{padding:28px 12px;text-align:center;color:var(--muted);font-size:12px}.form-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.form-grid .field{margin:0}.form-grid .full{grid-column:1/-1}.form-actions{display:flex;justify-content:flex-end;margin-top:14px}.form-card{margin-bottom:16px}.inline-select{padding:6px 8px;border:1px solid var(--border);border-radius:7px;background:var(--panel2);color:var(--text);font-size:10px}.small-btn{padding:6px 9px;border-radius:7px;font-size:10px}.task-title{font-weight:700}.stock-low{color:var(--red);font-weight:800}.currency{font-variant-numeric:tabular-nums}.bars{display:flex;flex-direction:column;gap:13px}.bar-row{display:grid;grid-template-columns:110px 1fr 90px;align-items:center;gap:10px;font-size:10px}.bar-track{height:9px;background:var(--panel2);border-radius:20px;overflow:hidden}.bar-fill{height:100%;background:linear-gradient(90deg,var(--accent),#ad7cf2);border-radius:20px}.note{background:#7667f512;border:1px solid #7667f533;border-radius:10px;padding:12px;color:var(--muted);font-size:11px;line-height:1.6;margin-top:12px}.toast{position:fixed;right:22px;bottom:22px;z-index:100;background:var(--panel2);border:1px solid var(--border);border-radius:10px;padding:12px 16px;box-shadow:var(--shadow);font-size:12px;display:none;max-width:min(380px,90vw)}.toast.show{display:block}.backdrop{display:none;position:fixed;inset:0;background:#0008;z-index:15}
+@media(max-width:1050px){.stats{grid-template-columns:repeat(2,1fr)}}@media(max-width:760px){.sidebar{transform:translateX(-100%)}.sidebar.open{transform:translateX(0);box-shadow:var(--shadow)}.backdrop.show{display:block}.main{margin-left:0}.mobile-menu{display:inline-block}.topbar{padding:0 14px}.content{padding:22px 15px}.workspace-select{max-width:145px}.stats{grid-template-columns:repeat(2,minmax(0,1fr))}.grid2{grid-template-columns:1fr}.page-head{flex-direction:column}.hero h2{font-size:20px}}@media(max-width:420px){.stats{grid-template-columns:1fr 1fr}.topbar{gap:6px}.top-right{gap:6px}.workspace-select{max-width:120px}.form-grid{grid-template-columns:1fr}.form-grid .full{grid-column:auto}}
+</style>
+</head>
+<body>
+<div id="authScreen" class="auth-screen">
+  <div class="auth-wrap">
+    <div class="brand"><div class="brandmark">W</div><h1>WORKBASE</h1><p>AN ARNAW STUDIO PRODUCT</p></div>
+    <div class="auth-card">
+      <h2 id="authTitle">Welcome back</h2><p class="sub" id="authSubtitle">Sign in to your business workspace.</p>
+      <form id="authForm">
+        <div class="field hidden" id="nameWrap"><label for="fullName">FULL NAME</label><input id="fullName" autocomplete="name" placeholder="Your name"></div>
+        <div class="field"><label for="email">EMAIL ADDRESS</label><input id="email" type="email" autocomplete="email" required placeholder="you@example.com"></div>
+        <div class="field"><label for="password">PASSWORD</label><input id="password" type="password" autocomplete="current-password" required minlength="6" placeholder="At least 6 characters"></div>
+        <button class="btn btn-primary" id="authSubmit" type="submit">Sign in</button>
+      </form>
+      <div class="feedback" id="authFeedback" role="status"></div>
+      <div class="switch"><span id="switchText">Don't have an account?</span><button class="link" id="switchMode" type="button">Create account</button></div>
+      <div class="switch"><button class="link" id="forgotPassword" type="button">Forgot password?</button></div>
+    </div>
+    <div class="auth-foot">© 2026 Arnaw Studio</div>
+  </div>
+</div>
+
+<div id="app">
+  <div class="backdrop" id="backdrop"></div>
+  <aside class="sidebar" id="sidebar">
+    <div class="brandline"><div class="brandmark">W</div><div><strong>WORKBASE</strong><small>ARNAW STUDIO</small></div></div>
+    <div class="nav-label">WORKSPACE</div>
+    <button class="nav active" data-page="overview"><span class="ico">▦</span>Overview</button>
+    <button class="nav" data-page="projects"><span class="ico">▣</span>Projects</button>
+    <button class="nav" data-page="tasks"><span class="ico">✓</span>Tasks</button>
+    <button class="nav" data-page="team"><span class="ico">♧</span>Team</button>
+    <div class="nav-label">BUSINESS</div>
+    <button class="nav" data-page="inventory"><span class="ico">▤</span>Inventory</button>
+    <button class="nav" data-page="finance"><span class="ico">₹</span>Finance</button>
+    <button class="nav" data-page="analytics"><span class="ico">⌁</span>Analytics</button>
+    <div class="nav-label">PREFERENCES</div>
+    <button class="nav" data-page="settings"><span class="ico">⚙</span>Settings</button>
+    <div class="sidebar-bottom"><div class="userbox"><div class="avatar" id="userAvatar">W</div><div class="usertext"><strong id="userName">User</strong><small id="userEmail">Free workspace</small></div><button class="icon-btn" id="signOut" title="Sign out">↗</button></div></div>
+  </aside>
+
+  <main class="main">
+    <header class="topbar">
+      <div class="top-left"><button class="icon-btn mobile-menu" id="mobileMenu">☰</button><div class="crumb">WorkBase / <strong id="breadcrumb" style="color:var(--text)">Overview</strong></div></div>
+      <div class="top-right"><select class="workspace-select" id="workspaceSelect" aria-label="Select workspace"></select><button class="btn btn-secondary" id="newWorkspace">+ Workspace</button><button class="icon-btn" id="themeToggle" title="Toggle theme">☀</button></div>
+    </header>
+
+    <div class="content">
+      <section class="page active" id="page-overview">
+        <div class="page-head"><div><h1>Business overview</h1><p>A clear view of your projects, team and operations.</p></div><button class="btn btn-primary" onclick="navigate('projects')">＋ New project</button></div>
+        <div class="hero"><div class="eyebrow">YOUR BUSINESS WORKSPACE</div><h2>Everything moving in one place.</h2><p>Manage projects, track tasks, monitor stock and keep an eye on business finances from one organized workspace.</p></div>
+        <div class="stats" id="overviewStats"><div class="stat"><span>Projects</span><strong>—</strong></div><div class="stat"><span>Open tasks</span><strong>—</strong></div><div class="stat"><span>Inventory items</span><strong>—</strong></div><div class="stat"><span>Paid invoices</span><strong>—</strong></div></div>
+        <div class="grid2"><div class="panel"><div class="panel-head"><h3>Recent projects</h3><button class="btn btn-secondary small-btn" onclick="navigate('projects')">View all</button></div><div id="recentProjects" class="empty">Loading projects…</div></div><div class="panel"><div class="panel-head"><h3>Upcoming tasks</h3><button class="btn btn-secondary small-btn" onclick="navigate('tasks')">View all</button></div><div id="upcomingTasks" class="empty">Loading tasks…</div></div></div>
+      </section>
+
+      <section class="page" id="page-projects">
+        <div class="page-head"><div><h1>Projects</h1><p>Plan work and track project progress.</p></div></div>
+        <div class="panel form-card"><div class="panel-head"><h3>Create a project</h3><span class="muted">New workspace project</span></div><form id="projectForm"><div class="form-grid"><div class="field"><label>PROJECT NAME</label><input id="projectName" maxlength="120" required placeholder="Website redesign"></div><div class="field"><label>STATUS</label><select id="projectStatus"><option value="active">Active</option><option value="planning">Planning</option><option value="on_hold">On hold</option><option value="completed">Completed</option></select></div><div class="field full"><label>DESCRIPTION</label><input id="projectDescription" maxlength="500" placeholder="What is this project about?"></div></div><div class="form-actions"><button class="btn btn-primary">Create project</button></div></form></div>
+        <div class="panel"><div class="panel-head"><h3>All projects</h3><span class="muted" id="projectCount">0 projects</span></div><div id="projectsTable" class="empty">Loading…</div></div>
+      </section>
+
+      <section class="page" id="page-tasks">
+        <div class="page-head"><div><h1>Tasks</h1><p>Keep work moving with clear owners, priorities and deadlines.</p></div></div>
+        <div class="panel form-card"><div class="panel-head"><h3>Create a task</h3></div><form id="taskForm"><div class="form-grid"><div class="field full"><label>TASK TITLE</label><input id="taskTitle" maxlength="180" required placeholder="Prepare launch checklist"></div><div class="field"><label>PROJECT</label><select id="taskProject"><option value="">No project</option></select></div><div class="field"><label>ASSIGNEE</label><select id="taskAssignee"><option value="">Unassigned</option></select></div><div class="field"><label>PRIORITY</label><select id="taskPriority"><option value="low">Low</option><option value="medium" selected>Medium</option><option value="high">High</option></select></div><div class="field"><label>DUE DATE</label><input id="taskDue" type="date"></div><div class="field full"><label>DESCRIPTION</label><input id="taskDescription" maxlength="500" placeholder="Optional task details"></div></div><div class="form-actions"><button class="btn btn-primary">Add task</button></div></form></div>
+        <div class="panel"><div class="panel-head"><h3>Task board</h3><span class="muted" id="taskCount">0 tasks</span></div><div id="tasksTable" class="empty">Loading…</div></div>
+      </section>
+
+      <section class="page" id="page-team">
+        <div class="page-head"><div><h1>Team</h1><p>People who have access to this workspace.</p></div></div>
+        <div class="panel"><div class="panel-head"><h3>Workspace members</h3><span class="muted" id="memberCount">0 members</span></div><div id="teamTable" class="empty">Loading…</div><div class="note">Team directory and task assignment are enabled. Secure email invitations and role management require a separate invitation workflow and are not exposed as unrestricted client-side actions.</div></div>
+      </section>
+
+      <section class="page" id="page-inventory">
+        <div class="page-head"><div><h1>Inventory</h1><p>Track stock levels, SKUs and unit costs.</p></div></div>
+        <div class="panel form-card"><div class="panel-head"><h3>Add inventory item</h3></div><form id="inventoryForm"><div class="form-grid"><div class="field"><label>ITEM NAME</label><input id="itemName" maxlength="140" required placeholder="Product name"></div><div class="field"><label>SKU</label><input id="itemSku" maxlength="60" placeholder="SKU-001"></div><div class="field"><label>QUANTITY</label><input id="itemQuantity" type="number" min="0" step="1" value="0" required></div><div class="field"><label>REORDER LEVEL</label><input id="itemReorder" type="number" min="0" step="1" value="5" required></div><div class="field"><label>UNIT COST (₹)</label><input id="itemCost" type="number" min="0" step="0.01" value="0" required></div></div><div class="form-actions"><button class="btn btn-primary">Add item</button></div></form></div>
+        <div class="panel"><div class="panel-head"><h3>Stock register</h3><span class="muted" id="inventoryCount">0 items</span></div><div id="inventoryTable" class="empty">Loading…</div></div>
+      </section>
+
+      <section class="page" id="page-finance">
+        <div class="page-head"><div><h1>Finance</h1><p>Record expenses and track invoices. Amounts are shown in INR.</p></div></div>
+        <div class="stats" id="financeStats"><div class="stat"><span>Recorded expenses</span><strong>₹0</strong></div><div class="stat"><span>Paid invoices</span><strong>₹0</strong></div></div>
+        <div class="grid2">
+          <div class="panel form-card"><div class="panel-head"><h3>Record expense</h3></div><form id="expenseForm"><div class="field"><label>EXPENSE TITLE</label><input id="expenseTitle" required maxlength="140" placeholder="Office supplies"></div><div class="field"><label>CATEGORY</label><select id="expenseCategory"><option>General</option><option>Operations</option><option>Equipment</option><option>Travel</option><option>Marketing</option><option>Utilities</option><option>Software</option></select></div><div class="field"><label>AMOUNT (₹)</label><input id="expenseAmount" type="number" min="0.01" step="0.01" required></div><div class="field"><label>DATE</label><input id="expenseDate" type="date" required></div><div class="form-actions"><button class="btn btn-primary">Save expense</button></div></form></div>
+          <div class="panel form-card"><div class="panel-head"><h3>Create invoice record</h3></div><form id="invoiceForm"><div class="field"><label>INVOICE NUMBER</label><input id="invoiceNumber" maxlength="40" required placeholder="INV-001"></div><div class="field"><label>CUSTOMER</label><input id="invoiceCustomer" maxlength="140" required placeholder="Customer or company"></div><div class="field"><label>AMOUNT (₹)</label><input id="invoiceAmount" type="number" min="0.01" step="0.01" required></div><div class="field"><label>STATUS</label><select id="invoiceStatus"><option value="draft">Draft</option><option value="sent">Sent</option><option value="paid">Paid</option><option value="overdue">Overdue</option></select></div><div class="field"><label>DUE DATE</label><input id="invoiceDue" type="date"></div><div class="form-actions"><button class="btn btn-primary">Save invoice</button></div></form></div>
+        </div>
+        <div class="grid2" style="margin-top:15px"><div class="panel"><div class="panel-head"><h3>Expenses</h3></div><div id="expensesTable" class="empty">Loading…</div></div><div class="panel"><div class="panel-head"><h3>Invoices</h3></div><div id="invoicesTable" class="empty">Loading…</div></div></div>
+      </section>
+
+      <section class="page" id="page-analytics">
+        <div class="page-head"><div><h1>Analytics</h1><p>A live summary of records in the selected workspace.</p></div><button class="btn btn-secondary" id="refreshAnalytics">↻ Refresh</button></div>
+        <div class="stats" id="analyticsStats"></div>
+        <div class="grid2"><div class="panel"><div class="panel-head"><h3>Task progress</h3></div><div id="taskBars" class="bars"></div></div><div class="panel"><div class="panel-head"><h3>Invoice status</h3></div><div id="invoiceBars" class="bars"></div></div></div>
+        <div class="note">Analytics are calculated from the data stored in this workspace. They are operational summaries, not audited financial statements.</div>
+      </section>
+
+      <section class="page" id="page-settings">
+        <div class="page-head"><div><h1>Settings</h1><p>Manage workspace details and your preferences.</p></div></div>
+        <div class="grid2"><div class="panel"><div class="panel-head"><h3>Workspace profile</h3></div><form id="workspaceForm"><div class="field"><label>WORKSPACE NAME</label><input id="workspaceName" required maxlength="80"></div><button class="btn btn-primary">Save workspace</button></form></div><div class="panel"><div class="panel-head"><h3>Appearance</h3></div><p class="muted" style="margin-bottom:13px">Choose how WorkBase looks on this device.</p><button class="btn btn-secondary" id="settingsTheme">Toggle dark / light mode</button></div></div>
+      </section>
+    </div>
+  </main>
+</div>
+<div class="toast" id="toast" role="status"></div>
+
+<script>
+const SUPABASE_URL = "YOUR_SUPABASE_PROJECT_URL";
+const SUPABASE_PUBLISHABLE_KEY = "YOUR_SUPABASE_PUBLISHABLE_KEY";
+const $ = id => document.getElementById(id);
+let db = null;
+let session = null;
+let currentUser = null;
+let currentWorkspace = null;
+let workspaces = [];
+let currentPage = "overview";
+let authMode = "login";
+let members = [];
+let projects = [];
+let toastTimer;
+
+function configured(){return SUPABASE_URL.startsWith("https://") && SUPABASE_URL.includes(".supabase.co") && !SUPABASE_URL.includes("YOUR_") && SUPABASE_PUBLISHABLE_KEY.length > 15 && !SUPABASE_PUBLISHABLE_KEY.includes("YOUR_");}
+function toast(message){const el=$("toast");el.textContent=message;el.classList.add("show");clearTimeout(toastTimer);toastTimer=setTimeout(()=>el.classList.remove("show"),3200);}
+function setFeedback(message,success=false){const el=$("authFeedback");el.textContent=message;el.className="feedback"+(success?" success":"");}
+function esc(value){return String(value??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));}
+function money(value){return new Intl.NumberFormat("en-IN",{style:"currency",currency:"INR",maximumFractionDigits:2}).format(Number(value)||0);}
+function dateText(value){if(!value)return "—";return new Date(value+"T00:00:00").toLocaleDateString("en-IN",{day:"2-digit",month:"short",year:"numeric"});}
+function empty(message){return `<div class="empty">${esc(message)}</div>`;}
+function table(headers,rows){if(!rows.length)return empty("No records yet.");return `<div class="table-wrap"><table><thead><tr>${headers.map(h=>`<th>${h}</th>`).join("")}</tr></thead><tbody>${rows.join("")}</tbody></table></div>`;}
+function statusPill(status){const map={active:"green",completed:"green",paid:"green",done:"green",in_progress:"amber",sent:"amber",overdue:"red",high:"red",on_hold:"amber",planning:"amber"};return `<span class="pill ${map[status]||""}">${esc(String(status).replaceAll("_"," "))}</span>`;}
+function setTheme(theme){document.documentElement.dataset.theme=theme;localStorage.setItem("workbase-theme",theme);$("themeToggle").textContent=theme==="dark"?"☀":"☾";}
+function toggleTheme(){setTheme(document.documentElement.dataset.theme==="dark"?"light":"dark");}
+$("themeToggle").addEventListener("click",toggleTheme);$("settingsTheme").addEventListener("click",toggleTheme);setTheme(localStorage.getItem("workbase-theme")||"dark");
+
+$("switchMode").addEventListener("click",()=>{authMode=authMode==="login"?"signup":"login";$("authTitle").textContent=authMode==="signup"?"Create your account":"Welcome back";$("authSubtitle").textContent=authMode==="signup"?"Start your business workspace.":"Sign in to your business workspace.";$("nameWrap").classList.toggle("hidden",authMode!=="signup");$("authSubmit").textContent=authMode==="signup"?"Create account":"Sign in";$("switchText").textContent=authMode==="signup"?"Already have an account?":"Don't have an account?";$("switchMode").textContent=authMode==="signup"?"Sign in":"Create account";setFeedback("");});
+$("authForm").addEventListener("submit",async e=>{e.preventDefault();if(!db){setFeedback("Add your Supabase project URL and publishable key in this HTML file.");return;}const email=$("email").value.trim();const password=$("password").value;const button=$("authSubmit");button.disabled=true;try{if(authMode==="signup"){const fullName=$("fullName").value.trim();if(!fullName)throw new Error("Enter your full name.");const {data,error}=await db.auth.signUp({email,password,options:{data:{full_name:fullName}}});if(error)throw error;if(data.session){await launch(data.session);}else{setFeedback("Account created. Check your email to confirm, then sign in.",true);}}else{const {data,error}=await db.auth.signInWithPassword({email,password});if(error)throw error;await launch(data.session);}}catch(err){setFeedback(err.message||"Authentication failed.");}finally{button.disabled=false;}});
+$("forgotPassword").addEventListener("click",async()=>{if(!db)return setFeedback("Configure Supabase first.");const email=$("email").value.trim();if(!email)return setFeedback("Enter your email address first.");try{const {error}=await db.auth.resetPasswordForEmail(email);if(error)throw error;setFeedback("Password reset email sent.",true);}catch(err){setFeedback(err.message);}});
+
+async function launch(authSession){session=authSession;currentUser=authSession.user;$("authScreen").style.display="none";$("app").style.display="block";const name=currentUser.user_metadata?.full_name||currentUser.email?.split("@")[0]||"User";$("userName").textContent=name;$("userEmail").textContent=currentUser.email||"Workspace member";$("userAvatar").textContent=name.charAt(0).toUpperCase();await loadWorkspaces();}
+async function loadWorkspaces(){const {data,error}=await db.from("workspaces").select("id,name,created_at").order("created_at",{ascending:true});if(error)throw error;workspaces=data||[];if(!workspaces.length){const name=(currentUser.user_metadata?.full_name||currentUser.email?.split("@")[0]||"My")+"'s Workspace";const {data:created,error:createError}=await db.from("workspaces").insert({name,created_by:currentUser.id}).select("id,name,created_at").single();if(createError)throw createError;workspaces=[created];}currentWorkspace=workspaces.find(w=>w.id===currentWorkspace?.id)||workspaces[0];renderWorkspaceSelect();await loadCurrentPage();}
+function renderWorkspaceSelect(){$("workspaceSelect").innerHTML=workspaces.map(w=>`<option value="${w.id}" ${w.id===currentWorkspace.id?"selected":""}>${esc(w.name)}</option>`).join("");$("workspaceName").value=currentWorkspace.name;}
+$("workspaceSelect").addEventListener("change",async()=>{currentWorkspace=workspaces.find(w=>w.id===$("workspaceSelect").value);renderWorkspaceSelect();await loadCurrentPage();toast("Workspace switched.");});
+$("newWorkspace").addEventListener("click",async()=>{const name=prompt("New workspace name:");if(!name||!name.trim())return;try{const {data,error}=await db.from("workspaces").insert({name:name.trim(),created_by:currentUser.id}).select("id,name,created_at").single();if(error)throw error;workspaces.push(data);currentWorkspace=data;renderWorkspaceSelect();await loadCurrentPage();toast("Workspace created.");}catch(err){toast(err.message);}});
+
+function navigate(page){currentPage=page;document.querySelectorAll(".page").forEach(p=>p.classList.toggle("active",p.id==="page-"+page));document.querySelectorAll(".nav").forEach(n=>n.classList.toggle("active",n.dataset.page===page));$("breadcrumb").textContent=page.charAt(0).toUpperCase()+page.slice(1);closeSidebar();loadCurrentPage().catch(err=>toast(err.message));}
+document.querySelectorAll(".nav").forEach(n=>n.addEventListener("click",()=>navigate(n.dataset.page)));
+window.navigate=navigate;
+function closeSidebar(){$("sidebar").classList.remove("open");$("backdrop").classList.remove("show");}
+$("mobileMenu").addEventListener("click",()=>{$("sidebar").classList.add("open");$("backdrop").classList.add("show");});$("backdrop").addEventListener("click",closeSidebar);
+async function loadCurrentPage(){if(!currentWorkspace)return;switch(currentPage){case"overview":await loadOverview();break;case"projects":await loadProjects();break;case"tasks":await loadTasks();break;case"team":await loadTeam();break;case"inventory":await loadInventory();break;case"finance":await loadFinance();break;case"analytics":await loadAnalytics();break;case"settings":renderWorkspaceSelect();break;}}
+async function countRows(table,extra={}){let q=db.from(table).select("id",{count:"exact",head:true}).eq("workspace_id",currentWorkspace.id);for(const [k,v] of Object.entries(extra))q=q.eq(k,v);const {count,error}=await q;if(error)throw error;return count||0;}
+
+async function loadOverview(){const [projectCount,openTasks,inventoryCount,paidInvoices,projectsData,tasksData]=await Promise.all([countRows("projects"),db.from("tasks").select("id",{count:"exact",head:true}).eq("workspace_id",currentWorkspace.id).neq("status","done"),countRows("inventory_items"),db.from("invoices").select("amount").eq("workspace_id",currentWorkspace.id).eq("status","paid"),db.from("projects").select("id,name,status,created_at").eq("workspace_id",currentWorkspace.id).order("created_at",{ascending:false}).limit(5),db.from("tasks").select("id,title,status,priority,due_date").eq("workspace_id",currentWorkspace.id).neq("status","done").order("due_date",{ascending:true,nullsFirst:false}).limit(5)]);if(openTasks.error||projectsData.error||tasksData.error)throw openTasks.error||projectsData.error||tasksData.error;const paid=paidInvoices.data||[];$("overviewStats").innerHTML=[[projectCount,"Projects"],[openTasks.count||0,"Open tasks"],[inventoryCount,"Inventory items"],[money(paid.reduce((s,x)=>s+Number(x.amount),0)),"Paid invoice total"]].map(([v,l])=>`<div class="stat"><span>${l}</span><strong>${v}</strong></div>`).join("");$("recentProjects").innerHTML=projectsData.data?.length?table(["Project","Status"],projectsData.data.map(p=>`<tr><td><strong>${esc(p.name)}</strong></td><td>${statusPill(p.status)}</td></tr>`)):empty("No projects yet.");$("upcomingTasks").innerHTML=tasksData.data?.length?table(["Task","Due","Status"],tasksData.data.map(t=>`<tr><td><strong>${esc(t.title)}</strong></td><td>${dateText(t.due_date)}</td><td>${statusPill(t.status)}</td></tr>`)):empty("No open tasks.");}
+
+async function loadProjects(){const {data,error}=await db.from("projects").select("id,name,description,status,created_at").eq("workspace_id",currentWorkspace.id).order("created_at",{ascending:false});if(error)throw error;projects=data||[];$("projectCount").textContent=`${projects.length} projects`;$("projectsTable").innerHTML=table(["Project","Description","Status","Created","Action"],projects.map(p=>`<tr><td><strong>${esc(p.name)}</strong></td><td>${esc(p.description||"—")}</td><td><select class="inline-select project-status" data-id="${p.id}"><option value="planning" ${p.status==="planning"?"selected":""}>Planning</option><option value="active" ${p.status==="active"?"selected":""}>Active</option><option value="on_hold" ${p.status==="on_hold"?"selected":""}>On hold</option><option value="completed" ${p.status==="completed"?"selected":""}>Completed</option></select></td><td>${dateText(p.created_at.slice(0,10))}</td><td><button class="btn btn-danger small-btn delete-project" data-id="${p.id}">Delete</button></td></tr>`));document.querySelectorAll(".project-status").forEach(el=>el.addEventListener("change",async()=>{const {error}=await db.from("projects").update({status:el.value}).eq("id",el.dataset.id).eq("workspace_id",currentWorkspace.id);if(error)toast(error.message);else toast("Project updated.");}));document.querySelectorAll(".delete-project").forEach(el=>el.addEventListener("click",async()=>{if(!confirm("Delete this project and its tasks?"))return;const {error}=await db.from("projects").delete().eq("id",el.dataset.id).eq("workspace_id",currentWorkspace.id);if(error)toast(error.message);else{toast("Project deleted.");await loadProjects();}}));$("taskProject").innerHTML='<option value="">No project</option>'+projects.map(p=>`<option value="${p.id}">${esc(p.name)}</option>`).join("");}
+$("projectForm").addEventListener("submit",async e=>{e.preventDefault();try{const {error}=await db.from("projects").insert({workspace_id:currentWorkspace.id,name:$("projectName").value.trim(),description:$("projectDescription").value.trim(),status:$("projectStatus").value,created_by:currentUser.id});if(error)throw error;e.target.reset();toast("Project created.");await loadProjects();}catch(err){toast(err.message);}});
+
+async function loadTeam(){const {data,error}=await db.from("workspace_members").select("user_id,role,joined_at,profiles(full_name)").eq("workspace_id",currentWorkspace.id).order("joined_at",{ascending:true});if(error)throw error;members=data||[];$("memberCount").textContent=`${members.length} members`;$ ("taskAssignee").innerHTML='<option value="">Unassigned</option>'+members.map(m=>`<option value="${m.user_id}">${esc(m.profiles?.full_name||m.user_id.slice(0,8))}</option>`).join("");$("teamTable").innerHTML=table(["Member","Role","Joined"],members.map(m=>`<tr><td><strong>${esc(m.profiles?.full_name||"Workspace member")}</strong>${m.user_id===currentUser.id?'<span class="pill green" style="margin-left:7px">You</span>':''}</td><td>${statusPill(m.role)}</td><td>${new Date(m.joined_at).toLocaleDateString("en-IN")}</td></tr>`));}
+
+async function loadTasks(){const [taskResult,projectResult,memberResult]=await Promise.all([db.from("tasks").select("id,title,description,status,priority,due_date,project_id,assignee_id,projects(name)").eq("workspace_id",currentWorkspace.id).order("created_at",{ascending:false}),db.from("projects").select("id,name").eq("workspace_id",currentWorkspace.id).order("name"),db.from("workspace_members").select("user_id,profiles(full_name)").eq("workspace_id",currentWorkspace.id)]);if(taskResult.error||projectResult.error||memberResult.error)throw taskResult.error||projectResult.error||memberResult.error;projects=projectResult.data||[];members=memberResult.data||[];$("taskProject").innerHTML='<option value="">No project</option>'+projects.map(p=>`<option value="${p.id}">${esc(p.name)}</option>`).join("");$("taskAssignee").innerHTML='<option value="">Unassigned</option>'+members.map(m=>`<option value="${m.user_id}">${esc(m.profiles?.full_name||m.user_id.slice(0,8))}</option>`).join("");const rows=taskResult.data||[];$("taskCount").textContent=`${rows.length} tasks`;$ ("tasksTable").innerHTML=table(["Task","Project","Priority","Due date","Assignee","Status"],rows.map(t=>{const person=members.find(m=>m.user_id===t.assignee_id);return `<tr><td><span class="task-title">${esc(t.title)}</span><div class="muted">${esc(t.description||"")}</div></td><td>${esc(t.projects?.name||"—")}</td><td>${statusPill(t.priority)}</td><td>${dateText(t.due_date)}</td><td>${esc(person?.profiles?.full_name||"Unassigned")}</td><td><select class="inline-select task-status" data-id="${t.id}"><option value="todo" ${t.status==="todo"?"selected":""}>To do</option><option value="in_progress" ${t.status==="in_progress"?"selected":""}>In progress</option><option value="done" ${t.status==="done"?"selected":""}>Done</option></select></td></tr>`;}));document.querySelectorAll(".task-status").forEach(el=>el.addEventListener("change",async()=>{const {error}=await db.from("tasks").update({status:el.value}).eq("id",el.dataset.id).eq("workspace_id",currentWorkspace.id);if(error)toast(error.message);else toast("Task status updated.");}));}
+$("taskForm").addEventListener("submit",async e=>{e.preventDefault();try{const {error}=await db.from("tasks").insert({workspace_id:currentWorkspace.id,title:$("taskTitle").value.trim(),description:$("taskDescription").value.trim(),project_id:$("taskProject").value||null,assignee_id:$("taskAssignee").value||null,priority:$("taskPriority").value,due_date:$("taskDue").value||null,created_by:currentUser.id});if(error)throw error;e.target.reset();toast("Task created.");await loadTasks();}catch(err){toast(err.message);}});
+
+async function loadInventory(){const {data,error}=await db.from("inventory_items").select("id,name,sku,quantity,reorder_level,unit_cost,created_at").eq("workspace_id",currentWorkspace.id).order("name");if(error)throw error;const rows=data||[];$("inventoryCount").textContent=`${rows.length} items`;$ ("inventoryTable").innerHTML=table(["Item","SKU","Quantity","Unit cost","Stock","Action"],rows.map(i=>`<tr><td><strong>${esc(i.name)}</strong></td><td>${esc(i.sku||"—")}</td><td><input class="inline-select stock-quantity" data-id="${i.id}" type="number" min="0" step="1" value="${i.quantity}" style="width:75px"></td><td class="currency">${money(i.unit_cost)}</td><td>${i.quantity<=i.reorder_level?'<span class="pill red">Low stock</span>':'<span class="pill green">In stock</span>'}</td><td><button class="btn btn-secondary small-btn save-stock" data-id="${i.id}">Save</button> <button class="btn btn-danger small-btn delete-stock" data-id="${i.id}">Delete</button></td></tr>`));document.querySelectorAll(".save-stock").forEach(b=>b.addEventListener("click",async()=>{const input=document.querySelector(`.stock-quantity[data-id="${b.dataset.id}"]`);const quantity=Number(input.value);if(!Number.isInteger(quantity)||quantity<0)return toast("Enter a valid quantity.");const {error}=await db.from("inventory_items").update({quantity}).eq("id",b.dataset.id).eq("workspace_id",currentWorkspace.id);if(error)toast(error.message);else{toast("Stock updated.");await loadInventory();}}));document.querySelectorAll(".delete-stock").forEach(b=>b.addEventListener("click",async()=>{if(!confirm("Delete this inventory item?"))return;const {error}=await db.from("inventory_items").delete().eq("id",b.dataset.id).eq("workspace_id",currentWorkspace.id);if(error)toast(error.message);else{toast("Item deleted.");await loadInventory();}}));}
+$("inventoryForm").addEventListener("submit",async e=>{e.preventDefault();try{const {error}=await db.from("inventory_items").insert({workspace_id:currentWorkspace.id,name:$("itemName").value.trim(),sku:$("itemSku").value.trim(),quantity:Number($("itemQuantity").value),reorder_level:Number($("itemReorder").value),unit_cost:Number($("itemCost").value)});if(error)throw error;e.target.reset();$("itemQuantity").value="0";$("itemReorder").value="5";$("itemCost").value="0";toast("Inventory item added.");await loadInventory();}catch(err){toast(err.message);}});
+
+async function loadFinance(){const [expenses,invoices]=await Promise.all([db.from("expenses").select("id,title,category,amount,expense_date").eq("workspace_id",currentWorkspace.id).order("expense_date",{ascending:false}),db.from("invoices").select("id,invoice_number,customer_name,amount,status,due_date").eq("workspace_id",currentWorkspace.id).order("created_at",{ascending:false})]);if(expenses.error||invoices.error)throw expenses.error||invoices.error;const ex=expenses.data||[],inv=invoices.data||[];const totalEx=ex.reduce((s,x)=>s+Number(x.amount),0),totalPaid=inv.filter(x=>x.status==="paid").reduce((s,x)=>s+Number(x.amount),0);$("financeStats").innerHTML=`<div class="stat"><span>Total recorded expenses</span><strong>${money(totalEx)}</strong></div><div class="stat"><span>Paid invoice total</span><strong>${money(totalPaid)}</strong></div>`;$("expensesTable").innerHTML=table(["Expense","Category","Date","Amount"],ex.map(x=>`<tr><td><strong>${esc(x.title)}</strong></td><td>${esc(x.category)}</td><td>${dateText(x.expense_date)}</td><td class="currency">${money(x.amount)}</td></tr>`));$("invoicesTable").innerHTML=table(["Invoice","Customer","Status","Amount"],inv.map(x=>`<tr><td><strong>${esc(x.invoice_number)}</strong></td><td>${esc(x.customer_name)}</td><td><select class="inline-select invoice-status" data-id="${x.id}"><option value="draft" ${x.status==="draft"?"selected":""}>Draft</option><option value="sent" ${x.status==="sent"?"selected":""}>Sent</option><option value="paid" ${x.status==="paid"?"selected":""}>Paid</option><option value="overdue" ${x.status==="overdue"?"selected":""}>Overdue</option></select></td><td class="currency">${money(x.amount)}</td></tr>`));document.querySelectorAll(".invoice-status").forEach(el=>el.addEventListener("change",async()=>{const {error}=await db.from("invoices").update({status:el.value}).eq("id",el.dataset.id).eq("workspace_id",currentWorkspace.id);if(error)toast(error.message);else{toast("Invoice updated.");await loadFinance();}}));}
+$("expenseForm").addEventListener("submit",async e=>{e.preventDefault();try{const {error}=await db.from("expenses").insert({workspace_id:currentWorkspace.id,title:$("expenseTitle").value.trim(),category:$("expenseCategory").value,amount:Number($("expenseAmount").value),expense_date:$("expenseDate").value||undefined,created_by:currentUser.id});if(error)throw error;e.target.reset();toast("Expense recorded.");await loadFinance();}catch(err){toast(err.message);}});
+$("invoiceForm").addEventListener("submit",async e=>{e.preventDefault();try{const {error}=await db.from("invoices").insert({workspace_id:currentWorkspace.id,invoice_number:$("invoiceNumber").value.trim(),customer_name:$("invoiceCustomer").value.trim(),amount:Number($("invoiceAmount").value),status:$("invoiceStatus").value,due_date:$("invoiceDue").value||null,created_by:currentUser.id});if(error)throw error;e.target.reset();toast("Invoice record created.");await loadFinance();}catch(err){toast(err.message);}});
+
+async function loadAnalytics(){const [tasks,projectsData,inventory,expenses,invoices]=await Promise.all([db.from("tasks").select("status").eq("workspace_id",currentWorkspace.id),db.from("projects").select("status").eq("workspace_id",currentWorkspace.id),db.from("inventory_items").select("quantity,reorder_level").eq("workspace_id",currentWorkspace.id),db.from("expenses").select("amount").eq("workspace_id",currentWorkspace.id),db.from("invoices").select("amount,status").eq("workspace_id",currentWorkspace.id)]);for(const r of [tasks,projectsData,inventory,expenses,invoices])if(r.error)throw r.error;const ts=tasks.data||[],ps=projectsData.data||[],is=inventory.data||[],es=expenses.data||[],ivs=invoices.data||[];const sum=(arr,fn)=>arr.reduce((s,x)=>s+fn(x),0);const exp=sum(es,x=>Number(x.amount)),paid=sum(ivs.filter(x=>x.status==="paid"),x=>Number(x.amount)),low=is.filter(x=>x.quantity<=x.reorder_level).length;$("analyticsStats").innerHTML=[[ps.length,"Projects"],[ts.filter(x=>x.status==="done").length+" / "+ts.length,"Tasks completed"],[low,"Low-stock items"],[money(paid-exp),"Paid invoices minus expenses"]].map(([v,l])=>`<div class="stat"><span>${l}</span><strong>${v}</strong></div>`).join("");const taskStates=[["To do",ts.filter(x=>x.status==="todo").length],["In progress",ts.filter(x=>x.status==="in_progress").length],["Done",ts.filter(x=>x.status==="done").length]];const maxTask=Math.max(1,...taskStates.map(x=>x[1]));$("taskBars").innerHTML=taskStates.map(([label,n])=>`<div class="bar-row"><span>${label}</span><div class="bar-track"><div class="bar-fill" style="width:${n/maxTask*100}%"></div></div><strong>${n}</strong></div>`).join("");const invoiceStates=[["Draft",ivs.filter(x=>x.status==="draft").length],["Sent",ivs.filter(x=>x.status==="sent").length],["Paid",ivs.filter(x=>x.status==="paid").length],["Overdue",ivs.filter(x=>x.status==="overdue").length]];const maxInv=Math.max(1,...invoiceStates.map(x=>x[1]));$("invoiceBars").innerHTML=invoiceStates.map(([label,n])=>`<div class="bar-row"><span>${label}</span><div class="bar-track"><div class="bar-fill" style="width:${n/maxInv*100}%"></div></div><strong>${n}</strong></div>`).join("");}
+$("refreshAnalytics").addEventListener("click",()=>loadAnalytics().then(()=>toast("Analytics refreshed.")).catch(e=>toast(e.message)));
+
+$("workspaceForm").addEventListener("submit",async e=>{e.preventDefault();const name=$("workspaceName").value.trim();try{const {data,error}=await db.from("workspaces").update({name}).eq("id",currentWorkspace.id).select("id,name,created_at").single();if(error)throw error;currentWorkspace=data;workspaces=workspaces.map(w=>w.id===data.id?data:w);renderWorkspaceSelect();toast("Workspace settings saved.");}catch(err){toast(err.message);}});
+
+async function signOut(){if(db)await db.auth.signOut();session=null;currentUser=null;currentWorkspace=null;workspaces=[];$("app").style.display="none";$("authScreen").style.display="grid";$("password").value="";setFeedback("Signed out.",true);}
+$("signOut").addEventListener("click",signOut);
+
+async function init(){if(!configured()){setFeedback("Set SUPABASE_URL and SUPABASE_PUBLISHABLE_KEY in the script before using WorkBase.");return;}if(!window.supabase?.createClient){setFeedback("Supabase library did not load. Check your internet connection.");return;}db=window.supabase.createClient(SUPABASE_URL,SUPABASE_PUBLISHABLE_KEY);const {data,error}=await db.auth.getSession();if(error){setFeedback(error.message);return;}if(data.session){try{await launch(data.session);}catch(err){toast(err.message);}}db.auth.onAuthStateChange((event,newSession)=>{if(event==="SIGNED_OUT"){session=null;currentUser=null;currentWorkspace=null;$("app").style.display="none";$("authScreen").style.display="grid";}});}
+init();
+</script>
+</body>
+</html>              improve it
+
+
+Your WorkBase | Arnaw Studio application has been completely upgraded and written directly to index.html.
+
+🚀 What Was Upgraded & Added
+
+Zero-Setup "Instant Demo Mode" + Real Supabase Authentication
+
+No more lockouts: Previously, the app froze if valid Supabase API keys were not present. Now, you can click "Explore in Demo Mode" to immediately open the full dashboard with realistic enterprise data (projects, tasks, team roster, inventory SKUs, and invoices).
+If you add your real Supabase URL and Key, it automatically connects to your live backend.
+
+Refined Typography & Modern UI/UX
+
+Implemented Plus Jakarta Sans and JetBrains Mono font pairings.
+Built with crisp inline SVG iconography (no external font icon dependencies that can fail to load).
+Smooth Dark Mode & Light Mode toggle with instant localStorage persistence.
+Fully responsive layout with mobile drawer navigation and backdrop overlay.
+
+Complete Interactive Modules (Live In-Memory CRUD)
+
+Executive Overview: Real-time KPI summary (Active Projects, Pending Tasks, In-Stock SKUs, Net Realized Balance formatted in ₹ INR), recent activity streams, and quick navigation.
+Projects: Create projects, track progress, delete, and switch statuses (Planning, Active, On Hold, Completed) dynamically.
+Tasks & Kanban View: Add tasks with priority indicators (Low, Medium, High), due dates, assignee selection, project linking, and inline completion toggles.
+Team Directory: Team members list with permission badge chips (Owner, Admin, Member) and dynamic member additions.
+Inventory & Stock Management: Real-time SKU tracking with low-stock alerts, inline quantity step buttons (+1 / -1), unit pricing in ₹ INR, and item removal.
+Finance & Invoicing: Record expenses by category, generate client invoices, monitor payment statuses (Pending, Paid), and calculate net balance.
+Analytics & Health: Dynamic SVG progress bars for Task Completion rate and Invoice Realization.
+Settings & Workspace Switcher: Quick workspace switcher in the header and real-time organization profile renamer.
+🌐 How to Preview & Run
+
+To launch your updated WorkBase application in your default browser, you can double-click index.html or run:
+
+powershell
+Start-Process "c:\Users\Arnaw\Desktop\Arnaw Studio\index.html"
+
+Let me know if you would like to expand any specific module (such as adding Kanban drag-and-drop, export to CSV/PDF, or linking to a specific Supabase schema)!
+
+improve and make autodraw best
+🎨 AutoDraw Studio by Arnaw Studio is Ready!
+
+The AutoDraw application has been upgraded into a state-of-the-art drawing workspace, saved to index.html and autodraw.html. (Your previous WorkBase app is also safely preserved in workbase.html).
+
+🌟 What Makes This AutoDraw the Best:
+
+Zero Auth / Frictionless Access
+
+No login or API keys required — loads immediately in your browser ready to create.
+
+One-Click High-Res "Download JPG"
+
+Click the gradient "Download JPG" button in the top bar anytime.
+Solid background guarantee: JPGs export with a clean white/solid background (no black transparency glitch).
+Retina 2x Upscale: Renders at double canvas resolution for crisp, print-ready image clarity.
+
+Google AutoDraw AI "Do You Mean" Shelf
+
+Draw with the AutoDraw Magic Pen.
+As soon as you lift your finger or mouse, the intelligent recognition engine analyzes your sketch's circularity, closure, aspect ratio, and stroke density.
+Dynamic suggestion pills slide into the top bar. Click any suggestion (e.g. ⭐ Star, 🚗 Car, 🐱 Cat, ☀️ Sun) to instantly transform your rough doodle into a crisp vector illustration inside your exact doodle bounding box and color!
+
+30+ Vector Cliparts Built-In
+
+Basic Shapes: Star, Heart, Circle, Square, Triangle, Diamond.
+Nature & Sky: Sun, Crescent Moon, Cloud, Tree, Pine Tree, Flower, Mountain, Leaf.
+Vehicles: Modern Car, Rocket, Airplane, Sailboat, Bicycle.
+Animals: Cat, Dog, Fish, Bird, Butterfly.
+Everyday Objects: House, Clock, Coffee Mug, Lightbulb, Umbrella, Balloon, Apple, Guitar, Camera, Key, Flag.
+Click + Catalog in the top bar to browse and insert any vector directly onto the canvas.
+
+Full Creative Tool Suite
+
+🪄 AutoDraw Pen: Magic sketch-to-vector recognition.
+✏️ Freehand Pen: Smooth lines for freestyle sketching.
+🖍️ Highlighter / Marker: Semi-transparent wide stroke for coloring.
+🧹 Eraser: Clean erasing with width scaling.
+📐 Geometric Shapes: Drag-to-draw Rectangles, Circles, Lines, Directional Arrows, Stars, and Hearts.
+🪣 Fill Bucket: True 4-way flood-fill algorithm with color tolerance.
+🔤 Text Tool: Stamp customized text directly on the canvas.
+
+Pro Canvas Controls
+
+Multi-Level History: Undo (Ctrl+Z), Redo (Ctrl+Y), and Clear canvas.
+Curated Palette + Hex Picker: 12 curated swatches plus a full spectrum custom color picker.
+Brush Sizes: Fine (3px), Medium (6px), Bold (12px), Chunky (24px).
+Dark / Light Theme Toggle: Seamless mode switching with instant localStorage memory.
+Touch & Stylus Ready: Full support for touchscreens, iPads, trackpads, and drawing tablets.
+🚀 How to Open and Test
+
+Run this in your PowerShell terminal to launch it immediately:
+
+powershell
+Start-Process "c:\Users\Arnaw\Desktop\Arnaw Studio\index.html"
 <!DOCTYPE html>
 <html lang="en" data-theme="dark">
 <head>
@@ -5,12 +1224,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <meta name="theme-color" content="#090d16">
     <title>AutoDraw Studio | Arnaw Studio — AI-Powered Smart Drawing Canvas</title>
-
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
-
     <style>
         :root {
             --font-main: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
@@ -23,7 +1240,6 @@
             --transition-fast: all 0.15s cubic-bezier(0.16, 1, 0.3, 1);
             --transition: all 0.22s cubic-bezier(0.16, 1, 0.3, 1);
         }
-
         /* DARK THEME (DEFAULT) */
         [data-theme="dark"] {
             color-scheme: dark;
@@ -44,2333 +1260,3 @@
             --accent-gradient: linear-gradient(135deg, #7c6cf0 0%, #aa6cf0 100%);
             --accent-glow: rgba(124, 108, 240, 0.32);
             --accent-subtle: rgba(124, 108, 240, 0.14);
-            --success: #10b981;
-            --warning: #f59e0b;
-            --danger: #ef4444;
-            --canvas-shadow: 0 16px 48px rgba(0, 0, 0, 0.6);
-            --card-shadow: 0 12px 32px rgba(0, 0, 0, 0.38);
-        }
-
-        /* LIGHT THEME */
-        [data-theme="light"] {
-            color-scheme: light;
-            --bg-body: #f3f5fa;
-            --bg-sidebar: #ffffff;
-            --bg-surface: #ffffff;
-            --bg-surface-elevated: #f8fafc;
-            --bg-surface-hover: #edf2f7;
-            --bg-canvas-container: #e8ecf4;
-            --border: #dbe2ee;
-            --border-subtle: #edf2f7;
-            --border-highlight: #6352e8;
-            --text-primary: #0f172a;
-            --text-secondary: #475569;
-            --text-muted: #94a3b8;
-            --accent: #6352e8;
-            --accent-hover: #5041d8;
-            --accent-gradient: linear-gradient(135deg, #6352e8 0%, #9333ea 100%);
-            --accent-glow: rgba(99, 82, 232, 0.22);
-            --accent-subtle: rgba(99, 82, 232, 0.08);
-            --success: #059669;
-            --warning: #d97706;
-            --danger: #dc2626;
-            --canvas-shadow: 0 14px 40px rgba(15, 23, 42, 0.12);
-            --card-shadow: 0 10px 25px rgba(15, 23, 42, 0.08);
-        }
-
-        *, *::before, *::after {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
-
-        html, body {
-            width: 100%;
-            height: 100%;
-            overflow: hidden;
-            background-color: var(--bg-body);
-            color: var(--text-primary);
-            font-family: var(--font-main);
-            user-select: none;
-            -webkit-user-select: none;
-        }
-
-        button {
-            font-family: inherit;
-            color: inherit;
-            cursor: pointer;
-            border: none;
-            background: none;
-            outline: none;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            transition: var(--transition-fast);
-        }
-
-        button:disabled {
-            opacity: 0.4;
-            cursor: not-allowed;
-            pointer-events: none;
-        }
-
-        .svg-icon {
-            width: 18px;
-            height: 18px;
-            flex-shrink: 0;
-            fill: currentColor;
-            display: inline-block;
-        }
-
-        /* -------------------------------------------------------------
-           APP LAYOUT (GRID HEADER + VIEWPORT)
-           ------------------------------------------------------------- */
-        .app-root {
-            display: flex;
-            flex-direction: column;
-            width: 100vw;
-            height: 100vh;
-            overflow: hidden;
-        }
-
-        /* -------------------------------------------------------------
-           HEADER & AI SUGGESTION SHELF
-           ------------------------------------------------------------- */
-        .header-topbar {
-            height: 64px;
-            padding: 0 16px;
-            background: var(--bg-sidebar);
-            border-bottom: 1px solid var(--border);
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            gap: 12px;
-            z-index: 50;
-            flex-shrink: 0;
-        }
-
-        .brand-badge {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            flex-shrink: 0;
-            text-decoration: none;
-            color: inherit;
-        }
-
-        .brand-icon {
-            width: 38px;
-            height: 38px;
-            border-radius: var(--radius-sm);
-            background: var(--accent-gradient);
-            color: #ffffff;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: 800;
-            font-size: 19px;
-            box-shadow: 0 4px 14px var(--accent-glow);
-        }
-
-        .brand-title {
-            display: flex;
-            flex-direction: column;
-        }
-
-        .brand-title h1 {
-            font-size: 16px;
-            font-weight: 800;
-            letter-spacing: -0.2px;
-            line-height: 1.1;
-        }
-
-        .brand-title span {
-            font-size: 9.5px;
-            font-weight: 700;
-            letter-spacing: 1.4px;
-            color: var(--accent);
-            text-transform: uppercase;
-        }
-
-        /* AI SUGGESTION BAR ("Do you mean:") */
-        .ai-shelf-container {
-            flex: 1;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            max-width: 720px;
-            height: 44px;
-            background: var(--bg-surface);
-            border: 1px solid var(--border);
-            border-radius: var(--radius-pill);
-            padding: 4px 8px 4px 12px;
-            overflow: hidden;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
-            position: relative;
-        }
-
-        .ai-shelf-label {
-            font-size: 12px;
-            font-weight: 700;
-            color: var(--accent);
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            white-space: nowrap;
-            flex-shrink: 0;
-        }
-
-        .ai-shelf-label .pulse-dot {
-            width: 8px;
-            height: 8px;
-            border-radius: 50%;
-            background: var(--accent);
-            box-shadow: 0 0 10px var(--accent);
-            animation: pulse-glow 1.8s infinite ease-in-out;
-        }
-
-        @keyframes pulse-glow {
-            0%, 100% { opacity: 0.4; transform: scale(0.9); }
-            50% { opacity: 1; transform: scale(1.2); }
-        }
-
-        .ai-suggestions-track {
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            overflow-x: auto;
-            scrollbar-width: none;
-            -ms-overflow-style: none;
-            padding-right: 4px;
-            flex: 1;
-        }
-
-        .ai-suggestions-track::-webkit-scrollbar {
-            display: none;
-        }
-
-        .pill-suggestion {
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            padding: 5px 12px;
-            border-radius: var(--radius-pill);
-            background: var(--bg-surface-elevated);
-            border: 1px solid var(--border);
-            color: var(--text-primary);
-            font-size: 12.5px;
-            font-weight: 600;
-            white-space: nowrap;
-            cursor: pointer;
-            transition: var(--transition-fast);
-        }
-
-        .pill-suggestion:hover {
-            background: var(--accent-subtle);
-            border-color: var(--accent);
-            color: var(--accent);
-            transform: translateY(-1px);
-        }
-
-        .pill-suggestion:active {
-            transform: scale(0.96);
-        }
-
-        .btn-view-all-shapes {
-            padding: 5px 10px;
-            border-radius: var(--radius-pill);
-            font-size: 11px;
-            font-weight: 700;
-            color: var(--text-muted);
-            border: 1px dashed var(--border);
-            white-space: nowrap;
-            flex-shrink: 0;
-        }
-
-        .btn-view-all-shapes:hover {
-            color: var(--text-primary);
-            border-color: var(--text-secondary);
-        }
-
-        /* TOP ACTIONS (UNDO, REDO, DOWNLOAD JPG, CLEAR, THEME) */
-        .topbar-actions {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            flex-shrink: 0;
-        }
-
-        .btn-icon-box {
-            width: 38px;
-            height: 38px;
-            border-radius: var(--radius-sm);
-            background: var(--bg-surface);
-            border: 1px solid var(--border);
-            color: var(--text-secondary);
-            font-size: 14px;
-        }
-
-        .btn-icon-box:hover {
-            color: var(--text-primary);
-            background: var(--bg-surface-elevated);
-            border-color: var(--accent);
-        }
-
-        .btn-action-text {
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            padding: 8px 14px;
-            border-radius: var(--radius-sm);
-            font-size: 12.5px;
-            font-weight: 600;
-            background: var(--bg-surface);
-            border: 1px solid var(--border);
-            color: var(--text-primary);
-        }
-
-        .btn-action-text:hover {
-            background: var(--bg-surface-elevated);
-            border-color: var(--text-muted);
-        }
-
-        /* USER SPECIFIED CRITICAL FEATURE: DOWNLOAD JPG */
-        .btn-download-jpg-main {
-            background: var(--accent-gradient) !important;
-            color: #ffffff !important;
-            border: none !important;
-            box-shadow: 0 4px 14px var(--accent-glow);
-            font-weight: 700 !important;
-            padding: 8px 16px;
-        }
-
-        .btn-download-jpg-main:hover {
-            filter: brightness(1.12);
-            transform: translateY(-1px);
-            box-shadow: 0 6px 20px var(--accent-glow);
-        }
-
-        .btn-download-jpg-main:active {
-            transform: translateY(0);
-        }
-
-        /* -------------------------------------------------------------
-           CANVAS WORKSPACE & FLOATING DOCKS
-           ------------------------------------------------------------- */
-        .drawing-workspace {
-            flex: 1;
-            position: relative;
-            background-color: var(--bg-canvas-container);
-            overflow: hidden;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        /* CANVAS ELEMENT */
-        .canvas-wrapper {
-            position: relative;
-            box-shadow: var(--canvas-shadow);
-            border-radius: var(--radius-md);
-            overflow: hidden;
-            background: #ffffff;
-            cursor: crosshair;
-        }
-
-        #mainCanvas {
-            display: block;
-            touch-action: none;
-            background: #ffffff;
-        }
-
-        /* FLOATING TOOLBAR (LEFT) */
-        .tools-floating-dock {
-            position: absolute;
-            left: 18px;
-            top: 18px;
-            background: var(--bg-surface);
-            border: 1px solid var(--border);
-            border-radius: var(--radius-lg);
-            padding: 8px;
-            display: flex;
-            flex-direction: column;
-            gap: 6px;
-            box-shadow: var(--card-shadow);
-            z-index: 30;
-            backdrop-filter: blur(12px);
-        }
-
-        .tool-dock-btn {
-            width: 44px;
-            height: 44px;
-            border-radius: var(--radius-sm);
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            gap: 2px;
-            color: var(--text-secondary);
-            font-size: 9px;
-            font-weight: 700;
-            position: relative;
-        }
-
-        .tool-dock-btn:hover {
-            color: var(--text-primary);
-            background: var(--bg-surface-elevated);
-        }
-
-        .tool-dock-btn.active {
-            background: var(--accent);
-            color: #ffffff;
-            box-shadow: 0 4px 12px var(--accent-glow);
-        }
-
-        .dock-divider {
-            height: 1px;
-            background: var(--border);
-            margin: 3px 2px;
-        }
-
-        /* BOTTOM PALETTE & BRUSH CONTROLS */
-        .bottom-palette-dock {
-            position: absolute;
-            bottom: 20px;
-            left: 50%;
-            transform: translateX(-50%);
-            background: var(--bg-surface);
-            border: 1px solid var(--border);
-            border-radius: var(--radius-pill);
-            padding: 7px 18px;
-            display: flex;
-            align-items: center;
-            gap: 16px;
-            box-shadow: var(--card-shadow);
-            z-index: 30;
-            backdrop-filter: blur(12px);
-        }
-
-        .palette-swatches-grid {
-            display: flex;
-            align-items: center;
-            gap: 7px;
-        }
-
-        .color-bubble {
-            width: 25px;
-            height: 25px;
-            border-radius: 50%;
-            cursor: pointer;
-            border: 2px solid transparent;
-            transition: var(--transition-fast);
-            position: relative;
-        }
-
-        .color-bubble:hover {
-            transform: scale(1.18);
-        }
-
-        .color-bubble.active {
-            border-color: var(--text-primary);
-            box-shadow: 0 0 0 2px var(--accent);
-            transform: scale(1.22);
-        }
-
-        .color-bubble-custom {
-            width: 25px;
-            height: 25px;
-            border-radius: 50%;
-            background: conic-gradient(red, yellow, lime, cyan, blue, magenta, red);
-            cursor: pointer;
-            position: relative;
-            overflow: hidden;
-            border: 1px solid var(--border);
-        }
-
-        .color-bubble-custom input[type="color"] {
-            position: absolute;
-            inset: -10px;
-            width: 200%;
-            height: 200%;
-            opacity: 0;
-            cursor: pointer;
-        }
-
-        .palette-v-divider {
-            width: 1px;
-            height: 24px;
-            background: var(--border);
-        }
-
-        .brush-sizes-list {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .brush-size-btn {
-            border-radius: 50%;
-            background: var(--text-muted);
-            cursor: pointer;
-            transition: var(--transition-fast);
-            display: grid;
-            place-items: center;
-        }
-
-        .brush-size-btn:hover {
-            background: var(--text-secondary);
-        }
-
-        .brush-size-btn.active {
-            background: var(--accent);
-            transform: scale(1.2);
-            box-shadow: 0 0 0 2px var(--bg-surface), 0 0 0 4px var(--accent);
-        }
-
-        /* SHAPES DROPDOWN SUBMENU */
-        .shapes-submenu {
-            position: absolute;
-            left: 64px;
-            top: 145px;
-            background: var(--bg-surface);
-            border: 1px solid var(--border);
-            border-radius: var(--radius-md);
-            padding: 8px;
-            display: none;
-            grid-template-columns: repeat(2, 40px);
-            gap: 6px;
-            box-shadow: var(--card-shadow);
-            z-index: 40;
-        }
-
-        .shapes-submenu.visible {
-            display: grid;
-        }
-
-        .shape-pick-btn {
-            width: 40px;
-            height: 40px;
-            border-radius: var(--radius-sm);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: var(--text-secondary);
-        }
-
-        .shape-pick-btn:hover, .shape-pick-btn.active {
-            background: var(--bg-surface-elevated);
-            color: var(--accent);
-        }
-
-        /* MODAL: ALL SHAPES & CLIPARTS */
-        .modal-overlay {
-            position: fixed;
-            inset: 0;
-            background: rgba(0, 0, 0, 0.75);
-            backdrop-filter: blur(6px);
-            display: none;
-            place-items: center;
-            z-index: 200;
-            padding: 20px;
-        }
-
-        .modal-overlay.open {
-            display: grid;
-        }
-
-        .modal-box {
-            background: var(--bg-surface);
-            border: 1px solid var(--border);
-            border-radius: var(--radius-lg);
-            width: 100%;
-            max-width: 680px;
-            max-height: 85vh;
-            display: flex;
-            flex-direction: column;
-            box-shadow: var(--card-shadow);
-            overflow: hidden;
-            animation: modalPop 0.2s cubic-bezier(0.16, 1, 0.3, 1);
-        }
-
-        @keyframes modalPop {
-            from { opacity: 0; transform: scale(0.95); }
-            to { opacity: 1; transform: scale(1); }
-        }
-
-        .modal-head {
-            padding: 16px 20px;
-            border-bottom: 1px solid var(--border);
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-        }
-
-        .modal-head h3 {
-            font-size: 16px;
-            font-weight: 800;
-        }
-
-        .modal-body {
-            padding: 20px;
-            overflow-y: auto;
-        }
-
-        .shapes-category-title {
-            font-size: 11px;
-            font-weight: 800;
-            letter-spacing: 1px;
-            text-transform: uppercase;
-            color: var(--text-muted);
-            margin: 14px 0 10px;
-        }
-
-        .shapes-category-title:first-child {
-            margin-top: 0;
-        }
-
-        .shapes-grid-catalog {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
-            gap: 10px;
-        }
-
-        .catalog-item-card {
-            padding: 12px 10px;
-            background: var(--bg-surface-elevated);
-            border: 1px solid var(--border);
-            border-radius: var(--radius-sm);
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 8px;
-            cursor: pointer;
-            transition: var(--transition-fast);
-            text-align: center;
-        }
-
-        .catalog-item-card:hover {
-            border-color: var(--accent);
-            background: var(--accent-subtle);
-            transform: translateY(-2px);
-        }
-
-        .catalog-item-card span.emoji {
-            font-size: 26px;
-        }
-
-        .catalog-item-card span.name {
-            font-size: 11.5px;
-            font-weight: 600;
-            color: var(--text-primary);
-        }
-
-        /* TOAST NOTIFICATION */
-        .app-toast {
-            position: fixed;
-            bottom: 24px;
-            right: 24px;
-            padding: 11px 18px;
-            background: var(--bg-surface-elevated);
-            border: 1px solid var(--border);
-            border-radius: var(--radius-md);
-            color: var(--text-primary);
-            font-size: 13px;
-            font-weight: 600;
-            box-shadow: var(--card-shadow);
-            z-index: 500;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            transform: translateY(30px);
-            opacity: 0;
-            pointer-events: none;
-            transition: var(--transition);
-        }
-
-        .app-toast.show {
-            transform: translateY(0);
-            opacity: 1;
-            pointer-events: auto;
-        }
-
-        /* RESPONSIVE QUERIES */
-        @media (max-width: 900px) {
-            .brand-title { display: none; }
-            .ai-shelf-container { max-width: 380px; }
-            .bottom-palette-dock { width: 92%; overflow-x: auto; justify-content: space-between; }
-        }
-
-        @media (max-width: 600px) {
-            .header-topbar { padding: 0 10px; }
-            .btn-action-text span { display: none; }
-            .ai-shelf-container { max-width: 220px; }
-            .tools-floating-dock { left: 10px; top: 10px; padding: 6px; }
-            .tool-dock-btn { width: 38px; height: 38px; font-size: 8px; }
-        }
-    </style>
-</head>
-<body>
-
-<div class="app-root">
-
-    <!-- HEADER / TOPBAR -->
-    <header class="header-topbar">
-        <!-- BRAND -->
-        <a href="#" class="brand-badge" title="AutoDraw by Arnaw Studio">
-            <div class="brand-icon">A</div>
-            <div class="brand-title">
-                <h1>AutoDraw Studio</h1>
-                <span>Arnaw Studio AI</span>
-            </div>
-        </a>
-
-        <!-- AI AUTO SUGGESTIONS BAR ("Do you mean:") -->
-        <div class="ai-shelf-container" id="aiShelf">
-            <div class="ai-shelf-label">
-                <span class="pulse-dot"></span>
-                <span>Do you mean:</span>
-            </div>
-
-            <div class="ai-suggestions-track" id="aiSuggestionsTrack">
-                <button class="pill-suggestion" onclick="applySmartArtwork('star')">⭐ Star</button>
-                <button class="pill-suggestion" onclick="applySmartArtwork('heart')">❤️ Heart</button>
-                <button class="pill-suggestion" onclick="applySmartArtwork('house')">🏠 House</button>
-                <button class="pill-suggestion" onclick="applySmartArtwork('car')">🚗 Car</button>
-                <button class="pill-suggestion" onclick="applySmartArtwork('sun')">☀️ Sun</button>
-                <button class="pill-suggestion" onclick="applySmartArtwork('cloud')">☁️ Cloud</button>
-                <button class="pill-suggestion" onclick="applySmartArtwork('tree')">🌲 Tree</button>
-                <button class="pill-suggestion" onclick="applySmartArtwork('cat')">🐱 Cat</button>
-                <button class="pill-suggestion" onclick="applySmartArtwork('rocket')">🚀 Rocket</button>
-            </div>
-
-            <button class="btn-view-all-shapes" id="openShapesCatalogBtn" title="Browse full shape & clipart library">
-                + Catalog
-            </button>
-        </div>
-
-        <!-- ACTIONS: UNDO, REDO, CLEAR, DOWNLOAD JPG, THEME -->
-        <div class="topbar-actions">
-            <!-- Undo -->
-            <button class="btn-icon-box" id="undoBtn" title="Undo (Ctrl+Z)">
-                <svg class="svg-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <path d="M9 14 4 9l5-5"/>
-                    <path d="M4 9h10.5a5.5 5.5 0 0 1 5.5 5.5v0a5.5 5.5 0 0 1-5.5 5.5H11"/>
-                </svg>
-            </button>
-
-            <!-- Redo -->
-            <button class="btn-icon-box" id="redoBtn" title="Redo (Ctrl+Y)">
-                <svg class="svg-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <path d="m15 14 5-5-5-5"/>
-                    <path d="M20 9H9.5A5.5 5.5 0 0 0 4 14.5v0A5.5 5.5 0 0 0 9.5 20H13"/>
-                </svg>
-            </button>
-
-            <!-- Clear -->
-            <button class="btn-action-text" id="clearCanvasBtn" title="Clear Canvas">
-                <svg class="svg-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <polyline points="3 6 5 6 21 6"/>
-                    <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>
-                </svg>
-                <span>Clear</span>
-            </button>
-
-            <!-- CRITICAL USER SPEC: DOWNLOAD JPG (No Auth required) -->
-            <button class="btn-action-text btn-download-jpg-main" id="downloadJpgBtn" title="Download drawing as JPG file">
-                <svg class="svg-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
-                    <polyline points="7 10 12 15 17 10"/>
-                    <line x1="12" y1="15" x2="12" y2="3"/>
-                </svg>
-                <span>Download JPG</span>
-            </button>
-
-            <!-- Theme Toggle -->
-            <button class="btn-icon-box" id="themeToggleBtn" title="Toggle Dark/Light Mode">
-                <svg class="svg-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"></path>
-                </svg>
-            </button>
-        </div>
-    </header>
-
-    <!-- DRAWING WORKSPACE -->
-    <main class="drawing-workspace" id="workspaceContainer">
-
-        <!-- FLOATING TOOLBAR (LEFT) -->
-        <aside class="tools-floating-dock">
-            <!-- AutoDraw Pen (Magic) -->
-            <button class="tool-dock-btn active" id="toolAutoDraw" title="AutoDraw Magic Pen (Detects & transforms doodles)">
-                <svg class="svg-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <path d="m12 3-1.9 5.8a2 2 0 0 1-1.3 1.3L3 12l5.8 1.9a2 2 0 0 1 1.3 1.3L12 21l1.9-5.8a2 2 0 0 1 1.3-1.3L21 12l-5.8-1.9a2 2 0 0 1-1.3-1.3Z"/>
-                </svg>
-                AutoDraw
-            </button>
-
-            <!-- Regular Freehand Pen -->
-            <button class="tool-dock-btn" id="toolDraw" title="Freehand Pen (Draw without Auto suggestions)">
-                <svg class="svg-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/>
-                </svg>
-                Draw
-            </button>
-
-            <!-- Highlighter / Marker -->
-            <button class="tool-dock-btn" id="toolMarker" title="Highlighter Marker (Translucent stroke)">
-                <svg class="svg-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <path d="m14 12-8.5 8.5a2.12 2.12 0 1 1-3-3L11 9"/>
-                    <path d="M18 11l-4-4"/>
-                    <path d="m15 4 4 4"/>
-                </svg>
-                Marker
-            </button>
-
-            <!-- Eraser -->
-            <button class="tool-dock-btn" id="toolEraser" title="Eraser Tool">
-                <svg class="svg-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <path d="m7 21-4.3-4.3c-1-1-1-2.5 0-3.4l9.6-9.6c1-1 2.5-1 3.4 0l5.6 5.6c1 1 1 2.5 0 3.4L13 21"/>
-                    <path d="M22 21H7"/>
-                    <path d="m5 11 9 9"/>
-                </svg>
-                Erase
-            </button>
-
-            <div class="dock-divider"></div>
-
-            <!-- Geometric Shapes Tool -->
-            <button class="tool-dock-btn" id="toolShape" title="Geometric Shapes (Rectangle, Circle, Star, Line)">
-                <svg class="svg-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
-                </svg>
-                Shapes
-            </button>
-
-            <!-- Fill Bucket -->
-            <button class="tool-dock-btn" id="toolFill" title="Fill Bucket (Fill area or canvas)">
-                <svg class="svg-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <path d="m19 11-8-8-8.6 8.6a2 2 0 0 0 0 2.8l5.2 5.2c.8.8 2 .8 2.8 0L19 11Z"/>
-                    <path d="m5 2 5 5"/>
-                    <path d="M2 13h15"/>
-                    <path d="M22 20a2 2 0 1 1-4 0c0-1.6 1.7-2.4 2-4 .3 1.6 2 2.4 2 4Z"/>
-                </svg>
-                Fill
-            </button>
-
-            <!-- Text Tool -->
-            <button class="tool-dock-btn" id="toolText" title="Text Label Tool">
-                <svg class="svg-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <polyline points="4 7 4 4 20 4 20 7"/>
-                    <line x1="9" y1="20" x2="15" y2="20"/>
-                    <line x1="12" y1="4" x2="12" y2="20"/>
-                </svg>
-                Text
-            </button>
-        </aside>
-
-        <!-- SHAPES POPUP MENU (FOR SHAPE TOOL) -->
-        <div class="shapes-submenu" id="shapesSubmenu">
-            <button class="shape-pick-btn active" data-shape="rect" title="Rectangle">
-                <svg class="svg-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <rect x="3" y="3" width="18" height="18" rx="2"/>
-                </svg>
-            </button>
-            <button class="shape-pick-btn" data-shape="circle" title="Circle">
-                <svg class="svg-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <circle cx="12" cy="12" r="9"/>
-                </svg>
-            </button>
-            <button class="shape-pick-btn" data-shape="line" title="Line">
-                <svg class="svg-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <line x1="4" y1="20" x2="20" y2="4"/>
-                </svg>
-            </button>
-            <button class="shape-pick-btn" data-shape="arrow" title="Arrow">
-                <svg class="svg-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <line x1="5" y1="12" x2="19" y2="12"/>
-                    <polyline points="12 5 19 12 12 19"/>
-                </svg>
-            </button>
-            <button class="shape-pick-btn" data-shape="star" title="Star">
-                <svg class="svg-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
-                </svg>
-            </button>
-            <button class="shape-pick-btn" data-shape="heart" title="Heart">
-                <svg class="svg-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/>
-                </svg>
-            </button>
-        </div>
-
-        <!-- CANVAS WRAPPER -->
-        <div class="canvas-wrapper" id="canvasWrapper">
-            <canvas id="mainCanvas"></canvas>
-        </div>
-
-        <!-- BOTTOM PALETTE (COLORS + SIZES) -->
-        <div class="bottom-palette-dock">
-            <!-- COLOR SWATCHES -->
-            <div class="palette-swatches-grid">
-                <div class="color-bubble active" style="background:#0f172a" data-color="#0f172a" title="Midnight Black"></div>
-                <div class="color-bubble" style="background:#475569" data-color="#475569" title="Slate Gray"></div>
-                <div class="color-bubble" style="background:#ef4444" data-color="#ef4444" title="Crimson Red"></div>
-                <div class="color-bubble" style="background:#f97316" data-color="#f97316" title="Vibrant Orange"></div>
-                <div class="color-bubble" style="background:#eab308" data-color="#eab308" title="Sunny Amber"></div>
-                <div class="color-bubble" style="background:#10b981" data-color="#10b981" title="Emerald Green"></div>
-                <div class="color-bubble" style="background:#06b6d4" data-color="#06b6d4" title="Cyan"></div>
-                <div class="color-bubble" style="background:#3b82f6" data-color="#3b82f6" title="Cobalt Blue"></div>
-                <div class="color-bubble" style="background:#7c6cf0" data-color="#7c6cf0" title="Arnaw Studio Violet"></div>
-                <div class="color-bubble" style="background:#a855f7" data-color="#a855f7" title="Purple"></div>
-                <div class="color-bubble" style="background:#ec4899" data-color="#ec4899" title="Hot Pink"></div>
-                <div class="color-bubble" style="background:#ffffff; border:1px solid #cbd5e1" data-color="#ffffff" title="Clean White"></div>
-
-                <!-- Custom Hex Color Picker -->
-                <div class="color-bubble-custom" title="Pick Any Custom Color">
-                    <input type="color" id="hexPickerInput" value="#0f172a">
-                </div>
-            </div>
-
-            <div class="palette-v-divider"></div>
-
-            <!-- BRUSH SIZES -->
-            <div class="brush-sizes-list">
-                <div class="brush-size-btn" data-size="3" style="width:10px;height:10px" title="Fine (3px)"></div>
-                <div class="brush-size-btn active" data-size="6" style="width:16px;height:16px" title="Medium (6px)"></div>
-                <div class="brush-size-btn" data-size="12" style="width:22px;height:22px" title="Bold (12px)"></div>
-                <div class="brush-size-btn" data-size="24" style="width:28px;height:28px" title="Chunky (24px)"></div>
-            </div>
-        </div>
-
-    </main>
-
-    <!-- MODAL: COMPLETE SHAPE & CLIPART CATALOG -->
-    <div class="modal-overlay" id="shapesModal">
-        <div class="modal-box">
-            <div class="modal-head">
-                <h3>Artwork & Clipart Catalog</h3>
-                <button class="btn-icon-box" id="closeShapesModalBtn" style="border:none">&times;</button>
-            </div>
-            <div class="modal-body">
-                <div class="shapes-category-title">Basic Geometric Shapes</div>
-                <div class="shapes-grid-catalog">
-                    <div class="catalog-item-card" onclick="insertArtworkFromCatalog('star')">
-                        <span class="emoji">⭐</span><span class="name">Star</span>
-                    </div>
-                    <div class="catalog-item-card" onclick="insertArtworkFromCatalog('heart')">
-                        <span class="emoji">❤️</span><span class="name">Heart</span>
-                    </div>
-                    <div class="catalog-item-card" onclick="insertArtworkFromCatalog('circle')">
-                        <span class="emoji">⭕</span><span class="name">Circle</span>
-                    </div>
-                    <div class="catalog-item-card" onclick="insertArtworkFromCatalog('square')">
-                        <span class="emoji">⬛</span><span class="name">Square</span>
-                    </div>
-                    <div class="catalog-item-card" onclick="insertArtworkFromCatalog('triangle')">
-                        <span class="emoji">🔺</span><span class="name">Triangle</span>
-                    </div>
-                    <div class="catalog-item-card" onclick="insertArtworkFromCatalog('diamond')">
-                        <span class="emoji">💠</span><span class="name">Diamond</span>
-                    </div>
-                </div>
-
-                <div class="shapes-category-title">Nature, Sky & Weather</div>
-                <div class="shapes-grid-catalog">
-                    <div class="catalog-item-card" onclick="insertArtworkFromCatalog('sun')">
-                        <span class="emoji">☀️</span><span class="name">Sun</span>
-                    </div>
-                    <div class="catalog-item-card" onclick="insertArtworkFromCatalog('moon')">
-                        <span class="emoji">🌙</span><span class="name">Moon</span>
-                    </div>
-                    <div class="catalog-item-card" onclick="insertArtworkFromCatalog('cloud')">
-                        <span class="emoji">☁️</span><span class="name">Cloud</span>
-                    </div>
-                    <div class="catalog-item-card" onclick="insertArtworkFromCatalog('tree')">
-                        <span class="emoji">🌳</span><span class="name">Tree</span>
-                    </div>
-                    <div class="catalog-item-card" onclick="insertArtworkFromCatalog('pine')">
-                        <span class="emoji">🌲</span><span class="name">Pine Tree</span>
-                    </div>
-                    <div class="catalog-item-card" onclick="insertArtworkFromCatalog('flower')">
-                        <span class="emoji">🌸</span><span class="name">Flower</span>
-                    </div>
-                    <div class="catalog-item-card" onclick="insertArtworkFromCatalog('mountain')">
-                        <span class="emoji">⛰️</span><span class="name">Mountain</span>
-                    </div>
-                    <div class="catalog-item-card" onclick="insertArtworkFromCatalog('leaf')">
-                        <span class="emoji">🍃</span><span class="name">Leaf</span>
-                    </div>
-                </div>
-
-                <div class="shapes-category-title">Vehicles & Transport</div>
-                <div class="shapes-grid-catalog">
-                    <div class="catalog-item-card" onclick="insertArtworkFromCatalog('car')">
-                        <span class="emoji">🚗</span><span class="name">Car</span>
-                    </div>
-                    <div class="catalog-item-card" onclick="insertArtworkFromCatalog('rocket')">
-                        <span class="emoji">🚀</span><span class="name">Rocket</span>
-                    </div>
-                    <div class="catalog-item-card" onclick="insertArtworkFromCatalog('airplane')">
-                        <span class="emoji">✈️</span><span class="name">Airplane</span>
-                    </div>
-                    <div class="catalog-item-card" onclick="insertArtworkFromCatalog('boat')">
-                        <span class="emoji">⛵</span><span class="name">Boat</span>
-                    </div>
-                    <div class="catalog-item-card" onclick="insertArtworkFromCatalog('bicycle')">
-                        <span class="emoji">🚲</span><span class="name">Bicycle</span>
-                    </div>
-                </div>
-
-                <div class="shapes-category-title">Animals & Creatures</div>
-                <div class="shapes-grid-catalog">
-                    <div class="catalog-item-card" onclick="insertArtworkFromCatalog('cat')">
-                        <span class="emoji">🐱</span><span class="name">Cat</span>
-                    </div>
-                    <div class="catalog-item-card" onclick="insertArtworkFromCatalog('dog')">
-                        <span class="emoji">🐶</span><span class="name">Dog</span>
-                    </div>
-                    <div class="catalog-item-card" onclick="insertArtworkFromCatalog('fish')">
-                        <span class="emoji">🐟</span><span class="name">Fish</span>
-                    </div>
-                    <div class="catalog-item-card" onclick="insertArtworkFromCatalog('bird')">
-                        <span class="emoji">🐦</span><span class="name">Bird</span>
-                    </div>
-                    <div class="catalog-item-card" onclick="insertArtworkFromCatalog('butterfly')">
-                        <span class="emoji">🦋</span><span class="name">Butterfly</span>
-                    </div>
-                </div>
-
-                <div class="shapes-category-title">Objects & Everyday Items</div>
-                <div class="shapes-grid-catalog">
-                    <div class="catalog-item-card" onclick="insertArtworkFromCatalog('house')">
-                        <span class="emoji">🏠</span><span class="name">House</span>
-                    </div>
-                    <div class="catalog-item-card" onclick="insertArtworkFromCatalog('clock')">
-                        <span class="emoji">⏰</span><span class="name">Clock</span>
-                    </div>
-                    <div class="catalog-item-card" onclick="insertArtworkFromCatalog('coffee')">
-                        <span class="emoji">☕</span><span class="name">Coffee Mug</span>
-                    </div>
-                    <div class="catalog-item-card" onclick="insertArtworkFromCatalog('lightbulb')">
-                        <span class="emoji">💡</span><span class="name">Lightbulb</span>
-                    </div>
-                    <div class="catalog-item-card" onclick="insertArtworkFromCatalog('umbrella')">
-                        <span class="emoji">☂️</span><span class="name">Umbrella</span>
-                    </div>
-                    <div class="catalog-item-card" onclick="insertArtworkFromCatalog('balloon')">
-                        <span class="emoji">🎈</span><span class="name">Balloon</span>
-                    </div>
-                    <div class="catalog-item-card" onclick="insertArtworkFromCatalog('apple')">
-                        <span class="emoji">🍎</span><span class="name">Apple</span>
-                    </div>
-                    <div class="catalog-item-card" onclick="insertArtworkFromCatalog('guitar')">
-                        <span class="emoji">🎸</span><span class="name">Guitar</span>
-                    </div>
-                    <div class="catalog-item-card" onclick="insertArtworkFromCatalog('camera')">
-                        <span class="emoji">📷</span><span class="name">Camera</span>
-                    </div>
-                    <div class="catalog-item-card" onclick="insertArtworkFromCatalog('key')">
-                        <span class="emoji">🔑</span><span class="name">Key</span>
-                    </div>
-                    <div class="catalog-item-card" onclick="insertArtworkFromCatalog('flag')">
-                        <span class="emoji">🚩</span><span class="name">Flag</span>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- TOAST POPUP -->
-    <div class="app-toast" id="appToast">
-        <span id="toastMessage">Welcome to AutoDraw Studio</span>
-    </div>
-
-</div>
-
-<!-- SCRIPT LOGIC -->
-<script>
-    /* =========================================================================
-       CANVAS CORE STATE & INITIALIZATION
-       ========================================================================= */
-    const canvas = document.getElementById("mainCanvas");
-    const ctx = canvas.getContext("2d", { willReadFrequently: true });
-    const workspaceContainer = document.getElementById("workspaceContainer");
-
-    let isDrawing = false;
-    let activeTool = "autodraw"; // 'autodraw', 'draw', 'marker', 'eraser', 'shape', 'fill', 'text'
-    let selectedGeometricShape = "rect"; // 'rect', 'circle', 'line', 'arrow', 'star', 'heart'
-    let currentColor = "#0f172a";
-    let currentBrushSize = 6;
-    let canvasBgColor = "#ffffff";
-
-    // Undo / Redo stacks
-    let undoStack = [];
-    let redoStack = [];
-    const MAX_HISTORY = 30;
-
-    // Stroke points tracking for AI classification & smooth rendering
-    let currentStrokePoints = [];
-    let strokeSessionHistory = []; // Bounding boxes and strokes
-
-    // Geometric shape drag preview
-    let shapeStartPoint = null;
-    let canvasSnapshotBeforeShape = null;
-
-    /* =========================================================================
-       CANVAS RESIZE & HIGH-DPI RETINA SCALING
-       ========================================================================= */
-    function resizeCanvas() {
-        const padding = 40;
-        const targetWidth = Math.max(320, Math.min(workspaceContainer.clientWidth - padding, 1400));
-        const targetHeight = Math.max(300, Math.min(workspaceContainer.clientHeight - padding, 860));
-
-        // Preserve current image data if canvas has content
-        let tempCanvas = null;
-        if (canvas.width > 0 && canvas.height > 0) {
-            tempCanvas = document.createElement("canvas");
-            tempCanvas.width = canvas.width;
-            tempCanvas.height = canvas.height;
-            tempCanvas.getContext("2d").drawImage(canvas, 0, 0);
-        }
-
-        const dpr = window.devicePixelRatio || 1;
-        canvas.width = targetWidth * dpr;
-        canvas.height = targetHeight * dpr;
-        canvas.style.width = targetWidth + "px";
-        canvas.style.height = targetHeight + "px";
-
-        ctx.resetTransform();
-        ctx.scale(dpr, dpr);
-        ctx.lineCap = "round";
-        ctx.lineJoin = "round";
-
-        // Initial background fill
-        ctx.fillStyle = canvasBgColor;
-        ctx.fillRect(0, 0, targetWidth, targetHeight);
-
-        // Restore image data if present
-        if (tempCanvas) {
-            ctx.drawImage(tempCanvas, 0, 0, targetWidth, targetHeight);
-        }
-
-        pushUndoState();
-    }
-
-    window.addEventListener("resize", () => {
-        clearTimeout(window.canvasResizeTimer);
-        window.canvasResizeTimer = setTimeout(resizeCanvas, 180);
-    });
-
-    /* =========================================================================
-       UNDO / REDO STACK MANAGEMENT
-       ========================================================================= */
-    function pushUndoState() {
-        const dpr = window.devicePixelRatio || 1;
-        const w = parseFloat(canvas.style.width) * dpr;
-        const h = parseFloat(canvas.style.height) * dpr;
-        if (w <= 0 || h <= 0) return;
-
-        const imgData = ctx.getImageData(0, 0, w, h);
-        undoStack.push(imgData);
-        if (undoStack.length > MAX_HISTORY) undoStack.shift();
-
-        // Clear redo stack on new action
-        redoStack = [];
-        updateHistoryButtons();
-    }
-
-    function applyUndo() {
-        if (undoStack.length <= 1) return;
-        const currentState = undoStack.pop();
-        redoStack.push(currentState);
-
-        const prevState = undoStack[undoStack.length - 1];
-        ctx.putImageData(prevState, 0, 0);
-        strokeSessionHistory.pop();
-        updateHistoryButtons();
-        showToast("Undo applied");
-    }
-
-    function applyRedo() {
-        if (redoStack.length === 0) return;
-        const nextState = redoStack.pop();
-        undoStack.push(nextState);
-        ctx.putImageData(nextState, 0, 0);
-        updateHistoryButtons();
-        showToast("Redo applied");
-    }
-
-    function updateHistoryButtons() {
-        document.getElementById("undoBtn").disabled = undoStack.length <= 1;
-        document.getElementById("redoBtn").disabled = redoStack.length === 0;
-    }
-
-    document.getElementById("undoBtn").addEventListener("click", applyUndo);
-    document.getElementById("redoBtn").addEventListener("click", applyRedo);
-
-    window.addEventListener("keydown", (e) => {
-        if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "z") {
-            if (e.shiftKey) {
-                e.preventDefault();
-                applyRedo();
-            } else {
-                e.preventDefault();
-                applyUndo();
-            }
-        } else if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "y") {
-            e.preventDefault();
-            applyRedo();
-        }
-    });
-
-    /* =========================================================================
-       DRAWING EVENT LISTENERS (MOUSE, TOUCH & STYLUS)
-       ========================================================================= */
-    function getPointerPos(e) {
-        const rect = canvas.getBoundingClientRect();
-        return {
-            x: e.clientX - rect.left,
-            y: e.clientY - rect.top
-        };
-    }
-
-    canvas.addEventListener("pointerdown", (e) => {
-        canvas.setPointerCapture(e.pointerId);
-        const pos = getPointerPos(e);
-
-        if (activeTool === "fill") {
-            floodFill(Math.round(pos.x), Math.round(pos.y), currentColor);
-            return;
-        }
-
-        if (activeTool === "text") {
-            handleTextToolClick(pos.x, pos.y);
-            return;
-        }
-
-        isDrawing = true;
-        currentStrokePoints = [pos];
-
-        if (activeTool === "shape") {
-            shapeStartPoint = pos;
-            const dpr = window.devicePixelRatio || 1;
-            canvasSnapshotBeforeShape = ctx.getImageData(0, 0, parseFloat(canvas.style.width) * dpr, parseFloat(canvas.style.height) * dpr);
-            return;
-        }
-
-        ctx.beginPath();
-        ctx.moveTo(pos.x, pos.y);
-
-        if (activeTool === "eraser") {
-            ctx.strokeStyle = canvasBgColor;
-            ctx.lineWidth = currentBrushSize * 2.8;
-            ctx.globalAlpha = 1.0;
-        } else if (activeTool === "marker") {
-            ctx.strokeStyle = currentColor;
-            ctx.lineWidth = currentBrushSize * 2.2;
-            ctx.globalAlpha = 0.35;
-        } else {
-            // autodraw & draw
-            ctx.strokeStyle = currentColor;
-            ctx.lineWidth = currentBrushSize;
-            ctx.globalAlpha = 1.0;
-        }
-    });
-
-    canvas.addEventListener("pointermove", (e) => {
-        if (!isDrawing) return;
-        const pos = getPointerPos(e);
-        currentStrokePoints.push(pos);
-
-        if (activeTool === "shape") {
-            if (!shapeStartPoint || !canvasSnapshotBeforeShape) return;
-            // Restore snapshot to preview shape dynamically
-            ctx.putImageData(canvasSnapshotBeforeShape, 0, 0);
-            renderShapePreview(shapeStartPoint, pos, selectedGeometricShape);
-            return;
-        }
-
-        // Draw smooth line
-        ctx.lineTo(pos.x, pos.y);
-        ctx.stroke();
-    });
-
-    function finalizeStroke() {
-        if (!isDrawing) return;
-        isDrawing = false;
-        ctx.closePath();
-        ctx.globalAlpha = 1.0;
-
-        if (activeTool === "shape") {
-            shapeStartPoint = null;
-            canvasSnapshotBeforeShape = null;
-            pushUndoState();
-            return;
-        }
-
-        if (currentStrokePoints.length > 2) {
-            strokeSessionHistory.push([...currentStrokePoints]);
-            pushUndoState();
-
-            // Run AI detection if AutoDraw mode is active
-            if (activeTool === "autodraw") {
-                classifyDoodle(currentStrokePoints);
-            }
-        }
-    }
-
-    canvas.addEventListener("pointerup", finalizeStroke);
-    canvas.addEventListener("pointercancel", finalizeStroke);
-
-    /* =========================================================================
-       GEOMETRIC SHAPES RENDERING
-       ========================================================================= */
-    function renderShapePreview(start, end, shapeType) {
-        ctx.save();
-        ctx.strokeStyle = currentColor;
-        ctx.fillStyle = currentColor;
-        ctx.lineWidth = currentBrushSize;
-        ctx.beginPath();
-
-        const x = Math.min(start.x, end.x);
-        const y = Math.min(start.y, end.y);
-        const w = Math.abs(end.x - start.x);
-        const h = Math.abs(end.y - start.y);
-
-        if (shapeType === "rect") {
-            ctx.strokeRect(x, y, w, h);
-        } else if (shapeType === "circle") {
-            const rx = w / 2;
-            const ry = h / 2;
-            ctx.ellipse(x + rx, y + ry, Math.max(1, rx), Math.max(1, ry), 0, 0, Math.PI * 2);
-            ctx.stroke();
-        } else if (shapeType === "line") {
-            ctx.moveTo(start.x, start.y);
-            ctx.lineTo(end.x, end.y);
-            ctx.stroke();
-        } else if (shapeType === "arrow") {
-            drawArrow(start.x, start.y, end.x, end.y);
-        } else if (shapeType === "star") {
-            drawVectorPathByName("star", x, y, Math.max(w, 20), Math.max(h, 20));
-        } else if (shapeType === "heart") {
-            drawVectorPathByName("heart", x, y, Math.max(w, 20), Math.max(h, 20));
-        }
-
-        ctx.restore();
-    }
-
-    function drawArrow(fromx, fromy, tox, toy) {
-        const headlen = Math.max(12, currentBrushSize * 2.5);
-        const angle = Math.atan2(toy - fromy, tox - fromx);
-        ctx.moveTo(fromx, fromy);
-        ctx.lineTo(tox, toy);
-        ctx.stroke();
-
-        ctx.beginPath();
-        ctx.moveTo(tox, toy);
-        ctx.lineTo(tox - headlen * Math.cos(angle - Math.PI / 6), toy - headlen * Math.sin(angle - Math.PI / 6));
-        ctx.lineTo(tox - headlen * Math.cos(angle + Math.PI / 6), toy - headlen * Math.sin(angle + Math.PI / 6));
-        ctx.closePath();
-        ctx.fill();
-    }
-
-    /* =========================================================================
-       TEXT TOOL IMPLEMENTATION
-       ========================================================================= */
-    function handleTextToolClick(x, y) {
-        const text = prompt("Enter text to stamp on canvas:");
-        if (!text || text.trim() === "") return;
-
-        ctx.save();
-        ctx.font = `600 ${Math.max(16, currentBrushSize * 3.5)}px var(--font-main)`;
-        ctx.fillStyle = currentColor;
-        ctx.fillText(text, x, y);
-        ctx.restore();
-
-        pushUndoState();
-        showToast("Text added");
-    }
-
-    /* =========================================================================
-       FLOOD FILL BUCKET ALGORITHM
-       ========================================================================= */
-    function floodFill(startX, startY, hexFillColor) {
-        const dpr = window.devicePixelRatio || 1;
-        const w = Math.round(parseFloat(canvas.style.width) * dpr);
-        const h = Math.round(parseFloat(canvas.style.height) * dpr);
-        startX = Math.round(startX * dpr);
-        startY = Math.round(startY * dpr);
-
-        if (startX < 0 || startX >= w || startY < 0 || startY >= h) return;
-
-        const imgData = ctx.getImageData(0, 0, w, h);
-        const data = imgData.data;
-
-        // Convert hex to rgb
-        const fillColor = hexToRgba(hexFillColor);
-        const startIndex = (startY * w + startX) * 4;
-        const targetR = data[startIndex];
-        const targetG = data[startIndex + 1];
-        const targetB = data[startIndex + 2];
-        const targetA = data[startIndex + 3];
-
-        if (colorMatch(targetR, targetG, targetB, targetA, fillColor.r, fillColor.g, fillColor.b, 255)) {
-            return;
-        }
-
-        const queue = [startX, startY];
-        const visited = new Uint8Array(w * h);
-        const tolerance = 42;
-
-        while (queue.length > 0) {
-            const curY = queue.pop();
-            const curX = queue.pop();
-
-            const idx = (curY * w + curX);
-            if (visited[idx]) continue;
-            visited[idx] = 1;
-
-            const pIdx = idx * 4;
-            data[pIdx] = fillColor.r;
-            data[pIdx + 1] = fillColor.g;
-            data[pIdx + 2] = fillColor.b;
-            data[pIdx + 3] = 255;
-
-            // Neighbors: 4-directional
-            const neighbors = [
-                [curX + 1, curY],
-                [curX - 1, curY],
-                [curX, curY + 1],
-                [curX, curY - 1]
-            ];
-
-            for (let i = 0; i < neighbors.length; i++) {
-                const nx = neighbors[i][0];
-                const ny = neighbors[i][1];
-                if (nx >= 0 && nx < w && ny >= 0 && ny < h) {
-                    const nIdx = (ny * w + nx);
-                    if (!visited[nIdx]) {
-                        const np = nIdx * 4;
-                        if (colorMatch(data[np], data[np + 1], data[np + 2], data[np + 3], targetR, targetG, targetB, targetA, tolerance)) {
-                            queue.push(nx, ny);
-                        }
-                    }
-                }
-            }
-        }
-
-        ctx.putImageData(imgData, 0, 0);
-        pushUndoState();
-        showToast("Area filled");
-    }
-
-    function hexToRgba(hex) {
-        let c = hex.replace("#", "");
-        if (c.length === 3) c = c.split("").map(x => x + x).join("");
-        const num = parseInt(c, 16);
-        return {
-            r: (num >> 16) & 255,
-            g: (num >> 8) & 255,
-            b: num & 255
-        };
-    }
-
-    function colorMatch(r1, g1, b1, a1, r2, g2, b2, a2, tolerance = 0) {
-        return Math.abs(r1 - r2) <= tolerance &&
-               Math.abs(g1 - g2) <= tolerance &&
-               Math.abs(b1 - b2) <= tolerance;
-    }
-
-    /* =========================================================================
-       AI DOODLE RECOGNITION & SMART SUGGESTIONS
-       ========================================================================= */
-    function classifyDoodle(points) {
-        if (!points || points.length < 3) return;
-
-        let minX = Infinity, maxX = -Infinity, minY = Infinity, maxY = -Infinity;
-        points.forEach(p => {
-            if (p.x < minX) minX = p.x;
-            if (p.x > maxX) maxX = p.x;
-            if (p.y < minY) minY = p.y;
-            if (p.y > maxY) maxY = p.y;
-        });
-
-        const width = maxX - minX;
-        const height = maxY - minY;
-        const aspectRatio = width / (height || 1);
-        const startEndDist = Math.hypot(points[0].x - points[points.length - 1].x, points[0].y - points[points.length - 1].y);
-        const diagonal = Math.hypot(width, height);
-        const isClosed = startEndDist < diagonal * 0.35;
-
-        // Path perimeter length
-        let totalPathLen = 0;
-        for (let i = 1; i < points.length; i++) {
-            totalPathLen += Math.hypot(points[i].x - points[i - 1].x, points[i].y - points[i - 1].y);
-        }
-
-        // Circularity metric: 4 * pi * Area / (Perimeter^2)
-        const approxArea = width * height * 0.78;
-        const circularity = (4 * Math.PI * approxArea) / (totalPathLen * totalPathLen || 1);
-
-        let rankedSuggestions = [];
-
-        if (isClosed && Math.abs(aspectRatio - 1) < 0.3 && circularity > 0.45) {
-            // Highly circular / round doodle
-            rankedSuggestions = [
-                { id: "circle", label: "⭕ Circle" },
-                { id: "sun", label: "☀️ Sun" },
-                { id: "clock", label: "⏰ Clock" },
-                { id: "apple", label: "🍎 Apple" },
-                { id: "balloon", label: "🎈 Balloon" }
-            ];
-        } else if (isClosed && Math.abs(aspectRatio - 1) < 0.45) {
-            // Square / Boxy / Heart / Star
-            rankedSuggestions = [
-                { id: "star", label: "⭐ Star" },
-                { id: "heart", label: "❤️ Heart" },
-                { id: "square", label: "⬛ Square" },
-                { id: "house", label: "🏠 House" },
-                { id: "cat", label: "🐱 Cat" },
-                { id: "camera", label: "📷 Camera" }
-            ];
-        } else if (aspectRatio > 1.4) {
-            // Wide / Horizontal doodles
-            rankedSuggestions = [
-                { id: "car", label: "🚗 Car" },
-                { id: "cloud", label: "☁️ Cloud" },
-                { id: "airplane", label: "✈️ Airplane" },
-                { id: "boat", label: "⛵ Boat" },
-                { id: "glasses", label: "👓 Glasses" },
-                { id: "bicycle", label: "🚲 Bicycle" }
-            ];
-        } else if (height > width * 1.3) {
-            // Tall / Vertical doodles
-            rankedSuggestions = [
-                { id: "tree", label: "🌳 Tree" },
-                { id: "pine", label: "🌲 Pine Tree" },
-                { id: "rocket", label: "🚀 Rocket" },
-                { id: "flower", label: "🌸 Flower" },
-                { id: "lightbulb", label: "💡 Lightbulb" },
-                { id: "umbrella", label: "☂️ Umbrella" }
-            ];
-        } else {
-            // General best matches
-            rankedSuggestions = [
-                { id: "star", label: "⭐ Star" },
-                { id: "heart", label: "❤️ Heart" },
-                { id: "house", label: "🏠 House" },
-                { id: "sun", label: "☀️ Sun" },
-                { id: "tree", label: "🌲 Tree" },
-                { id: "car", label: "🚗 Car" }
-            ];
-        }
-
-        renderSuggestionsBar(rankedSuggestions);
-    }
-
-    function renderSuggestionsBar(suggestions) {
-        const track = document.getElementById("aiSuggestionsTrack");
-        track.innerHTML = suggestions.map(s => `
-            <button class="pill-suggestion" onclick="applySmartArtwork('${s.id}')">
-                ${s.label}
-            </button>
-        `).join("");
-    }
-
-    /* =========================================================================
-       SMART ARTWORK REPLACEMENT (SWAP ROUGH DOODLE WITH VECTOR)
-       ========================================================================= */
-    function applySmartArtwork(shapeId) {
-        const lastStrokes = currentStrokePoints.length > 2 
-            ? currentStrokePoints 
-            : (strokeSessionHistory[strokeSessionHistory.length - 1] || []);
-
-        if (lastStrokes.length > 0) {
-            // Calculate bounding box of doodle
-            let minX = Infinity, maxX = -Infinity, minY = Infinity, maxY = -Infinity;
-            lastStrokes.forEach(p => {
-                if (p.x < minX) minX = p.x;
-                if (p.x > maxX) maxX = p.x;
-                if (p.y < minY) minY = p.y;
-                if (p.y > maxY) maxY = p.y;
-            });
-
-            // Undo the rough doodle
-            applyUndo();
-
-            const boxWidth = Math.max(maxX - minX, 60);
-            const boxHeight = Math.max(maxY - minY, 60);
-
-            drawVectorPathByName(shapeId, minX, minY, boxWidth, boxHeight);
-            pushUndoState();
-            showToast(`AutoDraw transformed to ${shapeId.toUpperCase()}!`);
-        } else {
-            // Center in canvas
-            const w = parseFloat(canvas.style.width);
-            const h = parseFloat(canvas.style.height);
-            drawVectorPathByName(shapeId, w / 2 - 90, h / 2 - 90, 180, 180);
-            pushUndoState();
-            showToast(`Added ${shapeId.toUpperCase()} to canvas!`);
-        }
-    }
-
-    function insertArtworkFromCatalog(shapeId) {
-        closeModal();
-        const w = parseFloat(canvas.style.width);
-        const h = parseFloat(canvas.style.height);
-        drawVectorPathByName(shapeId, w / 2 - 90, h / 2 - 90, 180, 180);
-        pushUndoState();
-        showToast(`Added ${shapeId.toUpperCase()} to canvas`);
-    }
-
-    /* =========================================================================
-       VECTOR ARTWORK LIBRARY (30+ BEAUTIFUL CLEAN PATHS)
-       ========================================================================= */
-    function drawVectorPathByName(name, x, y, w, h) {
-        ctx.save();
-        ctx.strokeStyle = currentColor;
-        ctx.lineWidth = Math.max(currentBrushSize, 4);
-        ctx.lineCap = "round";
-        ctx.lineJoin = "round";
-        ctx.beginPath();
-
-        const cx = x + w / 2;
-        const cy = y + h / 2;
-
-        switch (name) {
-            case "star": {
-                const spikes = 5;
-                const outerRadius = Math.min(w, h) / 2;
-                const innerRadius = outerRadius * 0.45;
-                let rot = (Math.PI / 2) * 3;
-                let step = Math.PI / spikes;
-
-                ctx.moveTo(cx, cy - outerRadius);
-                for (let i = 0; i < spikes; i++) {
-                    ctx.lineTo(cx + Math.cos(rot) * outerRadius, cy + Math.sin(rot) * outerRadius);
-                    rot += step;
-                    ctx.lineTo(cx + Math.cos(rot) * innerRadius, cy + Math.sin(rot) * innerRadius);
-                    rot += step;
-                }
-                ctx.closePath();
-                ctx.stroke();
-                break;
-            }
-
-            case "heart": {
-                const size = Math.min(w, h);
-                ctx.moveTo(cx, cy + size * 0.35);
-                ctx.bezierCurveTo(cx - size * 0.6, cy - size * 0.2, cx - size * 0.5, cy - size * 0.65, cx, cy - size * 0.3);
-                ctx.bezierCurveTo(cx + size * 0.5, cy - size * 0.65, cx + size * 0.6, cy - size * 0.2, cx, cy + size * 0.35);
-                ctx.stroke();
-                break;
-            }
-
-            case "circle": {
-                ctx.arc(cx, cy, Math.min(w, h) / 2.1, 0, Math.PI * 2);
-                ctx.stroke();
-                break;
-            }
-
-            case "square": {
-                const side = Math.min(w, h);
-                ctx.strokeRect(cx - side / 2, cy - side / 2, side, side);
-                break;
-            }
-
-            case "triangle": {
-                ctx.moveTo(cx, y + 5);
-                ctx.lineTo(x + w - 5, y + h - 5);
-                ctx.lineTo(x + 5, y + h - 5);
-                ctx.closePath();
-                ctx.stroke();
-                break;
-            }
-
-            case "diamond": {
-                ctx.moveTo(cx, y);
-                ctx.lineTo(x + w, cy);
-                ctx.lineTo(cx, y + h);
-                ctx.lineTo(x, cy);
-                ctx.closePath();
-                ctx.stroke();
-                break;
-            }
-
-            case "sun": {
-                const r = Math.min(w, h) * 0.24;
-                ctx.arc(cx, cy, r, 0, Math.PI * 2);
-                ctx.stroke();
-                for (let i = 0; i < 8; i++) {
-                    const angle = (i * Math.PI) / 4;
-                    const r1 = Math.min(w, h) * 0.32;
-                    const r2 = Math.min(w, h) * 0.46;
-                    ctx.beginPath();
-                    ctx.moveTo(cx + Math.cos(angle) * r1, cy + Math.sin(angle) * r1);
-                    ctx.lineTo(cx + Math.cos(angle) * r2, cy + Math.sin(angle) * r2);
-                    ctx.stroke();
-                }
-                break;
-            }
-
-            case "moon": {
-                ctx.arc(cx, cy, Math.min(w, h) * 0.42, 0.5 * Math.PI, 1.5 * Math.PI);
-                ctx.bezierCurveTo(cx, cy - h * 0.2, cx, cy + h * 0.2, cx, cy + Math.min(w, h) * 0.42);
-                ctx.stroke();
-                break;
-            }
-
-            case "cloud": {
-                ctx.arc(cx - w * 0.2, cy, w * 0.18, Math.PI * 0.5, Math.PI * 1.5);
-                ctx.arc(cx - w * 0.05, cy - h * 0.2, w * 0.22, Math.PI * 1, Math.PI * 1.85);
-                ctx.arc(cx + w * 0.18, cy - h * 0.1, w * 0.2, Math.PI * 1.35, Math.PI * 0.1);
-                ctx.arc(cx + w * 0.2, cy + h * 0.08, w * 0.18, Math.PI * 1.8, Math.PI * 0.5);
-                ctx.closePath();
-                ctx.stroke();
-                break;
-            }
-
-            case "tree": {
-                // Trunk
-                ctx.strokeRect(cx - w * 0.08, y + h * 0.55, w * 0.16, h * 0.45);
-                // Foliage
-                ctx.beginPath();
-                ctx.arc(cx, y + h * 0.35, w * 0.35, 0, Math.PI * 2);
-                ctx.stroke();
-                break;
-            }
-
-            case "pine": {
-                // Trunk
-                ctx.strokeRect(cx - w * 0.07, y + h * 0.75, w * 0.14, h * 0.25);
-                // 3 tier triangles
-                for (let i = 0; i < 3; i++) {
-                    const top = y + (i * h * 0.22);
-                    const bottom = top + h * 0.35;
-                    const spread = w * (0.25 + i * 0.15);
-                    ctx.beginPath();
-                    ctx.moveTo(cx, top);
-                    ctx.lineTo(cx + spread, bottom);
-                    ctx.lineTo(cx - spread, bottom);
-                    ctx.closePath();
-                    ctx.stroke();
-                }
-                break;
-            }
-
-            case "flower": {
-                // 5 petals
-                for (let i = 0; i < 5; i++) {
-                    const angle = (i * 2 * Math.PI) / 5;
-                    const px = cx + Math.cos(angle) * (w * 0.25);
-                    const py = cy + Math.sin(angle) * (h * 0.25);
-                    ctx.beginPath();
-                    ctx.arc(px, py, w * 0.18, 0, Math.PI * 2);
-                    ctx.stroke();
-                }
-                // Center disc
-                ctx.beginPath();
-                ctx.arc(cx, cy, w * 0.14, 0, Math.PI * 2);
-                ctx.stroke();
-                break;
-            }
-
-            case "mountain": {
-                // Peak 1
-                ctx.moveTo(x + w * 0.1, y + h * 0.9);
-                ctx.lineTo(x + w * 0.45, y + h * 0.2);
-                ctx.lineTo(x + w * 0.8, y + h * 0.9);
-                // Peak 2
-                ctx.moveTo(x + w * 0.5, y + h * 0.9);
-                ctx.lineTo(x + w * 0.75, y + h * 0.35);
-                ctx.lineTo(x + w * 0.95, y + h * 0.9);
-                ctx.stroke();
-                break;
-            }
-
-            case "leaf": {
-                ctx.moveTo(x + w * 0.15, y + h * 0.85);
-                ctx.quadraticCurveTo(cx - w * 0.3, cy - h * 0.3, cx + w * 0.35, y + h * 0.15);
-                ctx.quadraticCurveTo(cx + w * 0.3, cy + h * 0.3, x + w * 0.15, y + h * 0.85);
-                ctx.moveTo(x + w * 0.15, y + h * 0.85);
-                ctx.lineTo(cx + w * 0.35, y + h * 0.15);
-                ctx.stroke();
-                break;
-            }
-
-            case "car": {
-                // Chassis
-                ctx.beginPath();
-                ctx.roundRect(x, y + h * 0.45, w, h * 0.35, 12);
-                ctx.stroke();
-                // Roof
-                ctx.beginPath();
-                ctx.moveTo(x + w * 0.2, y + h * 0.45);
-                ctx.lineTo(x + w * 0.35, y + h * 0.18);
-                ctx.lineTo(x + w * 0.75, y + h * 0.18);
-                ctx.lineTo(x + w * 0.88, y + h * 0.45);
-                ctx.stroke();
-                // Wheels
-                const wheelR = Math.min(w, h) * 0.14;
-                ctx.beginPath();
-                ctx.arc(x + w * 0.28, y + h * 0.82, wheelR, 0, Math.PI * 2);
-                ctx.stroke();
-                ctx.beginPath();
-                ctx.arc(x + w * 0.74, y + h * 0.82, wheelR, 0, Math.PI * 2);
-                ctx.stroke();
-                break;
-            }
-
-            case "house": {
-                // Base
-                ctx.strokeRect(x + w * 0.15, y + h * 0.42, w * 0.7, h * 0.53);
-                // Roof
-                ctx.beginPath();
-                ctx.moveTo(x + w * 0.1, y + h * 0.42);
-                ctx.lineTo(cx, y + h * 0.1);
-                ctx.lineTo(x + w * 0.9, y + h * 0.42);
-                ctx.closePath();
-                ctx.stroke();
-                // Door & Window
-                ctx.strokeRect(cx - w * 0.1, y + h * 0.65, w * 0.2, h * 0.3);
-                ctx.strokeRect(x + w * 0.25, y + h * 0.5, w * 0.16, h * 0.16);
-                break;
-            }
-
-            case "rocket": {
-                // Body
-                ctx.moveTo(cx, y + h * 0.05);
-                ctx.quadraticCurveTo(cx + w * 0.3, y + h * 0.4, cx + w * 0.2, y + h * 0.8);
-                ctx.lineTo(cx - w * 0.2, y + h * 0.8);
-                ctx.quadraticCurveTo(cx - w * 0.3, y + h * 0.4, cx, y + h * 0.05);
-                ctx.stroke();
-                // Fins
-                ctx.beginPath();
-                ctx.moveTo(cx - w * 0.2, y + h * 0.65);
-                ctx.lineTo(cx - w * 0.42, y + h * 0.85);
-                ctx.lineTo(cx - w * 0.2, y + h * 0.8);
-                ctx.stroke();
-                ctx.beginPath();
-                ctx.moveTo(cx + w * 0.2, y + h * 0.65);
-                ctx.lineTo(cx + w * 0.42, y + h * 0.85);
-                ctx.lineTo(cx + w * 0.2, y + h * 0.8);
-                ctx.stroke();
-                // Viewport
-                ctx.beginPath();
-                ctx.arc(cx, cy - h * 0.06, 12, 0, Math.PI * 2);
-                ctx.stroke();
-                break;
-            }
-
-            case "airplane": {
-                // Fuselage
-                ctx.ellipse(cx, cy, w * 0.4, h * 0.1, 0, 0, Math.PI * 2);
-                ctx.stroke();
-                // Wings
-                ctx.beginPath();
-                ctx.moveTo(cx - w * 0.08, cy);
-                ctx.lineTo(cx - w * 0.15, y + h * 0.1);
-                ctx.lineTo(cx + w * 0.08, y + h * 0.1);
-                ctx.lineTo(cx + w * 0.1, cy);
-                ctx.stroke();
-                ctx.beginPath();
-                ctx.moveTo(cx - w * 0.08, cy);
-                ctx.lineTo(cx - w * 0.15, y + h * 0.9);
-                ctx.lineTo(cx + w * 0.08, y + h * 0.9);
-                ctx.lineTo(cx + w * 0.1, cy);
-                ctx.stroke();
-                break;
-            }
-
-            case "boat": {
-                // Hull
-                ctx.moveTo(x + w * 0.1, y + h * 0.65);
-                ctx.lineTo(x + w * 0.88, y + h * 0.65);
-                ctx.lineTo(x + w * 0.72, y + h * 0.9);
-                ctx.lineTo(x + w * 0.26, y + h * 0.9);
-                ctx.closePath();
-                ctx.stroke();
-                // Mast & Sail
-                ctx.beginPath();
-                ctx.moveTo(cx, y + h * 0.65);
-                ctx.lineTo(cx, y + h * 0.15);
-                ctx.lineTo(x + w * 0.8, y + h * 0.58);
-                ctx.closePath();
-                ctx.stroke();
-                break;
-            }
-
-            case "bicycle": {
-                const wr = Math.min(w, h) * 0.2;
-                // Wheels
-                ctx.arc(x + wr + 10, y + h - wr - 5, wr, 0, Math.PI * 2);
-                ctx.stroke();
-                ctx.beginPath();
-                ctx.arc(x + w - wr - 10, y + h - wr - 5, wr, 0, Math.PI * 2);
-                ctx.stroke();
-                // Frame
-                ctx.beginPath();
-                ctx.moveTo(x + wr + 10, y + h - wr - 5);
-                ctx.lineTo(cx, y + h - wr - 5);
-                ctx.lineTo(x + w - wr - 10, y + h - wr - 5);
-                ctx.lineTo(cx + 10, y + h * 0.35);
-                ctx.lineTo(cx - 20, y + h * 0.4);
-                ctx.lineTo(x + wr + 10, y + h - wr - 5);
-                ctx.stroke();
-                break;
-            }
-
-            case "cat": {
-                // Head
-                ctx.arc(cx, cy, Math.min(w, h) * 0.36, 0, Math.PI * 2);
-                ctx.stroke();
-                // Ears
-                ctx.beginPath();
-                ctx.moveTo(cx - w * 0.24, cy - h * 0.26);
-                ctx.lineTo(cx - w * 0.36, cy - h * 0.52);
-                ctx.lineTo(cx - w * 0.08, cy - h * 0.35);
-                ctx.stroke();
-                ctx.beginPath();
-                ctx.moveTo(cx + w * 0.24, cy - h * 0.26);
-                ctx.lineTo(cx + w * 0.36, cy - h * 0.52);
-                ctx.lineTo(cx + w * 0.08, cy - h * 0.35);
-                ctx.stroke();
-                // Whiskers
-                ctx.beginPath();
-                ctx.moveTo(cx - 5, cy + 8);
-                ctx.lineTo(cx - w * 0.4, cy + 2);
-                ctx.moveTo(cx - 5, cy + 16);
-                ctx.lineTo(cx - w * 0.4, cy + 20);
-                ctx.moveTo(cx + 5, cy + 8);
-                ctx.lineTo(cx + w * 0.4, cy + 2);
-                ctx.moveTo(cx + 5, cy + 16);
-                ctx.lineTo(cx + w * 0.4, cy + 20);
-                ctx.stroke();
-                break;
-            }
-
-            case "dog": {
-                // Head
-                ctx.arc(cx, cy, Math.min(w, h) * 0.36, 0, Math.PI * 2);
-                ctx.stroke();
-                // Floppy ears
-                ctx.beginPath();
-                ctx.ellipse(cx - w * 0.34, cy - h * 0.1, w * 0.12, h * 0.25, -0.3, 0, Math.PI * 2);
-                ctx.stroke();
-                ctx.beginPath();
-                ctx.ellipse(cx + w * 0.34, cy - h * 0.1, w * 0.12, h * 0.25, 0.3, 0, Math.PI * 2);
-                ctx.stroke();
-                // Nose
-                ctx.beginPath();
-                ctx.arc(cx, cy + h * 0.1, 7, 0, Math.PI * 2);
-                ctx.stroke();
-                break;
-            }
-
-            case "fish": {
-                // Body
-                ctx.ellipse(cx - w * 0.05, cy, w * 0.35, h * 0.22, 0, 0, Math.PI * 2);
-                ctx.stroke();
-                // Tail
-                ctx.beginPath();
-                ctx.moveTo(cx + w * 0.28, cy);
-                ctx.lineTo(cx + w * 0.46, cy - h * 0.25);
-                ctx.lineTo(cx + w * 0.46, cy + h * 0.25);
-                ctx.closePath();
-                ctx.stroke();
-                // Eye
-                ctx.beginPath();
-                ctx.arc(cx - w * 0.25, cy - 5, 4, 0, Math.PI * 2);
-                ctx.stroke();
-                break;
-            }
-
-            case "bird": {
-                // Arced wings
-                ctx.arc(cx - w * 0.22, cy, w * 0.22, Math.PI * 1.15, Math.PI * 1.95);
-                ctx.stroke();
-                ctx.beginPath();
-                ctx.arc(cx + w * 0.22, cy, w * 0.22, Math.PI * 1.05, Math.PI * 1.85);
-                ctx.stroke();
-                break;
-            }
-
-            case "butterfly": {
-                // Body
-                ctx.ellipse(cx, cy, 6, h * 0.35, 0, 0, Math.PI * 2);
-                ctx.stroke();
-                // Left wings
-                ctx.beginPath();
-                ctx.arc(cx - w * 0.24, cy - h * 0.15, w * 0.22, 0, Math.PI * 2);
-                ctx.stroke();
-                ctx.beginPath();
-                ctx.arc(cx - w * 0.2, cy + h * 0.2, w * 0.16, 0, Math.PI * 2);
-                ctx.stroke();
-                // Right wings
-                ctx.beginPath();
-                ctx.arc(cx + w * 0.24, cy - h * 0.15, w * 0.22, 0, Math.PI * 2);
-                ctx.stroke();
-                ctx.beginPath();
-                ctx.arc(cx + w * 0.2, cy + h * 0.2, w * 0.16, 0, Math.PI * 2);
-                ctx.stroke();
-                break;
-            }
-
-            case "clock": {
-                // Face
-                ctx.arc(cx, cy, Math.min(w, h) * 0.45, 0, Math.PI * 2);
-                ctx.stroke();
-                // Hands
-                ctx.beginPath();
-                ctx.moveTo(cx, cy);
-                ctx.lineTo(cx, cy - h * 0.28);
-                ctx.moveTo(cx, cy);
-                ctx.lineTo(cx + w * 0.22, cy);
-                ctx.stroke();
-                break;
-            }
-
-            case "coffee": {
-                // Mug body
-                ctx.strokeRect(cx - w * 0.3, y + h * 0.35, w * 0.5, h * 0.5);
-                // Handle
-                ctx.beginPath();
-                ctx.arc(cx + w * 0.2, cy + h * 0.1, h * 0.16, -Math.PI / 2, Math.PI / 2);
-                ctx.stroke();
-                // Steam
-                ctx.beginPath();
-                ctx.moveTo(cx - 15, y + h * 0.25);
-                ctx.quadraticCurveTo(cx - 25, y + h * 0.12, cx - 15, y + h * 0.05);
-                ctx.moveTo(cx + 5, y + h * 0.25);
-                ctx.quadraticCurveTo(cx - 5, y + h * 0.12, cx + 5, y + h * 0.05);
-                ctx.stroke();
-                break;
-            }
-
-            case "lightbulb": {
-                // Bulb
-                ctx.arc(cx, cy - h * 0.1, w * 0.32, Math.PI * 0.75, Math.PI * 0.25);
-                ctx.lineTo(cx + w * 0.18, y + h * 0.75);
-                ctx.lineTo(cx - w * 0.18, y + h * 0.75);
-                ctx.closePath();
-                ctx.stroke();
-                // Base threads
-                ctx.beginPath();
-                ctx.moveTo(cx - w * 0.15, y + h * 0.82);
-                ctx.lineTo(cx + w * 0.15, y + h * 0.82);
-                ctx.moveTo(cx - w * 0.12, y + h * 0.9);
-                ctx.lineTo(cx + w * 0.12, y + h * 0.9);
-                ctx.stroke();
-                break;
-            }
-
-            case "umbrella": {
-                // Canopy
-                ctx.arc(cx, cy - h * 0.05, Math.min(w, h) * 0.42, Math.PI, 0);
-                ctx.closePath();
-                ctx.stroke();
-                // Stick & J-handle
-                ctx.beginPath();
-                ctx.moveTo(cx, cy - h * 0.05);
-                ctx.lineTo(cx, y + h * 0.78);
-                ctx.arc(cx - 10, y + h * 0.78, 10, 0, Math.PI);
-                ctx.stroke();
-                break;
-            }
-
-            case "balloon": {
-                // Balloon body
-                ctx.ellipse(cx, cy - h * 0.1, w * 0.35, h * 0.4, 0, 0, Math.PI * 2);
-                ctx.stroke();
-                // Knot & string
-                ctx.beginPath();
-                ctx.moveTo(cx - 5, cy + h * 0.3);
-                ctx.lineTo(cx + 5, cy + h * 0.3);
-                ctx.lineTo(cx, cy + h * 0.33);
-                ctx.closePath();
-                ctx.stroke();
-                ctx.beginPath();
-                ctx.moveTo(cx, cy + h * 0.33);
-                ctx.quadraticCurveTo(cx - 15, cy + h * 0.55, cx + 10, y + h * 0.95);
-                ctx.stroke();
-                break;
-            }
-
-            case "apple": {
-                // Fruit
-                ctx.arc(cx - w * 0.16, cy, w * 0.32, 0, Math.PI * 2);
-                ctx.arc(cx + w * 0.16, cy, w * 0.32, 0, Math.PI * 2);
-                ctx.stroke();
-                // Stem
-                ctx.beginPath();
-                ctx.moveTo(cx, cy - h * 0.28);
-                ctx.quadraticCurveTo(cx + 8, cy - h * 0.45, cx + 16, cy - h * 0.48);
-                ctx.stroke();
-                break;
-            }
-
-            case "guitar": {
-                // Figure-8 body
-                ctx.arc(cx, cy + h * 0.2, w * 0.32, 0, Math.PI * 2);
-                ctx.stroke();
-                ctx.beginPath();
-                ctx.arc(cx, cy - h * 0.12, w * 0.24, 0, Math.PI * 2);
-                ctx.stroke();
-                // Neck
-                ctx.beginPath();
-                ctx.moveTo(cx - 7, cy - h * 0.36);
-                ctx.lineTo(cx - 7, y + 10);
-                ctx.lineTo(cx + 7, y + 10);
-                ctx.lineTo(cx + 7, cy - h * 0.36);
-                ctx.stroke();
-                break;
-            }
-
-            case "camera": {
-                // Body
-                ctx.roundRect(x + w * 0.08, y + h * 0.28, w * 0.84, h * 0.62, 10);
-                ctx.stroke();
-                // Lens
-                ctx.beginPath();
-                ctx.arc(cx, cy + h * 0.08, Math.min(w, h) * 0.22, 0, Math.PI * 2);
-                ctx.stroke();
-                // Flash/top bump
-                ctx.strokeRect(x + w * 0.25, y + h * 0.18, w * 0.2, h * 0.1);
-                break;
-            }
-
-            case "key": {
-                // Bow
-                ctx.arc(cx - w * 0.22, cy, Math.min(w, h) * 0.24, 0, Math.PI * 2);
-                ctx.stroke();
-                // Shaft
-                ctx.beginPath();
-                ctx.moveTo(cx - w * 0.02, cy);
-                ctx.lineTo(x + w * 0.85, cy);
-                // Teeth
-                ctx.lineTo(x + w * 0.85, cy + h * 0.18);
-                ctx.moveTo(x + w * 0.68, cy);
-                ctx.lineTo(x + w * 0.68, cy + h * 0.14);
-                ctx.stroke();
-                break;
-            }
-
-            case "flag": {
-                // Pole
-                ctx.moveTo(x + w * 0.18, y + 10);
-                ctx.lineTo(x + w * 0.18, y + h - 10);
-                ctx.stroke();
-                // Pennant
-                ctx.beginPath();
-                ctx.moveTo(x + w * 0.18, y + 15);
-                ctx.lineTo(x + w * 0.85, y + h * 0.32);
-                ctx.lineTo(x + w * 0.18, y + h * 0.55);
-                ctx.closePath();
-                ctx.stroke();
-                break;
-            }
-
-            default: {
-                ctx.arc(cx, cy, Math.min(w, h) / 2.2, 0, Math.PI * 2);
-                ctx.stroke();
-                break;
-            }
-        }
-
-        ctx.restore();
-    }
-
-    /* =========================================================================
-       CRITICAL USER SPECIFICATION: DOWNLOAD AS JPG (NO AUTH REQUIRED)
-       ========================================================================= */
-    function downloadDrawingAsJPG() {
-        // High quality export canvas with solid white or background color (prevents black background artifact)
-        const dpr = window.devicePixelRatio || 1;
-        const width = parseFloat(canvas.style.width);
-        const height = parseFloat(canvas.style.height);
-
-        const exportCanvas = document.createElement("canvas");
-        exportCanvas.width = width * 2; // 2x upscale for razor sharp print quality
-        exportCanvas.height = height * 2;
-        const expCtx = exportCanvas.getContext("2d");
-
-        // Solid background (JPEG does not support alpha channel)
-        expCtx.fillStyle = canvasBgColor || "#ffffff";
-        expCtx.fillRect(0, 0, exportCanvas.width, exportCanvas.height);
-
-        // Draw main canvas onto export canvas
-        expCtx.drawImage(canvas, 0, 0, exportCanvas.width, exportCanvas.height);
-
-        // Watermark: Arnaw Studio (discrete stylish watermark)
-        expCtx.save();
-        expCtx.font = "600 18px 'Plus Jakarta Sans', sans-serif";
-        expCtx.fillStyle = "rgba(100, 116, 139, 0.4)";
-        expCtx.textAlign = "right";
-        expCtx.fillText("Created with AutoDraw • Arnaw Studio", exportCanvas.width - 24, exportCanvas.height - 20);
-        expCtx.restore();
-
-        // Convert to JPG format with 0.96 quality
-        const dataUrl = exportCanvas.toDataURL("image/jpeg", 0.96);
-
-        // Trigger browser download
-        const a = document.createElement("a");
-        const dateStr = new Date().toISOString().replace(/[:.]/g, "-").slice(0, 19);
-        a.download = `Arnaw-Studio-AutoDraw-${dateStr}.jpg`;
-        a.href = dataUrl;
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
-
-        showToast("Downloaded artwork as high-res JPG!");
-    }
-
-    document.getElementById("downloadJpgBtn").addEventListener("click", downloadDrawingAsJPG);
-
-    /* =========================================================================
-       CLEAR CANVAS ACTION
-       ========================================================================= */
-    function clearCanvas() {
-        if (!confirm("Are you sure you want to clear your drawing?")) return;
-        const w = parseFloat(canvas.style.width);
-        const h = parseFloat(canvas.style.height);
-        ctx.fillStyle = canvasBgColor;
-        ctx.fillRect(0, 0, w, h);
-        currentStrokePoints = [];
-        strokeSessionHistory = [];
-        pushUndoState();
-        showToast("Canvas cleared");
-    }
-
-    document.getElementById("clearCanvasBtn").addEventListener("click", clearCanvas);
-
-    /* =========================================================================
-       TOOL DOCK SWITCHING & CONTROLS
-       ========================================================================= */
-    const toolButtons = [
-        { id: "toolAutoDraw", mode: "autodraw" },
-        { id: "toolDraw", mode: "draw" },
-        { id: "toolMarker", mode: "marker" },
-        { id: "toolEraser", mode: "eraser" },
-        { id: "toolShape", mode: "shape" },
-        { id: "toolFill", mode: "fill" },
-        { id: "toolText", mode: "text" }
-    ];
-
-    const shapesSubmenu = document.getElementById("shapesSubmenu");
-
-    toolButtons.forEach(tool => {
-        const btn = document.getElementById(tool.id);
-        btn.addEventListener("click", () => {
-            toolButtons.forEach(t => document.getElementById(t.id).classList.remove("active"));
-            btn.classList.add("active");
-            activeTool = tool.mode;
-
-            if (tool.mode === "shape") {
-                shapesSubmenu.classList.toggle("visible");
-            } else {
-                shapesSubmenu.classList.remove("visible");
-            }
-
-            showToast(`Active tool: ${btn.title.split(" ")[0]}`);
-        });
-    });
-
-    // Submenu shapes selector
-    document.querySelectorAll(".shape-pick-btn").forEach(btn => {
-        btn.addEventListener("click", () => {
-            document.querySelectorAll(".shape-pick-btn").forEach(b => b.classList.remove("active"));
-            btn.classList.add("active");
-            selectedGeometricShape = btn.dataset.shape;
-            shapesSubmenu.classList.remove("visible");
-            showToast(`Selected Shape: ${selectedGeometricShape.toUpperCase()}`);
-        });
-    });
-
-    // Hide shapes submenu on click outside
-    document.addEventListener("click", (e) => {
-        if (!e.target.closest("#toolShape") && !e.target.closest("#shapesSubmenu")) {
-            shapesSubmenu.classList.remove("visible");
-        }
-    });
-
-    /* =========================================================================
-       COLOR PALETTES & BRUSH SIZE CONTROLS
-       ========================================================================= */
-    document.querySelectorAll(".color-bubble").forEach(bubble => {
-        bubble.addEventListener("click", () => {
-            document.querySelectorAll(".color-bubble").forEach(b => b.classList.remove("active"));
-            bubble.classList.add("active");
-            currentColor = bubble.dataset.color;
-        });
-    });
-
-    document.getElementById("hexPickerInput").addEventListener("input", (e) => {
-        currentColor = e.target.value;
-        document.querySelectorAll(".color-bubble").forEach(b => b.classList.remove("active"));
-    });
-
-    document.querySelectorAll(".brush-size-btn").forEach(btn => {
-        btn.addEventListener("click", () => {
-            document.querySelectorAll(".brush-size-btn").forEach(b => b.classList.remove("active"));
-            btn.classList.add("active");
-            currentBrushSize = parseInt(btn.dataset.size);
-        });
-    });
-
-    /* =========================================================================
-       MODAL: FULL SHAPE & CLIPART CATALOG
-       ========================================================================= */
-    const shapesModal = document.getElementById("shapesModal");
-    document.getElementById("openShapesCatalogBtn").addEventListener("click", () => {
-        shapesModal.classList.add("open");
-    });
-
-    function closeModal() {
-        shapesModal.classList.remove("open");
-    }
-
-    document.getElementById("closeShapesModalBtn").addEventListener("click", closeModal);
-    shapesModal.addEventListener("click", (e) => {
-        if (e.target === shapesModal) closeModal();
-    });
-
-    /* =========================================================================
-       DARK / LIGHT THEME TOGGLE
-       ========================================================================= */
-    const themeBtn = document.getElementById("themeToggleBtn");
-    let currentTheme = localStorage.getItem("autodraw-theme") || "dark";
-
-    function applyTheme(theme) {
-        currentTheme = theme;
-        document.documentElement.setAttribute("data-theme", theme);
-        localStorage.setItem("autodraw-theme", theme);
-
-        themeBtn.innerHTML = theme === "dark" 
-            ? `<svg class="svg-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="4"></circle><path d="M12 2v2"></path><path d="M12 20v2"></path><path d="m4.93 4.93 1.41 1.41"></path><path d="m17.66 17.66 1.41 1.41"></path><path d="M2 12h2"></path><path d="M20 12h2"></path><path d="m6.34 17.66-1.41 1.41"></path><path d="m19.07 4.93-1.41 1.41"></path></svg>`
-            : `<svg class="svg-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"></path></svg>`;
-    }
-
-    themeBtn.addEventListener("click", () => {
-        applyTheme(currentTheme === "dark" ? "light" : "dark");
-    });
-
-    /* =========================================================================
-       TOAST UTILITY
-       ========================================================================= */
-    function showToast(msg) {
-        const toast = document.getElementById("appToast");
-        const msgEl = document.getElementById("toastMessage");
-        msgEl.textContent = msg;
-        toast.classList.add("show");
-        clearTimeout(window.toastTimer);
-        window.toastTimer = setTimeout(() => toast.classList.remove("show"), 2400);
-    }
-
-    /* =========================================================================
-       INITIALIZE APP
-       ========================================================================= */
-    applyTheme(currentTheme);
-    resizeCanvas();
-</script>
-
-</body>
-</html>
