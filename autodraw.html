@@ -157,9 +157,9 @@
             <span class="label"><span id="sizeValue">8</span> px</span>
           </div>
           <div class="button-row">
-            <button type="button" class="btn" id="eraserBtn">Eraser</button>
-            <button type="button" class="btn" id="clearBtn">Clear</button>
-            <button type="button" class="btn primary" id="saveBtn">Save PNG</button>
+            <a href="#" class="btn" id="eraserBtn" role="button">Eraser</a>
+            <a href="#" class="btn" id="clearBtn" role="button">Clear</a>
+            <a href="#" class="btn primary" id="saveBtn" role="button">Save PNG</a>
           </div>
         </div>
 
@@ -281,20 +281,23 @@
       setStatus('Brush size updated');
     });
 
-    eraserBtn.addEventListener('click', () => {
+    eraserBtn.addEventListener('click', function (event) {
+      event.preventDefault();
       active.mode = active.mode === 'eraser' ? 'paint' : 'eraser';
       eraserBtn.textContent = active.mode === 'eraser' ? 'Brush' : 'Eraser';
       setStatus(active.mode === 'eraser' ? 'Eraser enabled' : 'Brush enabled');
     });
 
-    clearBtn.addEventListener('click', () => {
+    clearBtn.addEventListener('click', function (event) {
+      event.preventDefault();
       ctx.clearRect(0, 0, canvas.width, canvas.height);
       ctx.fillStyle = '#ffffff';
       ctx.fillRect(0, 0, canvas.width, canvas.height);
       setStatus('Canvas cleared');
     });
 
-    saveBtn.addEventListener('click', () => {
+    saveBtn.addEventListener('click', function (event) {
+      event.preventDefault();
       const link = document.createElement('a');
       link.download = 'autodraw-art.png';
       link.href = canvas.toDataURL('image/png');
