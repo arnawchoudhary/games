@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AutoDraw | Arnaw Studios</title>
+  <style>
+    :root {
+      --bg: #f3f5f9;
+      --surface: #ffffff;
+      --surface-2: #e9edf5;
+      --text: #0e1a2e;
+      --muted: #51607a;
+      --line: #d6dce8;
+      --accent: #2f5bff;
+      --accent-ink: #ffffff;
+      --shadow: 0 12px 32px rgba(14, 26, 46, 0.12);
+      --canvas-bg: #ffffff;
+    }
+    * { box-sizing: border-box; }
+    html, body { margin: 0; min-height: 100%; }
+    body {
+      font-family: Inter, "Segoe UI", sans-serif;
+      background: linear-gradient(180deg, #f7f8fb 0%, #eef2f7 100%);
+      color: var(--text);
+    }
+    a { color: inherit; text-decoration: none; }
+    .wrap { max-width: 1180px; margin: 0 auto; padding: 0 24px; }
+    header {
+      position: sticky; top: 0; z-index: 10;
+      backdrop-filter: blur(12px);
+      background: rgba(243, 245, 249, 0.9);
+      border-bottom: 1px solid var(--line);
+    }
+    .bar {
+      display: flex; align-items: center; justify-content: space-between;
+      height: 72px; gap: 16px;
+    }
+    .brand {
+      display: inline-flex; align-items: center; gap: 12px;
+      font-weight: 700;
+    }
+    .brand-mark {
+      width: 38px; height: 38px; border-radius: 12px; background: var(--accent);
+      display: grid; place-items: center; color: var(--accent-ink);
+      font-size: 1.2rem; box-shadow: var(--shadow);
+    }
+    .nav {
+      display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
+    }
+    .nav a, .nav button {
+      border: 1px solid transparent; border-radius: 999px; padding: 8px 14px;
+      font-size: 0.94rem; font-weight: 600; color: var(--muted);
+      background: transparent; cursor: pointer;
+      transition: all .2s ease;
+    }
+    .nav a:hover, .nav button:hover {
+      background: var(--surface-2); color: var(--text); border-color: var(--line);
+    }
+    .nav .primary {
+      background: var(--accent); color: var(--accent-ink); border-color: var(--accent);
+    }
+    .nav .primary:hover { filter: brightness(1.05); }
+
+    main {
+      padding: 48px 0 60px;
+    }
+    .panel {
+      background: rgba(255,255,255,0.7);
+      border: 1px solid var(--line);
+      border-radius: 28px;
+      box-shadow: var(--shadow);
+      overflow: hidden;
+    }
+    .toolbar {
+      display: flex; align-items: center; justify-content: space-between; gap: 18px;
+      padding: 18px 22px;
+      border-bottom: 1px solid var(--line);
+      background: rgba(255,255,255,0.7);
+      flex-wrap: wrap;
+    }
+    .controls {
+      display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
+    }
+    .swatch {
+      width: 26px; height: 26px; border-radius: 50%; border: 2px solid rgba(0,0,0,0.18);
+      cursor: pointer; transition: transform .15s ease; box-shadow: inset 0 0 0 1px rgba(255,255,255,0.55);
+    }
+    .swatch.active { transform: scale(1.16); border-color: var(--text); }
+    .label {
+      display: inline-flex; align-items: center; gap: 8px; font-size: 0.9rem; color: var(--muted);
+      font-weight: 600;
+    }
+    input[type="range"] {
+      accent-color: var(--accent);
+      width: 120px;
+    }
+    .button-row {
+      display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
+    }
+    .btn {
+      border: 1px solid var(--line); background: var(--surface); color: var(--text);
+      border-radius: 12px; padding: 10px 16px; font-weight: 700; cursor: pointer;
+      transition: transform .15s ease, border-color .15s ease;
+    }
+    .btn:hover { transform: translateY(-1px); border-color: var(--accent); }
+    .btn.primary {
+      background: var(--accent); color: var(--accent-ink); border-color: var(--accent);
+    }
+    .canvas-shell {
+      padding: 18px;
+    }
+    canvas {
+      width: 100%; height: auto; display: block; background: var(--canvas-bg);
+      border: 1px solid var(--line); border-radius: 18px;
+      box-shadow: inset 0 0 0 1px rgba(14,26,46,0.02);
+      cursor: crosshair;
+    }
+    .meta {
+      display: flex; align-items: center; justify-content: space-between; gap: 12px;
+      padding: 14px 22px 22px; color: var(--muted); font-size: 0.92rem;
+      flex-wrap: wrap;
+    }
+    @media (max-width: 640px) {
+      .toolbar, .meta { padding-left: 14px; padding-right: 14px; }
+      .canvas-shell { padding: 12px; }
+      .bar { height: auto; padding: 14px 0; align-items: start; }
+      .nav { justify-content: flex-end; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="wrap bar">
+      <a class="brand" href="index.html" aria-label="Go back to Arnaw Studios home">
+        <span class="brand-mark">A</span>
+        <span>Arnaw Studios</span>
+      </a>
+      <nav class="nav" aria-label="Main navigation">
+        <a href="index.html#projects">Projects</a>
+        <a href="diary.html">Diary</a>
+        <a href="index.html#about">About</a>
+        <a href="index.html#contact">Contact</a>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <div class="wrap">
+      <section class="panel" aria-label="AutoDraw app">
+        <div class="toolbar">
+          <div class="controls">
+            <span class="label">Color</span>
+            <div id="palette" aria-label="Color palette"></div>
+            <span class="label">Brush</span>
+            <input id="size" type="range" min="2" max="32" value="8" aria-label="Brush size" />
+            <span class="label"><span id="sizeValue">8</span> px</span>
+          </div>
+          <div class="button-row">
+            <button type="button" class="btn" id="eraserBtn">Eraser</button>
+            <button type="button" class="btn" id="clearBtn">Clear</button>
+            <button type="button" class="btn primary" id="saveBtn">Save PNG</button>
+          </div>
+        </div>
+
+        <div class="canvas-shell">
+          <canvas id="drawCanvas" width="1200" height="640" aria-label="Drawing canvas"></canvas>
+        </div>
+
+        <div class="meta">
+          <span>Freehand sketching • no sign-in required</span>
+          <span id="status">Ready to draw</span>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <script>
+    const canvas = document.getElementById('drawCanvas');
+    const ctx = canvas.getContext('2d');
+    const palette = document.getElementById('palette');
+    const sizeInput = document.getElementById('size');
+    const sizeValue = document.getElementById('sizeValue');
+    const status = document.getElementById('status');
+    const eraserBtn = document.getElementById('eraserBtn');
+    const clearBtn = document.getElementById('clearBtn');
+    const saveBtn = document.getElementById('saveBtn');
+
+    const colors = ['#0E1A2E', '#2F5BFF', '#E04B3A', '#2E9E5B', '#C98A00', '#7B5CFF', '#FF7A59', '#FFFFFF', '#000000'];
+    const active = { color: '#0E1A2E', size: Number(sizeInput.value), mode: 'paint' };
+    let drawing = false;
+    let lastX = 0;
+    let lastY = 0;
+
+    function setStatus(message) {
+      status.textContent = message;
+    }
+
+    function renderPalette() {
+      palette.innerHTML = '';
+      colors.forEach(color => {
+        const button = document.createElement('button');
+        button.type = 'button';
+        button.className = 'swatch' + (active.color === color ? ' active' : '');
+        button.title = color;
+        button.style.background = color;
+        button.setAttribute('aria-label', 'Use color ' + color);
+        button.addEventListener('click', () => {
+          active.color = color;
+          active.mode = 'paint';
+          eraserBtn.textContent = 'Eraser';
+          renderPalette();
+          setStatus('Brush color selected');
+        });
+        palette.appendChild(button);
+      });
+    }
+
+    function updateBrushSize() {
+      active.size = Number(sizeInput.value);
+      sizeValue.textContent = String(active.size);
+    }
+
+    function prepareCanvas() {
+      ctx.lineCap = 'round';
+      ctx.lineJoin = 'round';
+      ctx.lineWidth = active.size;
+      ctx.strokeStyle = active.color;
+      ctx.fillStyle = '#ffffff';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      setStatus('Ready to draw');
+    }
+
+    function getPointerPosition(event) {
+      const rect = canvas.getBoundingClientRect();
+      const scaleX = canvas.width / rect.width;
+      const scaleY = canvas.height / rect.height;
+      return {
+        x: (event.clientX - rect.left) * scaleX,
+        y: (event.clientY - rect.top) * scaleY
+      };
+    }
+
+    function beginStroke(event) {
+      drawing = true;
+      const pos = getPointerPosition(event);
+      lastX = pos.x;
+      lastY = pos.y;
+      ctx.beginPath();
+      ctx.moveTo(lastX, lastY);
+    }
+
+    function drawStroke(event) {
+      if (!drawing) return;
+      const pos = getPointerPosition(event);
+      ctx.lineWidth = active.size;
+      ctx.strokeStyle = active.mode === 'eraser' ? '#ffffff' : active.color;
+      ctx.beginPath();
+      ctx.moveTo(lastX, lastY);
+      ctx.lineTo(pos.x, pos.y);
+      ctx.stroke();
+      lastX = pos.x;
+      lastY = pos.y;
+    }
+
+    function endStroke() {
+      if (!drawing) return;
+      drawing = false;
+      ctx.beginPath();
+      setStatus(active.mode === 'eraser' ? 'Erasing' : 'Drawing');
+    }
+
+    canvas.addEventListener('pointerdown', beginStroke);
+    canvas.addEventListener('pointermove', drawStroke);
+    canvas.addEventListener('pointerup', endStroke);
+    canvas.addEventListener('pointerleave', endStroke);
+    canvas.addEventListener('pointercancel', endStroke);
+
+    sizeInput.addEventListener('input', () => {
+      updateBrushSize();
+      setStatus('Brush size updated');
+    });
+
+    eraserBtn.addEventListener('click', () => {
+      active.mode = active.mode === 'eraser' ? 'paint' : 'eraser';
+      eraserBtn.textContent = active.mode === 'eraser' ? 'Brush' : 'Eraser';
+      setStatus(active.mode === 'eraser' ? 'Eraser enabled' : 'Brush enabled');
+    });
+
+    clearBtn.addEventListener('click', () => {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      ctx.fillStyle = '#ffffff';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      setStatus('Canvas cleared');
+    });
+
+    saveBtn.addEventListener('click', () => {
+      const link = document.createElement('a');
+      link.download = 'autodraw-art.png';
+      link.href = canvas.toDataURL('image/png');
+      link.click();
+      setStatus('PNG saved');
+    });
+
+    updateBrushSize();
+    renderPalette();
+    prepareCanvas();
+  </script>
+</body>
+</html>
