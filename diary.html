@@ -34,9 +34,9 @@ button{cursor:pointer}
 #auth{display:grid;place-items:center;min-height:100vh;padding:1.5rem}
 .auth-card{width:100%;max-width:380px;background:var(--sheet);border:1px solid var(--rule);border-radius:10px;padding:2rem}
 .auth-card h1{font:600 2rem var(--write);margin:0 0 .25rem}
-.auth-card p{color:var(--muted)}
+.auth-card p{color:var(--muted);margin-bottom:1.5rem}
 label{display:block;font-size:.9rem;margin-bottom:.25rem}
-input[type=email],input[type=text],input[type=date]{
+input[type=email],input[type=password],input[type=text],input[type=date]{
  width:100%;padding:.6rem .7rem;border:1px solid var(--rule);
  border-radius:6px;background:var(--page);margin-bottom:1rem
 }
@@ -70,24 +70,17 @@ aside h2{font-size:1rem;margin:0 0 .75rem}
 <main id="auth" hidden>
  <div class="auth-card">
   <h1>My diary</h1>
-  <p>Sign in securely with a one-time email code.</p>
+  <p>Sign in to read and write your entries.</p>
 
   <label for="email">Email</label>
   <input id="email" type="email" autocomplete="email" required>
 
-  <div class="row">
-   <button class="btn" id="sendOtp">Send OTP</button>
-  </div>
+  <label for="password">Password</label>
+  <input id="password" type="password" autocomplete="current-password" minlength="6" required>
 
-  <div id="otpArea" hidden style="margin-top:1rem">
-   <label for="otp">6-digit verification code</label>
-   <input id="otp" type="text" inputmode="numeric"
-    autocomplete="one-time-code" maxlength="6"
-    placeholder="Enter the code from your email">
-   <div class="row">
-    <button class="btn" id="verifyOtp">Verify & sign in</button>
-    <button class="btn quiet" id="resendOtp">Resend code</button>
-   </div>
+  <div class="row">
+   <button class="btn" id="signin">Sign in</button>
+   <button class="btn quiet" id="signup">Create account</button>
   </div>
 
   <p class="msg" id="authMsg" role="status"></p>
@@ -138,10 +131,7 @@ if (!window.supabase) {
   throw new Error('Supabase library unavailable');
 }
 
-const db = window.supabase.createClient(
-  SUPABASE_URL,
-  SUPABASE_ANON_KEY
-);
+const db = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
 let user = null;
 let entries = [];
@@ -163,86 +153,73 @@ function say(el,text,error=false){
 
 function setBusy(value){
  busy=value;
- ['sendOtp','verifyOtp','resendOtp'].forEach(id=>{
-  $(id).disabled=value;
+ ['signin','signup'].forEach(id=>{
+  if($(id)) $(id).disabled=value;
  });
 }
 
-// EMAIL OTP LOGIN
-function getEmail(){
- const email=$('email').value.trim().toLowerCase();
+function getCredentials(){
+ const email = $('email').value.trim().toLowerCase();
+ const password = $('password').value;
  if(!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){
   say($('authMsg'),'Enter a valid email address.',true);
   return null;
  }
- return email;
+ if(!password || password.length < 6){
+  say($('authMsg'),'Password must be at least 6 characters.',true);
+  return null;
+ }
+ return { email, password };
 }
 
-async function sendEmailOtp(){
- if(busy)return;
- const email=getEmail();
- if(!email)return;
+// SIGN IN
+async function signIn(){
+ if(busy) return;
+ const creds = getCredentials();
+ if(!creds) return;
 
  setBusy(true);
- say($('authMsg'),'Sending your code...');
+ say($('authMsg'),'Signing in...');
 
- try{
-  const {error}=await db.auth.signInWithOtp({
-   email,
-   options:{shouldCreateUser:true}
-  });
-
-  if(error)throw error;
-
-  $('otpArea').hidden=false;
-  $('otp').value='';
-  $('otp').focus();
-  say($('authMsg'),'Code sent! Check your email inbox and spam folder.');
- }catch(err){
-  say($('authMsg'),err.message,true);
- }finally{
+ try {
+  const { error } = await db.auth.signInWithPassword(creds);
+  if(error) throw error;
+ } catch(err) {
+  say($('authMsg'), err.message, true);
+ } finally {
   setBusy(false);
  }
 }
 
-async function verifyEmailOtp(){
- if(busy)return;
-
- const email=getEmail();
- if(!email)return;
-
- const token=$('otp').value.trim();
-
- if(!/^\d{6}$/.test(token)){
-  say($('authMsg'),'Enter the 6-digit code.',true);
-  return;
- }
+// CREATE ACCOUNT
+async function signUp(){
+ if(busy) return;
+ const creds = getCredentials();
+ if(!creds) return;
 
  setBusy(true);
- say($('authMsg'),'Verifying code...');
+ say($('authMsg'),'Creating account...');
 
- try{
-  const {error}=await db.auth.verifyOtp({
-   email,
-   token,
-   type:'email'
-  });
+ try {
+  const { data, error } = await db.auth.signUp(creds);
+  if(error) throw error;
 
-  if(error)throw error;
-  say($('authMsg'),'Verified! Opening your diary...');
- }catch(err){
-  say($('authMsg'),err.message,true);
- }finally{
+  if(!data.session) {
+   say($('authMsg'), 'Account created! Signing you in...');
+   await db.auth.signInWithPassword(creds);
+  }
+ } catch(err) {
+  say($('authMsg'), err.message, true);
+ } finally {
   setBusy(false);
  }
 }
 
-$('sendOtp').onclick=sendEmailOtp;
-$('verifyOtp').onclick=verifyEmailOtp;
-$('resendOtp').onclick=sendEmailOtp;
+$('signin').onclick = signIn;
+$('signup').onclick = signUp;
 
-$('otp').addEventListener('keydown',e=>{
- if(e.key==='Enter')verifyEmailOtp();
+$('password').addEventListener('keydown', e => {
+ if(e.key === 'Enter') signIn();
 });
 
 // SIGN OUT
@@ -267,12 +244,11 @@ function applySession(session){
   loadEntries();
  }else{
   entries=[];
-  $('otp').value='';
-  $('otpArea').hidden=true;
   $('who').textContent='';
   $('list').replaceChildren();
   $('title').value='';
   $('content').value='';
+  $('password').value='';
   $('date').value=today();
   say($('authMsg'),'');
  }
