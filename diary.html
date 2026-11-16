@@ -1,428 +1,403 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="utf-8">
+<meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>My Diary</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;600&family=Literata:opsz,wght@7..72,400;7..72,600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;600&family=Literata:wght@400;600&display=swap" rel="stylesheet">
+
 <style>
-:root{
-  --page:#F3F5F1; --sheet:#FBFCFA; --ink:#1E2B2F; --muted:#5C6B70; --rule:#D5DDD8;
-  --accent:#2F5D62; --accent-ink:#fff; --danger:#A23B3B; --sel:#E4ECE8;
-  --ui:"Hanken Grotesk",system-ui,sans-serif; --write:"Literata",Georgia,serif;
-  color-scheme:light;
+:root {
+  --page:#F3F5F1; --sheet:#FBFCFA; --ink:#1E2B2F;
+  --muted:#5C6B70; --rule:#D5DDD8; --accent:#2F5D62;
+  --accent-ink:#fff; --danger:#A23B3B; --sel:#E4ECE8;
+  --ui:"Hanken Grotesk",sans-serif; --write:"Literata",Georgia,serif;
 }
-@media (prefers-color-scheme:dark){
-  :root{--page:#12191B; --sheet:#192225; --ink:#E4ECEA; --muted:#93A5A8; --rule:#2B3A3D;
-    --accent:#7FB7BC; --accent-ink:#0F1A1C; --danger:#E08A8A; --sel:#223034; color-scheme:dark;}
+@media(prefers-color-scheme:dark) {
+  :root {
+    --page:#12191B;--sheet:#192225;--ink:#E4ECEA;
+    --muted:#93A5A8;--rule:#2B3A3D;--accent:#7FB7BC;
+    --accent-ink:#0F1A1C;--danger:#E08A8A;--sel:#223034;
+  }
 }
 *{box-sizing:border-box}
-html,body{margin:0}
-body{background:var(--page);color:var(--ink);font:16px/1.5 var(--ui);min-height:100vh}
+body{margin:0;background:var(--page);color:var(--ink);font:16px/1.5 var(--ui);min-height:100vh}
 [hidden]{display:none!important}
 button,input,textarea{font:inherit;color:inherit}
-:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
-
-.btn{background:var(--accent);color:var(--accent-ink);border:0;border-radius:6px;padding:.6rem 1.1rem;font-weight:600;cursor:pointer}
-.btn:disabled{opacity:.6;cursor:default}
+button{cursor:pointer}
+.btn{background:var(--accent);color:var(--accent-ink);border:0;border-radius:6px;padding:.6rem 1.1rem;font-weight:600}
+.btn:disabled{opacity:.6}
 .btn.quiet{background:transparent;color:var(--accent);border:1px solid var(--rule)}
 .msg{min-height:1.5rem;margin:.75rem 0 0;font-size:.9rem;color:var(--muted)}
 .msg.error{color:var(--danger)}
-
-/* Auth */
 #auth{display:grid;place-items:center;min-height:100vh;padding:1.5rem}
 .auth-card{width:100%;max-width:380px;background:var(--sheet);border:1px solid var(--rule);border-radius:10px;padding:2rem}
-.auth-card h1{font:600 2rem/1.15 var(--write);margin:0 0 .25rem}
-.auth-card p{margin:0 0 1.5rem;color:var(--muted)}
-label{display:block;font-size:.9rem;font-weight:500;margin:0 0 .25rem}
-input[type=email],input[type=password],input[type=date],input[type=text]{
-  width:100%;padding:.6rem .7rem;border:1px solid var(--rule);border-radius:6px;background:var(--page);margin-bottom:1rem}
+.auth-card h1{font:600 2rem var(--write);margin:0 0 .25rem}
+.auth-card p{color:var(--muted)}
+label{display:block;font-size:.9rem;margin-bottom:.25rem}
+input[type=email],input[type=text],input[type=date]{
+ width:100%;padding:.6rem .7rem;border:1px solid var(--rule);
+ border-radius:6px;background:var(--page);margin-bottom:1rem
+}
 .row{display:flex;gap:.6rem;flex-wrap:wrap}
-
-/* App */
 #app header{display:flex;justify-content:space-between;align-items:center;gap:1rem;padding:.9rem 1.5rem;border-bottom:1px solid var(--rule)}
 #app header strong{font:600 1.25rem var(--write)}
 #app header span{color:var(--muted);font-size:.9rem;margin-right:.75rem}
-.layout{display:grid;grid-template-columns:280px 1fr;gap:1.5rem;max-width:1000px;margin:0 auto;padding:1.5rem}
-aside h2{font-size:1rem;margin:0 0 .75rem;font-weight:600}
+.layout{display:grid;grid-template-columns:280px 1fr;gap:1.5rem;max-width:1000px;margin:auto;padding:1.5rem}
+aside h2{font-size:1rem;margin:0 0 .75rem}
 #list{list-style:none;margin:.75rem 0 0;padding:0;max-height:70vh;overflow:auto}
-#list button{display:block;width:100%;text-align:left;background:none;border:0;border-left:3px solid transparent;padding:.6rem .75rem;cursor:pointer;border-radius:0 6px 6px 0}
+#list button{display:block;width:100%;text-align:left;background:none;border:0;border-left:3px solid transparent;padding:.6rem .75rem;border-radius:0 6px 6px 0}
 #list button[aria-current=true]{background:var(--sel);border-left-color:var(--accent)}
 #list .d{display:block;font-weight:600;font-size:.9rem}
 #list .p{display:block;color:var(--muted);font-size:.85rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .empty{color:var(--muted);font-size:.9rem;padding:.5rem 0}
-
 .sheet{background:var(--sheet);border:1px solid var(--rule);border-radius:10px;padding:1.5rem}
 .sheet .title{font:600 1.4rem var(--write);border:0;background:transparent;padding:.25rem 0;margin:0 0 .5rem;border-bottom:1px solid var(--rule);border-radius:0}
-.sheet input[type=date]{width:auto;margin-bottom:.75rem}
-#content{width:100%;min-height:50vh;resize:vertical;border:0;background-color:transparent;
-  font:400 1.05rem/2rem var(--write);padding:0;margin-bottom:1rem;
-  background-image:repeating-linear-gradient(transparent,transparent calc(2rem - 1px),var(--rule) calc(2rem - 1px),var(--rule) 2rem);
-  background-attachment:local}
+.sheet input[type=date]{width:auto}
+#content{width:100%;min-height:50vh;resize:vertical;border:0;background:transparent;font:1.05rem/2rem var(--write);padding:0;margin-bottom:1rem;background-image:repeating-linear-gradient(transparent,transparent calc(2rem - 1px),var(--rule) calc(2rem - 1px),var(--rule) 2rem);background-attachment:local}
 #content:focus-visible{outline:none}
-
-@media (max-width:760px){
-  .layout{grid-template-columns:1fr;padding:1rem}
-  #list{max-height:200px}
-  #app header{padding:.75rem 1rem}
+@media(max-width:760px){
+ .layout{grid-template-columns:1fr;padding:1rem}
+ #list{max-height:200px}
+ #app header{padding:.75rem 1rem}
 }
 </style>
 </head>
+
 <body>
 
 <main id="auth" hidden>
-  <div class="auth-card">
-    <h1>My diary</h1>
-    <p>Sign in to read and write your entries.</p>
-    <div>
-      <label for="email">Email</label>
-      <input id="email" type="email" autocomplete="email">
-      <label for="password">Password</label>
-      <input id="password" type="password" autocomplete="current-password" minlength="6">
-      <div class="row">
-        <button class="btn" id="signin">Sign in</button>
-        <button class="btn quiet" id="signup">Create account</button>
-      </div>
-      <p class="msg" id="authMsg" role="status"></p>
-    </div>
+ <div class="auth-card">
+  <h1>My diary</h1>
+  <p>Sign in securely with a one-time email code.</p>
+
+  <label for="email">Email</label>
+  <input id="email" type="email" autocomplete="email" required>
+
+  <div class="row">
+   <button class="btn" id="sendOtp">Send OTP</button>
   </div>
+
+  <div id="otpArea" hidden style="margin-top:1rem">
+   <label for="otp">6-digit verification code</label>
+   <input id="otp" type="text" inputmode="numeric"
+    autocomplete="one-time-code" maxlength="6"
+    placeholder="Enter the code from your email">
+   <div class="row">
+    <button class="btn" id="verifyOtp">Verify & sign in</button>
+    <button class="btn quiet" id="resendOtp">Resend code</button>
+   </div>
+  </div>
+
+  <p class="msg" id="authMsg" role="status"></p>
+ </div>
 </main>
 
 <div id="app" hidden>
-  <header>
-    <strong>My diary</strong>
-    <div><span id="who"></span><button class="btn quiet" id="signout">Sign out</button></div>
-  </header>
-  <div class="layout">
-    <aside>
-      <h2>Your entries</h2>
-      <button class="btn quiet" id="newEntry">Write today’s entry</button>
-      <ul id="list"></ul>
-    </aside>
-    <section class="sheet">
-      <label for="date">Date</label>
-      <input id="date" type="date">
-      <input id="title" class="title" type="text" placeholder="Title (optional)" aria-label="Title">
-      <textarea id="content" placeholder="What happened today?" aria-label="Entry"></textarea>
-      <button class="btn" id="save">Save entry</button>
-      <p class="msg" id="saveMsg" role="status"></p>
-    </section>
+ <header>
+  <strong>My diary</strong>
+  <div>
+   <span id="who"></span>
+   <button class="btn quiet" id="signout">Sign out</button>
   </div>
+ </header>
+
+ <div class="layout">
+  <aside>
+   <h2>Your entries</h2>
+   <button class="btn quiet" id="newEntry">Write today’s entry</button>
+   <ul id="list"></ul>
+  </aside>
+
+  <section class="sheet">
+   <label for="date">Date</label>
+   <input id="date" type="date">
+   <input id="title" class="title" type="text"
+    placeholder="Title (optional)" aria-label="Title">
+   <textarea id="content" placeholder="What happened today?"
+    aria-label="Entry"></textarea>
+   <button class="btn" id="save">Save entry</button>
+   <p class="msg" id="saveMsg" role="status"></p>
+  </section>
+ </div>
 </div>
 
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+
 <script>
-// Supabase project settings. Use only the publishable/anon key.
-// Never put a service_role or secret key in this file.
+// SUPABASE CONFIGURATION
 const SUPABASE_URL = 'https://cpdzzjvntkquwpibeosd.supabase.co';
 const SUPABASE_ANON_KEY = 'sb_publishable_wTrIDAFqTNDivXWGcagoWg_fYNb5Zio';
 
-if (!window.supabase || typeof window.supabase.createClient !== 'function') {
-  document.getElementById('auth').hidden = false;
-  document.getElementById('authMsg').textContent = 'The Supabase library did not load. Check your internet connection and refresh this page.';
-  throw new Error('Supabase JS library unavailable');
+const $ = id => document.getElementById(id);
+
+if (!window.supabase) {
+  $('auth').hidden = false;
+  $('authMsg').textContent = 'Supabase library failed to load.';
+  throw new Error('Supabase library unavailable');
 }
 
-const db = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
-  auth: {
-    autoRefreshToken: true,
-    persistSession: true,
-    detectSessionInUrl: true
-  }
-});
-
-const $ = id => document.getElementById(id);
+const db = window.supabase.createClient(
+  SUPABASE_URL,
+  SUPABASE_ANON_KEY
+);
 
 let user = null;
 let entries = [];
-let authBusy = false;
-let loadToken = 0;
+let busy = false;
 
 const today = () => {
-  const d = new Date();
-  return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+ const d = new Date();
+ return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
 };
 
-const fmt = d => new Date(d + 'T00:00:00').toLocaleDateString(undefined, {
-  weekday: 'short',
-  day: 'numeric',
-  month: 'short',
-  year: 'numeric'
+const fmt = d => new Date(d+'T00:00:00').toLocaleDateString(undefined,{
+ weekday:'short',day:'numeric',month:'short',year:'numeric'
 });
 
-function say(el, text, isError) {
-  el.textContent = text || '';
-  el.classList.toggle('error', !!isError);
+function say(el,text,error=false){
+ el.textContent=text||'';
+ el.classList.toggle('error',error);
 }
 
-function setAuthBusy(busy) {
-  authBusy = busy;
-  $('signin').disabled = busy;
-  $('signup').disabled = busy;
+function setBusy(value){
+ busy=value;
+ ['sendOtp','verifyOtp','resendOtp'].forEach(id=>{
+  $(id).disabled=value;
+ });
 }
 
-/* ---------- Authentication ---------- */
-
-function credentials() {
-  const email = $('email').value.trim().toLowerCase();
-  const password = $('password').value;
-
-  if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) || password.length < 6) {
-    say($('authMsg'), 'Enter a valid email and a password of at least 6 characters.', true);
-    return null;
-  }
-
-  return { email, password };
+// EMAIL OTP LOGIN
+function getEmail(){
+ const email=$('email').value.trim().toLowerCase();
+ if(!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){
+  say($('authMsg'),'Enter a valid email address.',true);
+  return null;
+ }
+ return email;
 }
 
-$('signin').onclick = async () => {
-  if (authBusy) return;
+async function sendEmailOtp(){
+ if(busy)return;
+ const email=getEmail();
+ if(!email)return;
 
-  const c = credentials();
-  if (!c) return;
+ setBusy(true);
+ say($('authMsg'),'Sending your code...');
 
-  setAuthBusy(true);
-  say($('authMsg'), 'Signing in…');
-
-  try {
-    const { data, error } = await db.auth.signInWithPassword(c);
-
-    if (error) {
-      say($('authMsg'), error.message, true);
-    } else if (data.session) {
-      say($('authMsg'), 'Signed in. Opening your diary…');
-    } else {
-      say($('authMsg'), 'Sign-in did not return an active session. Please try again.', true);
-    }
-  } catch (err) {
-    say($('authMsg'), err.message || 'Could not sign in. Please try again.', true);
-  } finally {
-    setAuthBusy(false);
-  }
-};
-
-$('signup').onclick = async () => {
-  if (authBusy) return;
-
-  const c = credentials();
-  if (!c) return;
-
-  setAuthBusy(true);
-  say($('authMsg'), 'Creating your account…');
-
-  try {
-    const signupOptions = {};
-
-    if (window.location.protocol === 'http:' || window.location.protocol === 'https:') {
-      signupOptions.emailRedirectTo = window.location.origin + window.location.pathname;
-    }
-
-    const { data, error } = await db.auth.signUp({
-      email: c.email,
-      password: c.password,
-      options: signupOptions
-    });
-
-    if (error) {
-      say($('authMsg'), error.message, true);
-      return;
-    }
-
-    if (data.session) {
-      say($('authMsg'), 'Account created successfully. Opening your diary…');
-    } else if (data.user) {
-      say($('authMsg'), 'Account created! Check your inbox (and spam folder) for the confirmation email. Confirm it, then return and sign in.');
-    } else {
-      say($('authMsg'), 'Supabase did not return an account. Please try again.', true);
-    }
-  } catch (err) {
-    say($('authMsg'), err.message || 'Could not create your account. Please try again.', true);
-  } finally {
-    setAuthBusy(false);
-  }
-};
-
-$('signout').onclick = async () => {
-  $('signout').disabled = true;
-
-  try {
-    const { error } = await db.auth.signOut();
-    if (error) say($('saveMsg'), error.message, true);
-  } catch (err) {
-    say($('saveMsg'), err.message || 'Could not sign out.', true);
-  } finally {
-    $('signout').disabled = false;
-  }
-};
-
-/* ---------- Session handling ---------- */
-
-db.auth.onAuthStateChange((_event, session) => {
-  applySession(session);
-});
-
-function applySession(session) {
-  user = session ? session.user : null;
-
-  const thisUserId = user?.id || null;
-  const token = ++loadToken;
-
-  $('auth').hidden = !!user;
-  $('app').hidden = !user;
-
-  if (user) {
-    $('who').textContent = user.email || '';
-
-    setTimeout(() => {
-      if (user && user.id === thisUserId && token === loadToken) {
-        loadEntries(undefined, thisUserId).catch(err => {
-          say($('saveMsg'), err.message, true);
-        });
-      }
-    }, 0);
-
-  } else {
-    entries = [];
-    $('password').value = '';
-    $('who').textContent = '';
-    $('list').replaceChildren();
-    $('title').value = '';
-    $('content').value = '';
-    $('date').value = today();
-
-    say($('authMsg'), '');
-    say($('saveMsg'), '');
-  }
-}
-
-// Restore an existing login session when the page opens.
-db.auth.getSession().then(({ data, error }) => {
-  if (error) throw error;
-  applySession(data.session);
-}).catch(err => {
-  $('auth').hidden = false;
-  say($('authMsg'), err.message || 'Could not restore your sign-in session.', true);
-});
-
-/* ---------- Diary entries ---------- */
-
-async function loadEntries(selectDate, expectedUserId = user?.id) {
-  if (!user || !expectedUserId || user.id !== expectedUserId) return;
-
-  const { data, error } = await db.from('diary_entries')
-    .select('id, entry_date, title, content')
-    .order('entry_date', { ascending: false });
-
-  if (error) {
-    say($('saveMsg'), error.message, true);
-    return;
-  }
-
-  if (!user || user.id !== expectedUserId) return;
-
-  entries = data || [];
-  renderList();
-  openDate(selectDate || $('date').value || today());
-}
-
-function renderList() {
-  const ul = $('list');
-  ul.replaceChildren();
-
-  if (!entries.length) {
-    const li = document.createElement('li');
-    li.className = 'empty';
-    li.textContent = 'No entries yet. Write your first one.';
-    ul.append(li);
-    return;
-  }
-
-  for (const e of entries) {
-    const li = document.createElement('li');
-    const b = document.createElement('button');
-
-    b.dataset.date = e.entry_date;
-
-    const d = document.createElement('span');
-    d.className = 'd';
-    d.textContent = fmt(e.entry_date);
-
-    const p = document.createElement('span');
-    p.className = 'p';
-    p.textContent = e.title || (e.content || '').split('\n')[0] || '(empty)';
-
-    b.append(d, p);
-    b.onclick = () => openDate(e.entry_date);
-
-    li.append(b);
-    ul.append(li);
-  }
-}
-
-function openDate(date) {
-  const e = entries.find(x => x.entry_date === date);
-
-  $('date').value = date;
-  $('title').value = e ? (e.title || '') : '';
-  $('content').value = e ? e.content : '';
-
-  say($('saveMsg'), '');
-
-  document.querySelectorAll('#list button').forEach(b => {
-    b.setAttribute('aria-current', b.dataset.date === date);
+ try{
+  const {error}=await db.auth.signInWithOtp({
+   email,
+   options:{shouldCreateUser:true}
   });
+
+  if(error)throw error;
+
+  $('otpArea').hidden=false;
+  $('otp').value='';
+  $('otp').focus();
+  say($('authMsg'),'Code sent! Check your email inbox and spam folder.');
+ }catch(err){
+  say($('authMsg'),err.message,true);
+ }finally{
+  setBusy(false);
+ }
 }
 
-$('date').onchange = () => openDate($('date').value || today());
+async function verifyEmailOtp(){
+ if(busy)return;
 
-$('newEntry').onclick = () => openDate(today());
+ const email=getEmail();
+ if(!email)return;
 
-/* ---------- Save entry ---------- */
+ const token=$('otp').value.trim();
 
-$('save').onclick = async () => {
-  if (!user) {
-    return say($('saveMsg'), 'Please sign in before saving an entry.', true);
-  }
+ if(!/^\d{6}$/.test(token)){
+  say($('authMsg'),'Enter the 6-digit code.',true);
+  return;
+ }
 
-  const entry_date = $('date').value;
+ setBusy(true);
+ say($('authMsg'),'Verifying code...');
 
-  if (!entry_date) {
-    return say($('saveMsg'), 'Pick a date first.', true);
-  }
+ try{
+  const {error}=await db.auth.verifyOtp({
+   email,
+   token,
+   type:'email'
+  });
 
-  $('save').disabled = true;
-  say($('saveMsg'), 'Saving…');
+  if(error)throw error;
+  say($('authMsg'),'Verified! Opening your diary...');
+ }catch(err){
+  say($('authMsg'),err.message,true);
+ }finally{
+  setBusy(false);
+ }
+}
 
-  try {
-    const savingUserId = user.id;
+$('sendOtp').onclick=sendEmailOtp;
+$('verifyOtp').onclick=verifyEmailOtp;
+$('resendOtp').onclick=sendEmailOtp;
 
-    const { error } = await db.from('diary_entries').upsert({
-      user_id: savingUserId,
-      entry_date,
-      title: $('title').value.trim() || null,
-      content: $('content').value
-    }, {
-      onConflict: 'user_id,entry_date'
-    });
+$('otp').addEventListener('keydown',e=>{
+ if(e.key==='Enter')verifyEmailOtp();
+});
 
-    if (error) {
-      say($('saveMsg'), error.message, true);
-      return;
-    }
+// SIGN OUT
+$('signout').onclick=async()=>{
+ const {error}=await db.auth.signOut();
+ if(error)say($('saveMsg'),error.message,true);
+};
 
-    await loadEntries(entry_date, savingUserId);
+// SESSION
+db.auth.onAuthStateChange((_event,session)=>{
+ applySession(session);
+});
 
-    if (user && user.id === savingUserId) {
-      say($('saveMsg'), 'Saved.');
-    }
+function applySession(session){
+ user=session?.user||null;
 
-  } catch (err) {
-    say($('saveMsg'), err.message || 'Could not save this entry.', true);
-  } finally {
-    $('save').disabled = false;
-  }
+ $('auth').hidden=!!user;
+ $('app').hidden=!user;
+
+ if(user){
+  $('who').textContent=user.email||'';
+  loadEntries();
+ }else{
+  entries=[];
+  $('otp').value='';
+  $('otpArea').hidden=true;
+  $('who').textContent='';
+  $('list').replaceChildren();
+  $('title').value='';
+  $('content').value='';
+  $('date').value=today();
+  say($('authMsg'),'');
+ }
+}
+
+db.auth.getSession().then(({data,error})=>{
+ if(error)throw error;
+ applySession(data.session);
+}).catch(err=>{
+ $('auth').hidden=false;
+ say($('authMsg'),err.message,true);
+});
+
+// LOAD ENTRIES
+async function loadEntries(selectDate){
+ if(!user)return;
+
+ const userId=user.id;
+
+ const {data,error}=await db.from('diary_entries')
+  .select('id,entry_date,title,content')
+  .order('entry_date',{ascending:false});
+
+ if(error){
+  say($('saveMsg'),error.message,true);
+  return;
+ }
+
+ if(!user || user.id!==userId)return;
+
+ entries=data||[];
+ renderList();
+ openDate(selectDate||$('date').value||today());
+}
+
+// RENDER SIDEBAR
+function renderList(){
+ const ul=$('list');
+ ul.replaceChildren();
+
+ if(!entries.length){
+  const li=document.createElement('li');
+  li.className='empty';
+  li.textContent='No entries yet. Write your first one.';
+  ul.append(li);
+  return;
+ }
+
+ entries.forEach(entry=>{
+  const li=document.createElement('li');
+  const button=document.createElement('button');
+  button.dataset.date=entry.entry_date;
+
+  const date=document.createElement('span');
+  date.className='d';
+  date.textContent=fmt(entry.entry_date);
+
+  const preview=document.createElement('span');
+  preview.className='p';
+  preview.textContent=entry.title ||
+   (entry.content||'').split('\n')[0] || '(empty)';
+
+  button.append(date,preview);
+  button.onclick=()=>openDate(entry.entry_date);
+
+  li.append(button);
+  ul.append(li);
+ });
+}
+
+// OPEN ENTRY
+function openDate(date){
+ const entry=entries.find(e=>e.entry_date===date);
+
+ $('date').value=date;
+ $('title').value=entry?.title||'';
+ $('content').value=entry?.content||'';
+
+ say($('saveMsg'),'');
+
+ document.querySelectorAll('#list button').forEach(button=>{
+  button.setAttribute('aria-current',button.dataset.date===date);
+ });
+}
+
+$('date').onchange=()=>openDate($('date').value||today());
+$('newEntry').onclick=()=>openDate(today());
+
+// SAVE ENTRY
+$('save').onclick=async()=>{
+ if(!user){
+  say($('saveMsg'),'Please sign in first.',true);
+  return;
+ }
+
+ const entryDate=$('date').value;
+ if(!entryDate){
+  say($('saveMsg'),'Pick a date first.',true);
+  return;
+ }
+
+ $('save').disabled=true;
+ say($('saveMsg'),'Saving...');
+
+ try{
+  const userId=user.id;
+
+  const {error}=await db.from('diary_entries').upsert({
+   user_id:userId,
+   entry_date:entryDate,
+   title:$('title').value.trim()||null,
+   content:$('content').value
+  },{
+   onConflict:'user_id,entry_date'
+  });
+
+  if(error)throw error;
+
+  await loadEntries(entryDate);
+  say($('saveMsg'),'Saved!');
+ }catch(err){
+  say($('saveMsg'),err.message,true);
+ }finally{
+  $('save').disabled=false;
+ }
 };
 </script>
 </body>
