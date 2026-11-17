@@ -1,837 +1,272 @@
-```html
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="light">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="theme-color" content="#087f78">
-<title>MEDIN — Arnaw Studios</title>
-
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MEDIN — Understand Your Medicine. Manage Your Health. | Arnaw Studios</title>
+<meta name="description" content="MEDIN by Arnaw Studios: Verified medicine information, packaging OCR scanner, and private prescription reminders.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0%25' y1='0%25' x2='100%25' y2='100%25'%3E%3Cstop offset='0%25' stop-color='%230ea5e9'/%3E%3Cstop offset='100%25' stop-color='%232563eb'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='64' height='64' rx='16' fill='url(%23g)'/%3E%3Cpath d='M32 14v36M14 32h36' stroke='white' stroke-width='7' stroke-linecap='round'/%3E%3Ccircle cx='32' cy='32' r='6' fill='%2338bdf8'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
 
 <style>
 :root {
-    --bg:#f3f7f8;
-    --card:#ffffff;
-    --text:#172d35;
-    --muted:#71838a;
-    --primary:#07877e;
-    --border:#e3ebed;
-    --soft:#e8f7f5;
+  --primary: #0284c7; --primary-hover: #0369a1; --primary-glow: rgba(2, 132, 199, 0.25);
+  --accent: #2563eb; --emerald: #059669; --amber: #d97706; --rose: #e11d48;
+  --bg: radial-gradient(circle at 10% 20%, #eff6ff 0%, #f0fdfa 45%, #f8fafc 100%);
+  --glass: rgba(255, 255, 255, 0.82); --glass-subtle: rgba(255, 255, 255, 0.55);
+  --border: rgba(255, 255, 255, 0.7); --border-subtle: rgba(226, 232, 240, 0.85);
+  --text: #0f172a; --muted: #475569; --card-shadow: 0 12px 32px -4px rgba(14, 116, 144, 0.08);
+  --header-bg: rgba(255, 255, 255, 0.88); --pill-bg: rgba(241, 245, 249, 0.85); --input-bg: #ffffff;
 }
-
-* {
-    box-sizing:border-box;
-    margin:0;
-    padding:0;
-    font-family:Arial,sans-serif;
+:root[data-theme="dark"] {
+  --primary: #38bdf8; --primary-hover: #0ea5e9; --primary-glow: rgba(56, 189, 248, 0.25);
+  --accent: #60a5fa; --emerald: #10b981; --amber: #f59e0b; --rose: #f43f5e;
+  --bg: radial-gradient(circle at 15% 15%, #0c192c 0%, #08111e 50%, #030712 100%);
+  --glass: rgba(15, 23, 42, 0.82); --glass-subtle: rgba(30, 41, 59, 0.6);
+  --border: rgba(255, 255, 255, 0.12); --border-subtle: rgba(255, 255, 255, 0.08);
+  --text: #f8fafc; --muted: #94a3b8; --card-shadow: 0 16px 36px -4px rgba(0, 0, 0, 0.5);
+  --header-bg: rgba(11, 19, 36, 0.88); --pill-bg: rgba(30, 41, 59, 0.75); --input-bg: rgba(15, 23, 42, 0.9);
 }
-
-body {
-    background:var(--bg);
-    color:var(--text);
-    min-height:100vh;
-}
-
-header {
-    background:var(--card);
-    border-bottom:1px solid var(--border);
-    padding:18px 6%;
-    display:flex;
-    align-items:center;
-    justify-content:space-between;
-    position:sticky;
-    top:0;
-    z-index:10;
-}
-
-.logo {
-    font-size:25px;
-    font-weight:900;
-    color:var(--primary);
-}
-
-.logo span {color:var(--text);}
-
-.small {
-    color:var(--muted);
-    font-size:12px;
-    margin-top:4px;
-}
-
-.container {
-    max-width:1100px;
-    margin:30px auto;
-    padding:15px;
-}
-
-.hero {
-    background:linear-gradient(120deg,#066d69,#19b7a6);
-    color:white;
-    padding:40px;
-    border-radius:22px;
-    margin-bottom:25px;
-}
-
-.hero h1 {
-    font-size:35px;
-    margin-bottom:12px;
-}
-
-.hero p {
-    line-height:1.6;
-    max-width:600px;
-}
-
-.grid {
-    display:grid;
-    grid-template-columns:repeat(auto-fit,minmax(280px,1fr));
-    gap:20px;
-}
-
-.card {
-    background:var(--card);
-    border:1px solid var(--border);
-    border-radius:18px;
-    padding:24px;
-    margin-bottom:20px;
-}
-
-.card h2 {
-    margin-bottom:15px;
-    font-size:20px;
-}
-
-input {
-    width:100%;
-    padding:14px;
-    margin:9px 0;
-    border:1px solid var(--border);
-    border-radius:10px;
-    font-size:15px;
-}
-
-input:focus {
-    outline:2px solid #a6ded9;
-}
-
-button {
-    border:0;
-    padding:13px 17px;
-    border-radius:10px;
-    background:var(--primary);
-    color:white;
-    cursor:pointer;
-    font-weight:bold;
-    margin:5px 3px 5px 0;
-}
-
-button:hover {opacity:.85;}
-
-.secondary {
-    background:var(--soft);
-    color:var(--primary);
-}
-
-.danger {
-    background:#fff0f0;
-    color:#bd3535;
-}
-
-.muted {
-    color:var(--muted);
-    font-size:13px;
-    line-height:1.5;
-}
-
-.hidden {display:none!important;}
-
-.status {
-    margin-top:12px;
-    font-size:13px;
-    line-height:1.5;
-    overflow-wrap:anywhere;
-}
-
-.result {
-    background:var(--soft);
-    padding:16px;
-    border-radius:12px;
-    margin-top:15px;
-    line-height:1.6;
-    overflow-wrap:anywhere;
-}
-
-.result h3 {margin-bottom:10px;}
-
-.reminder {
-    border:1px solid var(--border);
-    border-radius:12px;
-    padding:13px;
-    margin-top:10px;
-    display:flex;
-    align-items:center;
-    justify-content:space-between;
-    gap:10px;
-}
-
-.reminder strong {display:block;}
-
-.warning {
-    background:#fff5dc;
-    color:#735713;
-    padding:16px;
-    border-radius:12px;
-    line-height:1.6;
-    font-size:13px;
-    margin-top:20px;
-}
-
-footer {
-    text-align:center;
-    padding:30px;
-    color:var(--muted);
-    font-size:13px;
-}
-
-@media(max-width:500px) {
-    .hero {padding:25px;}
-    .hero h1 {font-size:27px;}
-    header {padding:15px;}
-}
+* { box-sizing: border-box; margin: 0; padding: 0; -webkit-font-smoothing: antialiased; }
+body { font-family: 'Plus Jakarta Sans', system-ui, sans-serif; background: var(--bg); background-attachment: fixed; color: var(--text); min-height: 100vh; display: flex; flex-direction: column; line-height: 1.55; padding-bottom: 76px; }
+.glass { background: var(--glass); backdrop-filter: blur(20px) saturate(180%); -webkit-backdrop-filter: blur(20px); border: 1px solid var(--border); border-radius: 20px; box-shadow: var(--card-shadow); }
+.glass-subtle { background: var(--glass-subtle); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px); border: 1px solid var(--border-subtle); border-radius: 14px; }
+header.app-header { position: sticky; top: 0; z-index: 50; background: var(--header-bg); backdrop-filter: blur(24px); border-bottom: 1px solid var(--border-subtle); }
+.header-container { max-width: 1180px; margin: 0 auto; padding: 12px 20px; display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.brand-wrapper { display: flex; align-items: center; gap: 12px; text-decoration: none; color: inherit; }
+.logo-icon { width: 40px; height: 40px; border-radius: 12px; background: linear-gradient(135deg, #0284c7, #2563eb); display: grid; place-items: center; color: white; box-shadow: 0 4px 14px var(--primary-glow); }
+.brand-title { display: flex; flex-direction: column; }
+.brand-row { display: flex; align-items: center; gap: 8px; }
+.brand-name { font-weight: 800; font-size: 1.25rem; letter-spacing: -0.03em; }
+.brand-badge { font-size: 0.65rem; font-weight: 700; text-transform: uppercase; padding: 2px 7px; border-radius: 99px; background: rgba(2, 132, 199, 0.12); color: var(--primary); border: 1px solid rgba(2, 132, 199, 0.25); }
+.brand-tagline { font-size: 0.72rem; color: var(--muted); font-weight: 500; }
+.header-actions { display: flex; align-items: center; gap: 10px; }
+.icon-btn { width: 38px; height: 38px; border-radius: 10px; border: 1px solid var(--border-subtle); background: var(--pill-bg); color: var(--muted); cursor: pointer; display: grid; place-items: center; transition: all 0.2s; }
+.icon-btn:hover { color: var(--text); border-color: var(--primary); }
+.user-status-pill { display: inline-flex; align-items: center; gap: 8px; padding: 6px 14px; border-radius: 99px; background: var(--pill-bg); border: 1px solid var(--border-subtle); font-size: 0.85rem; font-weight: 600; cursor: pointer; }
+.user-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--emerald); box-shadow: 0 0 8px rgba(16, 185, 129, 0.6); }
+.safety-bar { background: rgba(2, 132, 199, 0.08); border-bottom: 1px solid rgba(2, 132, 199, 0.15); font-size: 0.78rem; padding: 7px 16px; text-align: center; color: var(--muted); }
+.safety-bar strong { color: var(--primary); }
+.main-wrapper { max-width: 1180px; width: 100%; margin: 0 auto; padding: 20px; flex: 1; }
+.nav-tabs { display: flex; gap: 8px; padding: 6px; background: var(--glass-subtle); backdrop-filter: blur(16px); border: 1px solid var(--border-subtle); border-radius: 16px; margin-bottom: 24px; overflow-x: auto; scrollbar-width: none; }
+.nav-tabs::-webkit-scrollbar { display: none; }
+.nav-tab-btn { display: flex; align-items: center; gap: 8px; padding: 10px 18px; border-radius: 12px; border: none; background: transparent; color: var(--muted); font-weight: 600; font-size: 0.9rem; cursor: pointer; white-space: nowrap; transition: all 0.2s; }
+.nav-tab-btn:hover { color: var(--text); background: rgba(255, 255, 255, 0.4); }
+.nav-tab-btn.active { background: var(--primary); color: white; box-shadow: 0 4px 14px var(--primary-glow); }
+.view-section { display: none; animation: fadeIn 0.25s ease; }
+.view-section.active { display: block; }
+@keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+.dashboard-grid { display: grid; grid-template-columns: 1fr 340px; gap: 24px; }
+@media (max-width: 900px) { .dashboard-grid { grid-template-columns: 1fr; } }
+.hero-card { padding: 30px; position: relative; overflow: hidden; margin-bottom: 24px; }
+.hero-pretitle { font-size: 0.78rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: var(--primary); margin-bottom: 6px; }
+.hero-title { font-size: clamp(1.6rem, 3vw, 2.1rem); font-weight: 800; letter-spacing: -0.03em; margin-bottom: 10px; }
+.hero-desc { font-size: 0.95rem; color: var(--muted); max-width: 600px; margin-bottom: 20px; }
+.quick-action-row { display: flex; flex-wrap: wrap; gap: 10px; }
+.btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; padding: 10px 20px; border-radius: 12px; font-weight: 600; font-size: 0.9rem; cursor: pointer; border: 1px solid transparent; transition: all 0.2s; text-decoration: none; }
+.btn-primary { background: linear-gradient(135deg, var(--primary), var(--accent)); color: white; box-shadow: 0 4px 16px var(--primary-glow); }
+.btn-primary:hover { transform: translateY(-1px); box-shadow: 0 6px 20px var(--primary-glow); }
+.btn-secondary { background: var(--pill-bg); color: var(--text); border-color: var(--border-subtle); }
+.btn-secondary:hover { border-color: var(--primary); transform: translateY(-1px); }
+.btn-outline-danger { background: transparent; color: var(--rose); border-color: rgba(225, 29, 72, 0.3); }
+.section-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; }
+.section-title { font-size: 1.2rem; font-weight: 700; display: flex; align-items: center; gap: 10px; }
+.section-badge { font-size: 0.75rem; padding: 3px 8px; border-radius: 99px; background: rgba(2, 132, 199, 0.1); color: var(--primary); font-weight: 700; }
+.dose-timeline { display: flex; flex-direction: column; gap: 12px; }
+.dose-card { padding: 16px 18px; display: flex; align-items: center; justify-content: space-between; gap: 16px; border-left: 5px solid var(--primary); }
+.dose-card.taken { border-left-color: var(--emerald); opacity: 0.85; }
+.dose-card.skipped { border-left-color: var(--rose); opacity: 0.7; }
+.dose-card-main { display: flex; align-items: center; gap: 14px; }
+.dose-time-pill { background: rgba(2, 132, 199, 0.1); color: var(--primary); font-family: 'JetBrains Mono', monospace; font-weight: 700; font-size: 0.92rem; padding: 6px 12px; border-radius: 10px; min-width: 75px; text-align: center; }
+.dose-details h4 { font-size: 1.02rem; font-weight: 700; margin-bottom: 2px; }
+.dose-details p { font-size: 0.84rem; color: var(--muted); }
+.dose-actions { display: flex; align-items: center; gap: 6px; }
+.action-pill-btn { padding: 6px 12px; border-radius: 8px; font-size: 0.8rem; font-weight: 600; border: 1px solid transparent; cursor: pointer; display: inline-flex; align-items: center; gap: 4px; transition: all 0.15s; }
+.action-pill-btn.take { background: rgba(5, 150, 105, 0.12); color: var(--emerald); border-color: rgba(5, 150, 105, 0.3); }
+.action-pill-btn.take:hover { background: var(--emerald); color: white; }
+.action-pill-btn.skip { background: rgba(225, 29, 72, 0.08); color: var(--rose); border-color: rgba(225, 29, 72, 0.2); }
+.action-pill-btn.skip:hover { background: var(--rose); color: white; }
+.action-pill-btn.snooze { background: rgba(217, 119, 6, 0.08); color: var(--amber); border-color: rgba(217, 119, 6, 0.2); }
+.sidebar-column { display: flex; flex-direction: column; gap: 18px; }
+.widget-card { padding: 20px; }
+.widget-title { font-size: 0.95rem; font-weight: 700; margin-bottom: 12px; display: flex; align-items: center; justify-content: space-between; }
+.adherence-ring-container { display: flex; align-items: center; gap: 18px; }
+.ring-visual { position: relative; width: 85px; height: 85px; display: grid; place-items: center; }
+.ring-visual svg { transform: rotate(-90deg); width: 100%; height: 100%; }
+.ring-bg { stroke: var(--border-subtle); stroke-width: 8; fill: none; }
+.ring-fill { stroke: var(--emerald); stroke-width: 8; stroke-linecap: round; fill: none; transition: stroke-dashoffset 0.6s ease; }
+.ring-text { position: absolute; font-weight: 800; font-size: 1.1rem; }
+.search-container { max-width: 800px; margin: 0 auto; }
+.search-input-box { display: flex; align-items: center; gap: 12px; padding: 8px 16px; border-radius: 16px; background: var(--input-bg); border: 1px solid var(--border); box-shadow: var(--card-shadow); margin-bottom: 20px; }
+.search-input-box input { flex: 1; border: none; background: transparent; font-size: 1rem; color: var(--text); padding: 8px 0; outline: none; font-family: inherit; }
+.search-chips { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 20px; }
+.chip { padding: 5px 12px; border-radius: 99px; background: var(--pill-bg); border: 1px solid var(--border-subtle); font-size: 0.8rem; font-weight: 600; color: var(--muted); cursor: pointer; transition: all 0.15s; }
+.chip:hover { background: var(--primary); color: white; border-color: var(--primary); }
+.med-card-list { display: flex; flex-direction: column; gap: 14px; }
+.med-card { padding: 20px; border: 1px solid var(--border-subtle); }
+.med-card:hover { border-color: var(--primary); }
+.med-card-header { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 10px; }
+.med-card-title { font-size: 1.2rem; font-weight: 800; letter-spacing: -0.02em; }
+.med-card-generic { font-size: 0.85rem; color: var(--primary); font-weight: 600; }
+.med-source-tag { font-size: 0.72rem; padding: 3px 8px; border-radius: 6px; background: rgba(14, 165, 233, 0.1); color: var(--primary); font-weight: 600; }
+.med-warning-preview { background: rgba(225, 29, 72, 0.08); border-left: 3px solid var(--rose); padding: 8px 12px; border-radius: 0 8px 8px 0; font-size: 0.82rem; margin-bottom: 12px; }
+.scanner-container { max-width: 650px; margin: 0 auto; text-align: center; }
+.camera-viewport-card { padding: 18px; margin-bottom: 18px; }
+.video-wrapper { position: relative; width: 100%; aspect-ratio: 4/3; border-radius: 14px; overflow: hidden; background: #000; display: flex; align-items: center; justify-content: center; }
+#scannerVideo { width: 100%; height: 100%; object-fit: cover; }
+.camera-guide-overlay { position: absolute; inset: 16px; border: 2px dashed rgba(255, 255, 255, 0.65); border-radius: 12px; pointer-events: none; display: flex; flex-direction: column; justify-content: space-between; padding: 10px; }
+.camera-guide-text { background: rgba(0, 0, 0, 0.65); color: white; font-size: 0.78rem; font-weight: 600; padding: 4px 12px; border-radius: 99px; align-self: center; }
+.scan-laser-line { height: 2px; background: linear-gradient(90deg, transparent, #38bdf8, transparent); box-shadow: 0 0 10px #38bdf8; animation: scanLoop 2.4s infinite ease-in-out; }
+@keyframes scanLoop { 0% { transform: translateY(0); opacity: 0; } 20% { opacity: 1; } 80% { opacity: 1; } 100% { transform: translateY(200px); opacity: 0; } }
+.reminders-container { max-width: 850px; margin: 0 auto; }
+.reminder-form-card { padding: 24px; margin-bottom: 24px; }
+.form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 14px; margin-bottom: 16px; }
+.form-group { display: flex; flex-direction: column; gap: 5px; }
+.form-group label { font-size: 0.82rem; font-weight: 700; color: var(--muted); }
+.form-control { padding: 9px 12px; border-radius: 10px; border: 1px solid var(--border-subtle); background: var(--input-bg); color: var(--text); font-family: inherit; font-size: 0.92rem; outline: none; }
+.form-control:focus { border-color: var(--primary); }
+.modal-backdrop { position: fixed; inset: 0; background: rgba(15, 23, 42, 0.6); backdrop-filter: blur(8px); z-index: 100; display: grid; place-items: center; padding: 20px; opacity: 0; pointer-events: none; transition: opacity 0.2s ease; }
+.modal-backdrop.open { opacity: 1; pointer-events: auto; }
+.modal-dialog { max-width: 580px; width: 100%; max-height: 85vh; overflow-y: auto; padding: 24px; position: relative; }
+.modal-close-btn { position: absolute; top: 16px; right: 16px; width: 30px; height: 30px; border-radius: 50%; background: var(--pill-bg); border: 1px solid var(--border-subtle); color: var(--muted); cursor: pointer; display: grid; place-items: center; }
+.toast-notice { position: fixed; bottom: 85px; right: 20px; z-index: 110; padding: 10px 18px; border-radius: 12px; background: var(--glass); backdrop-filter: blur(20px); border: 1px solid var(--border); box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2); display: flex; align-items: center; gap: 8px; font-size: 0.88rem; font-weight: 600; transform: translateY(100px); opacity: 0; transition: all 0.3s ease; }
+.toast-notice.show { transform: translateY(0); opacity: 1; }
+.mobile-nav-bar { display: none; position: fixed; bottom: 0; left: 0; right: 0; height: 64px; background: var(--header-bg); backdrop-filter: blur(24px); border-top: 1px solid var(--border-subtle); z-index: 45; align-items: center; justify-content: space-around; }
+.mobile-nav-btn { display: flex; flex-direction: column; align-items: center; gap: 3px; font-size: 0.72rem; font-weight: 600; color: var(--muted); background: transparent; border: none; cursor: pointer; }
+.mobile-nav-btn.active { color: var(--primary); }
+.mobile-nav-btn svg { width: 20px; height: 20px; }
+@media (max-width: 768px) { .mobile-nav-bar { display: flex; } .nav-tabs, .brand-tagline { display: none; } .main-wrapper { padding: 14px 10px; } }
 </style>
 </head>
-
 <body>
 
-<header>
-    <div>
-        <div class="logo">MEDIN<span>.</span></div>
-        <div class="small">Healthcare information by Arnaw Studios</div>
+<header class="app-header">
+  <div class="header-container">
+    <a href="#" class="brand-wrapper" onclick="switchTab('dashboard')">
+      <div class="logo-icon">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M12 4v16M4 12h16"></path></svg>
+      </div>
+      <div class="brand-title">
+        <div class="brand-row">
+          <span class="brand-name">MEDIN</span>
+          <span class="brand-badge">Arnaw Studios</span>
+        </div>
+        <span class="brand-tagline">Understand Your Medicine. Manage Your Health.</span>
+      </div>
+    </a>
+    <div class="header-actions">
+      <button class="icon-btn" id="themeToggle" title="Toggle Dark/Light Mode" onclick="toggleTheme()">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"></circle><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"></path></svg>
+      </button>
+      <button class="icon-btn" title="Notifications" onclick="openNotifModal()">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg>
+      </button>
+      <div class="user-status-pill" onclick="openAuthModal()">
+        <span class="user-dot"></span>
+        <span id="userStatusText">Guest</span>
+      </div>
     </div>
-    <div id="accountLabel">Guest</div>
+  </div>
 </header>
 
-<main class="container">
-
-<section class="hero">
-    <h1>Healthcare, made simpler.</h1>
-    <p>
-        Understand medicine information, organise personal
-        reminders and keep useful health information accessible.
-    </p>
-</section>
-
-<!-- LOGIN -->
-
-<section class="card" id="authCard">
-
-    <h2>🔐 Welcome to MEDIN</h2>
-
-    <p class="muted">Sign in or create your personal account.</p>
-
-    <input id="email" type="email" placeholder="Email address"
-    autocomplete="email">
-
-    <input id="password" type="password" placeholder="Password"
-    autocomplete="current-password">
-
-    <button id="signupBtn">Create Account</button>
-    <button id="loginBtn" class="secondary">Login</button>
-
-    <div class="status" id="authStatus"></div>
-
-</section>
-
-<!-- APPLICATION -->
-
-<section id="app" class="hidden">
-
-<div class="grid">
-
-    <!-- MEDICINE SEARCH -->
-
-    <section class="card">
-
-        <h2>💊 Medicine Search</h2>
-
-        <p class="muted">
-            Search available medicine-label information.
-        </p>
-
-        <input id="medicineSearch"
-        placeholder="Enter medicine name">
-
-        <button id="searchBtn">Search</button>
-
-        <div id="medicineResult"></div>
-
-    </section>
-
-    <!-- REMINDERS -->
-
-    <section class="card">
-
-        <h2>⏰ My Reminders</h2>
-
-        <p class="muted">
-            Enter reminders based on existing instructions
-            from your healthcare professional.
-        </p>
-
-        <input id="reminderMedicine"
-        placeholder="Medicine name">
-
-        <label class="muted">Reminder time</label>
-
-        <input id="reminderTime" type="time">
-
-        <button id="addReminderBtn">Save Reminder</button>
-
-        <button id="notificationBtn" class="secondary">
-            Enable Notifications
-        </button>
-
-        <div id="reminderList"></div>
-
-    </section>
-
+<div class="safety-bar">
+  <span><strong>Educational & Reminder Platform:</strong> MEDIN never prescribes or recommends dosages. Enter schedules only from your licensed doctor's prescription.</span>
 </div>
 
-<section class="card">
-
-    <h2>👤 My Account</h2>
-
-    <p class="muted" id="userEmail"></p>
-
-    <button id="logoutBtn" class="danger">Sign Out</button>
-
-</section>
-
-</section>
-
-<section class="warning">
-    <strong>Medical safety:</strong>
-    MEDIN is an educational information and reminder tool.
-    It does not diagnose diseases, prescribe medicines,
-    recommend doses or replace medical professionals.
-    Always follow existing prescription instructions.
-    Medicine information may be incomplete or outdated.
-    Consult a qualified healthcare professional or pharmacist
-    before making medicine-related decisions.
-</section>
-
-</main>
-
-<footer>
-    MEDIN © 2026 | An Arnaw Studios Project
-</footer>
-
-<script>
-"use strict";
-
-// ========================================
-// CONFIGURATION
-// ========================================
-
-const SUPABASE_URL = "YOUR_SUPABASE_PROJECT_URL";
-const SUPABASE_KEY = "YOUR_SUPABASE_PUBLISHABLE_KEY";
-
-const authCard = document.getElementById("authCard");
-const app = document.getElementById("app");
-const authStatus = document.getElementById("authStatus");
-
-let client = null;
-let currentUser = null;
-let reminders = [];
-let notified = new Set();
-let loadingUser = false;
-
-// ========================================
-// INITIALISE SUPABASE
-// ========================================
-
-function initialise() {
-
-    if (!window.supabase) {
-        authStatus.textContent =
-            "Supabase library could not load. Check your internet connection.";
-        return;
-    }
-
-    if (
-        SUPABASE_URL.includes("YOUR_") ||
-        SUPABASE_KEY.includes("YOUR_")
-    ) {
-        authStatus.textContent =
-            "Setup required: Add your Supabase project URL and publishable key.";
-        return;
-    }
-
-    try {
-        client = window.supabase.createClient(
-            SUPABASE_URL,
-            SUPABASE_KEY
-        );
-
-        client.auth.onAuthStateChange((event, session) => {
-            if (session) {
-                loadUser(session.user);
-            } else {
-                showGuest();
-            }
-        });
-
-        checkSession();
-
-    } catch (error) {
-        authStatus.textContent =
-            "Supabase initialisation error: " + error.message;
-    }
-}
-
-// ========================================
-// AUTHENTICATION
-// ========================================
-
-async function checkSession() {
-
-    if (!client) return;
-
-    const {data, error} = await client.auth.getSession();
-
-    if (error) {
-        authStatus.textContent = error.message;
-        return;
-    }
-
-    if (data.session) {
-        await loadUser(data.session.user);
-    }
-}
-
-async function signUp() {
-
-    if (!client) {
-        authStatus.textContent = "Complete Supabase setup first.";
-        return;
-    }
-
-    const email = document.getElementById("email").value.trim();
-    const password = document.getElementById("password").value;
-
-    if (!email || password.length < 8) {
-        authStatus.textContent =
-            "Enter a valid email and password of at least 8 characters.";
-        return;
-    }
-
-    authStatus.textContent = "Creating account...";
-
-    const {data, error} = await client.auth.signUp({
-        email,
-        password
-    });
-
-    if (error) {
-        authStatus.textContent = error.message;
-        return;
-    }
-
-    authStatus.textContent = data.session
-        ? "Account created successfully."
-        : "Account created. Check your email to confirm it.";
-
-    if (data.session) await loadUser(data.user);
-}
-
-async function signIn() {
-
-    if (!client) {
-        authStatus.textContent = "Complete Supabase setup first.";
-        return;
-    }
-
-    const email = document.getElementById("email").value.trim();
-    const password = document.getElementById("password").value;
-
-    if (!email || !password) {
-        authStatus.textContent = "Enter your email and password.";
-        return;
-    }
-
-    authStatus.textContent = "Signing in...";
-
-    const {data, error} = await client.auth.signInWithPassword({
-        email,
-        password
-    });
-
-    if (error) {
-        authStatus.textContent = error.message;
-        return;
-    }
-
-    await loadUser(data.user);
-}
-
-async function loadUser(user) {
-
-    if (!user || loadingUser) return;
-
-    loadingUser = true;
-
-    currentUser = user;
-
-    authCard.classList.add("hidden");
-    app.classList.remove("hidden");
-
-    document.getElementById("accountLabel").textContent = "My Account";
-    document.getElementById("userEmail").textContent = user.email;
-
-    await loadReminders();
-
-    loadingUser = false;
-}
-
-function showGuest() {
-
-    currentUser = null;
-    reminders = [];
-
-    authCard.classList.remove("hidden");
-    app.classList.add("hidden");
-
-    document.getElementById("accountLabel").textContent = "Guest";
-}
-
-async function signOut() {
-
-    if (!client) return;
-
-    const {error} = await client.auth.signOut();
-
-    if (error) {
-        alert(error.message);
-        return;
-    }
-
-    showGuest();
-}
-
-// ========================================
-// MEDICINE SEARCH
-// ========================================
-
-async function searchMedicine() {
-
-    const name = document.getElementById("medicineSearch")
-        .value.trim();
-
-    const result = document.getElementById("medicineResult");
-
-    if (!name) {
-        result.textContent = "Enter a medicine name.";
-        return;
-    }
-
-    result.textContent = "Searching medicine database...";
-
-    try {
-
-        const url = new URL(
-            "https://api.fda.gov/drug/label.json"
-        );
-
-        const safeName = name.replace(/"/g, "");
-
-        url.searchParams.set(
-            "search",
-            `openfda.brand_name:"${safeName}" OR openfda.generic_name:"${safeName}"`
-        );
-
-        url.searchParams.set("limit", "1");
-
-        const response = await fetch(url);
-
-        const data = await response.json();
-
-        if (!response.ok || !data.results?.length) {
-            result.textContent =
-                "No matching label found. This does not establish whether a medicine is safe or available.";
-            return;
-        }
-
-        const item = data.results[0];
-
-        const box = document.createElement("div");
-        box.className = "result";
-
-        function addText(label, value) {
-            const heading = document.createElement("strong");
-            heading.textContent = label;
-
-            const paragraph = document.createElement("p");
-            paragraph.textContent = value;
-
-            box.append(heading, paragraph);
-        }
-
-        const title = document.createElement("h3");
-        title.textContent = "Medicine information";
-        box.appendChild(title);
-
-        addText(
-            "Brand name",
-            (item.openfda?.brand_name || []).join(", ") || "Not listed"
-        );
-
-        addText(
-            "Generic name",
-            (item.openfda?.generic_name || []).join(", ") || "Not listed"
-        );
-
-        addText(
-            "Listed uses",
-            (item.indications_and_usage || []).join(" ") ||
-            "Not listed in this record."
-        );
-
-        addText(
-            "Warnings",
-            (item.warnings || item.warnings_and_cautions || []).join(" ") ||
-            "No warning text available in this record."
-        );
-
-        const source = document.createElement("p");
-        source.className = "muted";
-        source.textContent =
-            "Source: US FDA drug-label database. This record may not apply to every product or country.";
-
-        box.appendChild(source);
-
-        result.replaceChildren(box);
-
-    } catch (error) {
-
-        result.textContent =
-            "Medicine search failed. Please try again later.";
-
-        console.error(error);
-    }
-}
-
-// ========================================
-// REMINDERS
-// ========================================
-
-async function loadReminders() {
-
-    if (!client || !currentUser) return;
-
-    const {data, error} = await client
-        .from("medication_reminders")
-        .select("*")
-        .order("reminder_time");
-
-    if (error) {
-        console.error(error);
-        document.getElementById("reminderList").textContent =
-            "Could not load reminders: " + error.message;
-        return;
-    }
-
-    reminders = data || [];
-    renderReminders();
-}
-
-async function addReminder() {
-
-    if (!currentUser) return;
-
-    const medicine = document.getElementById("reminderMedicine")
-        .value.trim();
-
-    const time = document.getElementById("reminderTime").value;
-
-    if (!medicine || !time) {
-        alert("Enter the medicine name and reminder time.");
-        return;
-    }
-
-    const {error} = await client
-        .from("medication_reminders")
-        .insert({
-            user_id: currentUser.id,
-            medicine_name: medicine,
-            reminder_time: time
-        });
-
-    if (error) {
-        alert("Could not save reminder: " + error.message);
-        return;
-    }
-
-    document.getElementById("reminderMedicine").value = "";
-    document.getElementById("reminderTime").value = "";
-
-    await loadReminders();
-}
-
-function renderReminders() {
-
-    const list = document.getElementById("reminderList");
-
-    list.replaceChildren();
-
-    if (!reminders.length) {
-        const empty = document.createElement("p");
-        empty.className = "muted";
-        empty.textContent = "No reminders yet.";
-        list.appendChild(empty);
-        return;
-    }
-
-    reminders.forEach(item => {
-
-        const row = document.createElement("div");
-        row.className = "reminder";
-
-        const info = document.createElement("div");
-
-        const name = document.createElement("strong");
-        name.textContent = item.medicine_name;
-
-        const time = document.createElement("p");
-        time.className = "muted";
-        time.textContent = item.reminder_time.slice(0, 5);
-
-        info.append(name, time);
-
-        const remove = document.createElement("button");
-        remove.className = "danger";
-        remove.textContent = "Delete";
-
-        remove.addEventListener("click", () => deleteReminder(item.id));
-
-        row.append(info, remove);
-
-        list.appendChild(row);
-    });
-}
-
-async function deleteReminder(id) {
-
-    if (!currentUser) return;
-
-    const {error} = await client
-        .from("medication_reminders")
-        .delete()
-        .eq("id", id);
-
-    if (error) {
-        alert(error.message);
-        return;
-    }
-
-    await loadReminders();
-}
-
-// ========================================
-// NOTIFICATIONS
-// ========================================
-
-async function enableNotifications() {
-
-    if (!("Notification" in window)) {
-        alert("Notifications are not supported by this browser.");
-        return;
-    }
-
-    const permission = await Notification.requestPermission();
-
-    if (permission === "granted") {
-        alert("Notifications enabled while MEDIN is running.");
-    } else {
-        alert("Notification permission was not granted.");
-    }
-}
-
-function checkReminders() {
-
-    if (!currentUser) return;
-
-    if (!("Notification" in window)) return;
-
-    if (Notification.permission !== "granted") return;
-
-    const now = new Date();
-
-    const currentTime =
-        String(now.getHours()).padStart(2, "0") + ":" +
-        String(now.getMinutes()).padStart(2, "0");
-
-    const date =
-        now.getFullYear() + "-" +
-        (now.getMonth() + 1) + "-" +
-        now.getDate();
-
-    reminders.forEach(item => {
-
-        const key = item.id + "-" + date;
-
-        if (
-            item.is_enabled &&
-            item.reminder_time.slice(0, 5) === currentTime &&
-            !notified.has(key)
-        ) {
-
-            new Notification("MEDIN Reminder", {
-                body: "Your scheduled reminder: " + item.medicine_name
-            });
-
-            notified.add(key);
-        }
-    });
-}
-
-// ========================================
-// EVENT LISTENERS
-// ========================================
-
-document.getElementById("signupBtn")
-    .addEventListener("click", signUp);
-
-document.getElementById("loginBtn")
-    .addEventListener("click", signIn);
-
-document.getElementById("logoutBtn")
-    .addEventListener("click", signOut);
-
-document.getElementById("searchBtn")
-    .addEventListener("click", searchMedicine);
-
-document.getElementById("addReminderBtn")
-    .addEventListener("click", addReminder);
-
-document.getElementById("notificationBtn")
-    .addEventListener("click", enableNotifications);
-
-document.getElementById("medicineSearch")
-    .addEventListener("keydown", event => {
-        if (event.key === "Enter") searchMedicine();
-    });
-
-setInterval(checkReminders, 15000);
-
-// ========================================
-// START
-// ========================================
-
-initialise();
-
-</script>
-
-</body>
-</html>
-```
+<main class="main-wrapper">
+  <nav class="nav-tabs">
+    <button class="nav-tab-btn active" data-tab="dashboard" onclick="switchTab('dashboard')">Dashboard</button>
+    <button class="nav-tab-btn" data-tab="search" onclick="switchTab('search')">Medicine Search</button>
+    <button class="nav-tab-btn" data-tab="scanner" onclick="switchTab('scanner')">Scan Packaging</button>
+    <button class="nav-tab-btn" data-tab="reminders" onclick="switchTab('reminders')">Prescription Reminders</button>
+    <button class="nav-tab-btn" data-tab="cabinet" onclick="switchTab('cabinet')">Medicine Cabinet</button>
+    <button class="nav-tab-btn" data-tab="settings" onclick="switchTab('settings')">Settings & Safety</button>
+  </nav>
+
+  <!-- 1. DASHBOARD -->
+  <section id="view-dashboard" class="view-section active">
+    <div class="glass hero-card">
+      <span class="hero-pretitle">ARNAW STUDIOS HEALTHCARE</span>
+      <h1 class="hero-title">Welcome to MEDIN</h1>
+      <p class="hero-desc">Your private medicine companion. Look up FDA active ingredients, scan medicine boxes with live camera OCR, and stay compliant with your doctor's prescriptions.</p>
+      <div class="quick-action-row">
+        <button class="btn btn-primary" onclick="switchTab('search')">Search Medicine</button>
+        <button class="btn btn-secondary" onclick="switchTab('scanner')">Scan Medicine Box</button>
+        <button class="btn btn-secondary" onclick="switchTab('reminders')">Add Dose Reminder</button>
+      </div>
+    </div>
+
+    <div class="dashboard-grid">
+      <div>
+        <div class="section-header">
+          <h2 class="section-title">
+            <span>Today's Prescribed Doses</span>
+            <span class="section-badge" id="doseBadge">0 scheduled</span>
+          </h2>
+          <span style="font-size:0.82rem; color:var(--muted);" id="dateStr"></span>
+        </div>
+        <div class="dose-timeline" id="todayDoseTimeline"></div>
+      </div>
+
+      <div class="sidebar-column">
+        <div class="glass widget-card">
+          <div class="widget-title">
+            <span>Adherence Tracker</span>
+            <span class="section-badge">Today</span>
+          </div>
+          <div class="adherence-ring-container">
+            <div class="ring-visual">
+              <svg viewBox="0 0 36 36">
+                <path class="ring-bg" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"/>
+                <path class="ring-fill" id="ringFill" stroke-dasharray="100, 100" stroke-dashoffset="0" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"/>
+              </svg>
+              <span class="ring-text" id="ringPct">100%</span>
+            </div>
+            <div>
+              <h5 id="adherenceTitle" style="font-size:0.95rem; font-weight:700;">On Schedule</h5>
+              <p style="font-size:0.8rem; color:var(--muted);">Doses marked taken as prescribed.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="glass widget-card" id="guardianCard">
+          <div class="widget-title">
+            <span>Under-18 Safety</span>
+            <span class="section-badge" id="guardianBadge">Adult Mode</span>
+          </div>
+          <p style="font-size:0.82rem; color:var(--muted); margin-bottom:10px;">Medication for minors requires parent or legal guardian guidance.</p>
+          <button class="btn btn-secondary" style="width:100%; font-size:0.82rem;" onclick="switchTab('settings')">Manage Guardian Setup</button>
+        </div>
+
+        <div class="glass widget-card" style="border-left: 4px solid var(--rose);">
+          <div class="widget-title" style="color:var(--rose);"><span>Emergency Helplines</span></div>
+          <div style="font-size:0.82rem; color:var(--muted); line-height:1.6;">
+            <div>🚑 Emergency Ambulance: <strong>112 / 911 / 108</strong></div>
+            <div>🧪 Poison Control: <strong>1800-222-1222</strong></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 2. SEARCH -->
+  <section id="view-search" class="view-section">
+    <div class="search-container">
+      <div style="text-align: center; margin-bottom: 20px;">
+        <h2 style="font-size: 1.7rem; font-weight: 800;">Verified Medicine Search</h2>
+        <p style="color: var(--muted); font-size: 0.9rem;">Connected to U.S. FDA Drug Labeling registry and clinical databases.</p>
+      </div>
+      <div class="search-input-box">
+        <input type="text" id="searchInput" placeholder="Search by brand name or active ingredient (e.g. Paracetamol, Amoxicillin)...">
+        <button class="btn btn-primary" onclick="searchMedicine()">Search</button>
+      </div>
+      <div class="search-chips">
+        <span style="font-size:0.8rem; color:var(--muted); align-self:center;">Popular:</span>
+        <button class="chip" onclick="quickSearch('Paracetamol')">Paracetamol</button>
+        <button class="chip" onclick="quickSearch('Ibuprofen')">Ibuprofen</button>
+        <button class="chip" onclick="quickSearch('Amoxicillin')">Amoxicillin</button>
+        <button class="chip" onclick="quickSearch('Metformin')">Metformin</button>
