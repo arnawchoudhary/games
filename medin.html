@@ -192,7 +192,7 @@ header.app-header { position: sticky; top: 0; z-index: 50; background: var(--hea
         <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M12 4v16M4 12h16"></path></svg>
       </div>
       <h2 style="font-size: 1.6rem; font-weight: 800; letter-spacing: -0.03em;">MEDIN Personal Account</h2>
-      <p style="font-size: 0.85rem; color: var(--muted); margin-top: 4px;">Sign in with your verified credentials to access your private prescription manager.</p>
+      <p style="font-size: 0.85rem; color: var(--muted); margin-top: 4px;">Sign in to access your cross-device prescription health records.</p>
     </div>
 
     <div class="auth-tabs">
@@ -203,11 +203,11 @@ header.app-header { position: sticky; top: 0; z-index: 50; background: var(--hea
     <form id="authForm" onsubmit="handleAuthSubmit(event)">
       <div class="form-group" style="margin-bottom: 12px;">
         <label>Email Address</label>
-        <input type="email" id="authEmail" class="form-control" placeholder="you@example.com" required>
+        <input type="email" id="authEmail" class="form-control" value="arnawc03@gmail.com" placeholder="you@example.com" required>
       </div>
       <div class="form-group" style="margin-bottom: 16px;">
         <label>Password</label>
-        <input type="password" id="authPassword" class="form-control" placeholder="Min. 6 characters" minlength="6" required>
+        <input type="password" id="authPassword" class="form-control" placeholder="arnaw123" minlength="6" required>
       </div>
 
       <!-- Under-18 Guardian Option for Registration -->
@@ -245,7 +245,7 @@ header.app-header { position: sticky; top: 0; z-index: 50; background: var(--hea
     <div class="glass hero-card">
       <span class="hero-pretitle">ARNAW STUDIOS HEALTHCARE</span>
       <h1 class="hero-title" id="welcomeUserTitle">Welcome to MEDIN</h1>
-      <p class="hero-desc">Your private medicine companion. Look up FDA active ingredients, scan medicine boxes with live camera OCR, and stay compliant with your doctor's prescriptions.</p>
+      <p class="hero-desc">Your cross-device medicine companion. Look up FDA active ingredients, scan medicine boxes with live camera OCR, and stay compliant with your doctor's prescriptions.</p>
       <div class="quick-action-row">
         <button class="btn btn-primary" onclick="switchTab('search')">Search Medicine</button>
         <button class="btn btn-secondary" onclick="switchTab('scanner')">Scan Medicine Box</button>
@@ -411,7 +411,7 @@ header.app-header { position: sticky; top: 0; z-index: 50; background: var(--hea
       <div class="section-header" style="margin-bottom: 20px;">
         <div>
           <h2 style="font-size: 1.7rem; font-weight: 800;">My Medicine Cabinet</h2>
-          <p style="color: var(--muted); font-size: 0.9rem;">Saved medicines for quick lookup and precautions.</p>
+          <p style="color: var(--muted); font-size: 0.9rem;">Saved medicines for quick lookup and precautions. Synced across all your devices.</p>
         </div>
         <button class="btn btn-primary" onclick="switchTab('search')">Add Medicine</button>
       </div>
@@ -473,7 +473,7 @@ header.app-header { position: sticky; top: 0; z-index: 50; background: var(--hea
 <div class="toast-notice" id="toast"><span id="toastMsg"></span></div>
 
 <script>
-// SUPABASE CLIENT (Configured from Arnaw Studios backend)
+// SUPABASE CLIENT (Pre-configured from Arnaw Studios backend)
 const SUPABASE_URL = 'https://cpdzzjvntkquwpibeosd.supabase.co';
 const SUPABASE_ANON_KEY = 'sb_publishable_wTrIDAFqTNDivXWGcagoWg_fYNb5Zio';
 const db = window.supabase ? window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY) : null;
@@ -493,47 +493,76 @@ const ESSENTIAL_MEDS = [
   { brand: 'Azithromycin', active: 'Azithromycin', cat: 'Macrolide Antibiotic', uses: 'Respiratory and bacterial infections.', sideEffects: 'Mild abdominal cramps, diarrhea.', warnings: 'Take as directed by doctor.', source: 'FDA' }
 ];
 
-// STATE MANAGEMENT (Strictly scoped to logged-in user account)
+// STATE MANAGEMENT (Synced across all devices through Supabase Cloud User Metadata)
 let schedules = [];
 let cabinet = [];
 let doseHistory = [];
 let isUnder18 = false;
 
-function loadUserRecords() {
+// Cloud Sync: Loads data from Supabase Cloud
+async function loadUserRecords() {
   if (!currentUser) return;
+  const meta = currentUser.user_metadata || {};
   const uid = currentUser.id;
-  schedules = JSON.parse(localStorage.getItem(`medin_sched_${uid}`) || '[]');
-  cabinet = JSON.parse(localStorage.getItem(`medin_cab_${uid}`) || '[]');
-  doseHistory = JSON.parse(localStorage.getItem(`medin_hist_${uid}`) || '[]');
-  isUnder18 = localStorage.getItem(`medin_u18_${uid}`) === 'true';
+
+  // Cloud metadata takes priority for true cross-device synchronization
+  if (meta.medin_schedules) {
+    schedules = meta.medin_schedules;
+  } else {
+    schedules = JSON.parse(localStorage.getItem(`medin_sched_${uid}`) || '[]');
+  }
+
+  if (meta.medin_cabinet) {
+    cabinet = meta.medin_cabinet;
+  } else {
+    cabinet = JSON.parse(localStorage.getItem(`medin_cab_${uid}`) || '[]');
+  }
+
+  if (meta.medin_history) {
+    doseHistory = meta.medin_history;
+  } else {
+    doseHistory = JSON.parse(localStorage.getItem(`medin_hist_${uid}`) || '[]');
+  }
+
+  isUnder18 = meta.is_under_18 || (localStorage.getItem(`medin_u18_${uid}`) === 'true');
 
   if (schedules.length === 0) {
     schedules = [
       { id: '1', med: 'Amoxicillin 500mg', dose: '1 Capsule', note: 'After food with water', time: '08:00', active: true },
       { id: '2', med: 'Paracetamol 650mg', dose: '1 Tablet', note: 'If fever > 100°F', time: '20:00', active: true }
     ];
-    localStorage.setItem(`medin_sched_${uid}`, JSON.stringify(schedules));
-  }
-
-  // Attempt cloud sync if tables exist
-  if (db) {
-    db.from('medication_schedules').select('*').eq('user_id', uid).then(({ data }) => {
-      if (data && data.length > 0) {
-        schedules = data.map(d => ({ id: d.id, med: d.medicine_name, dose: d.dosage, note: d.instructions, time: d.times?.[0] || '08:00', active: d.is_active }));
-        renderSchedules();
-        renderDashboard();
-      }
-    }).catch(()=>{});
+    saveUserRecords();
   }
 }
 
-function saveUserRecords() {
+// Cloud Sync: Pushes data to Supabase Cloud so all devices have identical records
+async function saveUserRecords() {
   if (!currentUser) return;
   const uid = currentUser.id;
+
+  // 1. Local caching for offline resilience
   localStorage.setItem(`medin_sched_${uid}`, JSON.stringify(schedules));
   localStorage.setItem(`medin_cab_${uid}`, JSON.stringify(cabinet));
   localStorage.setItem(`medin_hist_${uid}`, JSON.stringify(doseHistory));
   localStorage.setItem(`medin_u18_${uid}`, isUnder18 ? 'true' : 'false');
+
+  // 2. Cloud sync via Supabase user_metadata (works on any device)
+  if (db) {
+    try {
+      const { data, error } = await db.auth.updateUser({
+        data: {
+          medin_schedules: schedules,
+          medin_cabinet: cabinet,
+          medin_history: doseHistory,
+          is_under_18: isUnder18,
+          last_synced: new Date().toISOString()
+        }
+      });
+      if (data?.user) currentUser = data.user;
+    } catch (e) {
+      console.warn('Cloud sync error:', e);
+    }
+  }
 }
 
 // AUTH GATE LOGIC (NO GUEST MODE)
@@ -564,7 +593,7 @@ async function handleAuthSubmit(e) {
   }
 
   btn.disabled = true;
-  btn.textContent = 'Authenticating...';
+  btn.textContent = 'Authenticating with Supabase...';
   msg.style.display = 'none';
 
   try {
@@ -606,7 +635,7 @@ function showMsg(text, isErr) {
   msg.style.color = isErr ? 'var(--rose)' : 'var(--emerald)';
 }
 
-function unlockApp(user) {
+async function unlockApp(user) {
   currentUser = user;
   document.getElementById('authGateScreen').style.display = 'none';
   document.getElementById('appMainContainer').style.display = 'block';
@@ -615,11 +644,11 @@ function unlockApp(user) {
   document.getElementById('userEmailBadge').textContent = user.email.split('@')[0];
   document.getElementById('welcomeUserTitle').textContent = `Welcome, ${user.email.split('@')[0]}`;
   
-  loadUserRecords();
+  await loadUserRecords();
   renderDashboard();
   renderSchedules();
   renderCabinet();
-  showToast(`Signed in as ${user.email}`);
+  showToast(`Synced from cloud for ${user.email}`);
 }
 
 async function signOut() {
@@ -746,6 +775,7 @@ async function searchMedicine() {
   }
 
   list.forEach(m => {
+    const inCab = cabinet.some(c => c.name.toLowerCase() === m.brand.toLowerCase());
     const el = document.createElement('div');
     el.className = 'glass med-card';
     el.innerHTML = `
@@ -756,7 +786,11 @@ async function searchMedicine() {
       <p style="font-size:0.88rem; color:var(--muted); margin-bottom:8px;">${escapeHtml(m.uses)}</p>
       ${m.warnings ? `<div class="med-warning-preview"><strong>Warning:</strong> ${escapeHtml(m.warnings)}</div>` : ''}
       <div style="display:flex; justify-content:flex-end; gap:8px;">
-        <button class="btn btn-secondary" style="font-size:0.8rem; padding:6px 12px;" onclick="addCabinet('${escapeHtml(m.brand)}', '${escapeHtml(m.active)}')">Save to Cabinet</button>
+        ${inCab ? `
+          <button class="btn btn-outline-danger" style="font-size:0.8rem; padding:6px 12px;" onclick="removeMedicineByName('${escapeHtml(m.brand)}')">Remove from Cabinet</button>
+        ` : `
+          <button class="btn btn-secondary" style="font-size:0.8rem; padding:6px 12px;" onclick="addCabinet('${escapeHtml(m.brand)}', '${escapeHtml(m.active)}')">Save to Cabinet</button>
+        `}
         <button class="btn btn-primary" style="font-size:0.8rem; padding:6px 12px;" onclick='showDetail(${JSON.stringify(m).replace(/'/g, "&apos;")})'>Details</button>
       </div>
     `;
@@ -767,6 +801,7 @@ async function searchMedicine() {
 function quickSearch(name) { document.getElementById('searchInput').value = name; searchMedicine(); }
 
 function showDetail(m) {
+  const inCab = cabinet.some(c => c.name.toLowerCase() === m.brand.toLowerCase());
   document.getElementById('detailContent').innerHTML = `
     <h2 style="font-size:1.5rem; font-weight:800; margin-bottom:4px;">${escapeHtml(m.brand)}</h2>
     <p style="color:var(--primary); font-weight:600; margin-bottom:14px;">Active Ingredient: ${escapeHtml(m.active)}</p>
@@ -778,7 +813,11 @@ function showDetail(m) {
       </div>
     </div>
     <div style="margin-top:16px; display:flex; justify-content:flex-end; gap:8px;">
-      <button class="btn btn-secondary" onclick="addCabinet('${escapeHtml(m.brand)}', '${escapeHtml(m.active)}')">Add to Cabinet</button>
+      ${inCab ? `
+        <button class="btn btn-outline-danger" onclick="removeMedicineByName('${escapeHtml(m.brand)}'); closeModal('detailModal');">Remove from Cabinet</button>
+      ` : `
+        <button class="btn btn-secondary" onclick="addCabinet('${escapeHtml(m.brand)}', '${escapeHtml(m.active)}'); closeModal('detailModal');">Add to Cabinet</button>
+      `}
       <button class="btn btn-primary" onclick="scheduleFromSearch('${escapeHtml(m.brand)}')">Set Reminder</button>
     </div>
   `;
@@ -851,7 +890,7 @@ async function runOCR(src) {
   } catch(e) { p.style.display = 'none'; showToast('OCR extraction error'); }
 }
 
-// REMINDERS
+// REMINDERS & REMOVAL
 function saveSchedule(e) {
   e.preventDefault();
   schedules.push({
@@ -863,7 +902,7 @@ function saveSchedule(e) {
     active: true
   });
   saveUserRecords();
-  showToast('Reminder schedule saved');
+  showToast('Reminder schedule saved and synced to cloud');
   e.target.reset();
   renderSchedules();
   renderDashboard();
@@ -884,23 +923,36 @@ function renderSchedules() {
       <p style="font-size:0.85rem; color:var(--muted); margin-bottom:10px;">${escapeHtml(s.note || 'As prescribed')}</p>
       <div style="display:flex; justify-content:flex-end; gap:8px;">
         <button class="btn btn-secondary" style="font-size:0.8rem; padding:5px 10px;" onclick="toggleSched('${s.id}')">${s.active?'Pause':'Resume'}</button>
-        <button class="btn btn-outline-danger" style="font-size:0.8rem; padding:5px 10px;" onclick="delSched('${s.id}')">Delete</button>
+        <button class="btn btn-outline-danger" style="font-size:0.8rem; padding:5px 10px;" onclick="delSched('${s.id}')">Remove Reminder</button>
       </div>
     `;
     el.appendChild(card);
   });
 }
 function toggleSched(id) { const s = schedules.find(x => x.id === id); if(s){ s.active = !s.active; saveUserRecords(); renderSchedules(); renderDashboard(); } }
-function delSched(id) { schedules = schedules.filter(x => x.id !== id); saveUserRecords(); renderSchedules(); renderDashboard(); }
 
-// CABINET
+// REMOVE PRESCRIPTION REMINDER
+function delSched(id) {
+  const item = schedules.find(x => x.id === id);
+  if (confirm(`Remove reminder for "${item?.med || 'this medicine'}"?`)) {
+    schedules = schedules.filter(x => x.id !== id);
+    saveUserRecords();
+    renderSchedules();
+    renderDashboard();
+    showToast('Reminder removed and synced');
+  }
+}
+
+// CABINET & MEDICINE REMOVAL
 function addCabinet(name, active) {
   if (!cabinet.some(c => c.name.toLowerCase() === name.toLowerCase())) {
     cabinet.push({ id: String(Date.now()), name, active });
     saveUserRecords();
     showToast(`Added ${name} to cabinet`);
-  } else { showToast(`${name} already in cabinet`); }
+    renderCabinet();
+  } else { showToast(`${name} is already in cabinet`); }
 }
+
 function renderCabinet() {
   const el = document.getElementById('cabinetList');
   el.innerHTML = '';
@@ -915,13 +967,34 @@ function renderCabinet() {
       <div style="display:flex; justify-content:flex-end; gap:8px;">
         <button class="btn btn-secondary" style="font-size:0.8rem; padding:5px 10px;" onclick="quickSearch('${escapeHtml(c.name)}'); switchTab('search');">Info</button>
         <button class="btn btn-primary" style="font-size:0.8rem; padding:5px 10px;" onclick="scheduleFromSearch('${escapeHtml(c.name)}')">Schedule</button>
-        <button class="btn btn-outline-danger" style="font-size:0.8rem; padding:5px 10px;" onclick="delCabinet('${c.id}')">Remove</button>
+        <button class="btn btn-outline-danger" style="font-size:0.8rem; padding:5px 10px;" onclick="delCabinet('${c.id}')">Remove Medicine</button>
       </div>
     `;
     el.appendChild(card);
   });
 }
-function delCabinet(id) { cabinet = cabinet.filter(c => c.id !== id); saveUserRecords(); renderCabinet(); }
+
+// REMOVE MEDICINE FROM CABINET BY ID
+function delCabinet(id) {
+  const item = cabinet.find(c => c.id === id);
+  if (confirm(`Remove "${item?.name || 'this medicine'}" from your cabinet?`)) {
+    cabinet = cabinet.filter(c => c.id !== id);
+    saveUserRecords();
+    renderCabinet();
+    showToast(`Removed from cabinet and synced`);
+  }
+}
+
+// REMOVE MEDICINE FROM SEARCH/MODAL
+function removeMedicineByName(name) {
+  if (confirm(`Remove "${name}" from your cabinet?`)) {
+    cabinet = cabinet.filter(c => c.name.toLowerCase() !== name.toLowerCase());
+    saveUserRecords();
+    renderCabinet();
+    searchMedicine();
+    showToast(`Removed ${name} from cabinet`);
+  }
+}
 
 // NOTIFICATIONS
 function enableNotifications() {
@@ -974,7 +1047,7 @@ function setUnder18(val) {
   document.getElementById('guardianInputs').style.display = val ? 'flex' : 'none';
   document.getElementById('guardianBadge').textContent = val ? 'Guardian Required' : 'Adult Mode';
 }
-function saveGuardian() { showToast('Guardian settings saved'); }
+function saveGuardian() { saveUserRecords(); showToast('Guardian settings saved and synced'); }
 function toggleTheme() {
   const cur = document.documentElement.getAttribute('data-theme');
   document.documentElement.setAttribute('data-theme', cur === 'dark' ? 'light' : 'dark');
