@@ -4,11 +4,12 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>MEDIN — Understand Your Medicine. Manage Your Health. | Arnaw Studios</title>
-<meta name="description" content="MEDIN by Arnaw Studios: Verified medicine information, packaging OCR scanner, and private prescription reminders.">
+<meta name="description" content="MEDIN by Arnaw Studios: Verified medicine search, live packaging OCR scanner, and private prescription reminders.">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0%25' y1='0%25' x2='100%25' y2='100%25'%3E%3Cstop offset='0%25' stop-color='%230ea5e9'/%3E%3Cstop offset='100%25' stop-color='%232563eb'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='64' height='64' rx='16' fill='url(%23g)'/%3E%3Cpath d='M32 14v36M14 32h36' stroke='white' stroke-width='7' stroke-linecap='round'/%3E%3Ccircle cx='32' cy='32' r='6' fill='%2338bdf8'/%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
+<!-- Supabase JS & Tesseract OCR CDN -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
 
@@ -17,136 +18,139 @@
   --primary: #0284c7; --primary-hover: #0369a1; --primary-glow: rgba(2, 132, 199, 0.25);
   --accent: #2563eb; --emerald: #059669; --amber: #d97706; --rose: #e11d48;
   --bg: radial-gradient(circle at 10% 20%, #eff6ff 0%, #f0fdfa 45%, #f8fafc 100%);
-  --glass: rgba(255, 255, 255, 0.82); --glass-subtle: rgba(255, 255, 255, 0.55);
-  --border: rgba(255, 255, 255, 0.7); --border-subtle: rgba(226, 232, 240, 0.85);
+  --glass: rgba(255, 255, 255, 0.85); --glass-subtle: rgba(255, 255, 255, 0.6);
+  --border: rgba(255, 255, 255, 0.75); --border-subtle: rgba(226, 232, 240, 0.85);
   --text: #0f172a; --muted: #475569; --card-shadow: 0 12px 32px -4px rgba(14, 116, 144, 0.08);
-  --header-bg: rgba(255, 255, 255, 0.88); --pill-bg: rgba(241, 245, 249, 0.85); --input-bg: #ffffff;
+  --header-bg: rgba(255, 255, 255, 0.9); --pill-bg: rgba(241, 245, 249, 0.9); --input-bg: #ffffff;
 }
 :root[data-theme="dark"] {
   --primary: #38bdf8; --primary-hover: #0ea5e9; --primary-glow: rgba(56, 189, 248, 0.25);
   --accent: #60a5fa; --emerald: #10b981; --amber: #f59e0b; --rose: #f43f5e;
   --bg: radial-gradient(circle at 15% 15%, #0c192c 0%, #08111e 50%, #030712 100%);
-  --glass: rgba(15, 23, 42, 0.82); --glass-subtle: rgba(30, 41, 59, 0.6);
+  --glass: rgba(15, 23, 42, 0.85); --glass-subtle: rgba(30, 41, 59, 0.65);
   --border: rgba(255, 255, 255, 0.12); --border-subtle: rgba(255, 255, 255, 0.08);
   --text: #f8fafc; --muted: #94a3b8; --card-shadow: 0 16px 36px -4px rgba(0, 0, 0, 0.5);
-  --header-bg: rgba(11, 19, 36, 0.88); --pill-bg: rgba(30, 41, 59, 0.75); --input-bg: rgba(15, 23, 42, 0.9);
+  --header-bg: rgba(11, 19, 36, 0.9); --pill-bg: rgba(30, 41, 59, 0.8); --input-bg: rgba(15, 23, 42, 0.92);
 }
 * { box-sizing: border-box; margin: 0; padding: 0; -webkit-font-smoothing: antialiased; }
-body { font-family: 'Plus Jakarta Sans', system-ui, sans-serif; background: var(--bg); background-attachment: fixed; color: var(--text); min-height: 100vh; display: flex; flex-direction: column; line-height: 1.55; padding-bottom: 76px; }
+body { font-family: 'Plus Jakarta Sans', system-ui, sans-serif; background: var(--bg); background-attachment: fixed; color: var(--text); min-height: 100vh; display: flex; flex-direction: column; line-height: 1.55; }
 .glass { background: var(--glass); backdrop-filter: blur(20px) saturate(180%); -webkit-backdrop-filter: blur(20px); border: 1px solid var(--border); border-radius: 20px; box-shadow: var(--card-shadow); }
 .glass-subtle { background: var(--glass-subtle); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px); border: 1px solid var(--border-subtle); border-radius: 14px; }
 header.app-header { position: sticky; top: 0; z-index: 50; background: var(--header-bg); backdrop-filter: blur(24px); border-bottom: 1px solid var(--border-subtle); }
 .header-container { max-width: 1180px; margin: 0 auto; padding: 12px 20px; display: flex; align-items: center; justify-content: space-between; gap: 12px; }
-.brand-wrapper { display: flex; align-items: center; gap: 12px; text-decoration: none; color: inherit; }
-.logo-icon { width: 40px; height: 40px; border-radius: 12px; background: linear-gradient(135deg, #0284c7, #2563eb); display: grid; place-items: center; color: white; box-shadow: 0 4px 14px var(--primary-glow); }
+.brand-wrapper { display: flex; align-items: center; gap: 12px; text-decoration: none; color: inherit; cursor: pointer; }
+.logo-icon { width: 38px; height: 38px; border-radius: 12px; background: linear-gradient(135deg, #0284c7, #2563eb); display: grid; place-items: center; color: white; box-shadow: 0 4px 14px var(--primary-glow); }
 .brand-title { display: flex; flex-direction: column; }
 .brand-row { display: flex; align-items: center; gap: 8px; }
 .brand-name { font-weight: 800; font-size: 1.25rem; letter-spacing: -0.03em; }
 .brand-badge { font-size: 0.65rem; font-weight: 700; text-transform: uppercase; padding: 2px 7px; border-radius: 99px; background: rgba(2, 132, 199, 0.12); color: var(--primary); border: 1px solid rgba(2, 132, 199, 0.25); }
 .brand-tagline { font-size: 0.72rem; color: var(--muted); font-weight: 500; }
-.header-actions { display: flex; align-items: center; gap: 10px; }
-.icon-btn { width: 38px; height: 38px; border-radius: 10px; border: 1px solid var(--border-subtle); background: var(--pill-bg); color: var(--muted); cursor: pointer; display: grid; place-items: center; transition: all 0.2s; }
+.header-actions { display: flex; align-items: center; gap: 8px; }
+.icon-btn { width: 36px; height: 36px; border-radius: 10px; border: 1px solid var(--border-subtle); background: var(--pill-bg); color: var(--muted); cursor: pointer; display: grid; place-items: center; transition: all 0.2s; }
 .icon-btn:hover { color: var(--text); border-color: var(--primary); }
-.user-status-pill { display: inline-flex; align-items: center; gap: 8px; padding: 6px 14px; border-radius: 99px; background: var(--pill-bg); border: 1px solid var(--border-subtle); font-size: 0.85rem; font-weight: 600; cursor: pointer; }
+.user-status-pill { display: inline-flex; align-items: center; gap: 8px; padding: 5px 12px; border-radius: 99px; background: var(--pill-bg); border: 1px solid var(--border-subtle); font-size: 0.82rem; font-weight: 600; }
 .user-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--emerald); box-shadow: 0 0 8px rgba(16, 185, 129, 0.6); }
-.safety-bar { background: rgba(2, 132, 199, 0.08); border-bottom: 1px solid rgba(2, 132, 199, 0.15); font-size: 0.78rem; padding: 7px 16px; text-align: center; color: var(--muted); }
+.safety-bar { background: rgba(2, 132, 199, 0.08); border-bottom: 1px solid rgba(2, 132, 199, 0.15); font-size: 0.76rem; padding: 6px 16px; text-align: center; color: var(--muted); }
 .safety-bar strong { color: var(--primary); }
 .main-wrapper { max-width: 1180px; width: 100%; margin: 0 auto; padding: 20px; flex: 1; }
 .nav-tabs { display: flex; gap: 8px; padding: 6px; background: var(--glass-subtle); backdrop-filter: blur(16px); border: 1px solid var(--border-subtle); border-radius: 16px; margin-bottom: 24px; overflow-x: auto; scrollbar-width: none; }
 .nav-tabs::-webkit-scrollbar { display: none; }
-.nav-tab-btn { display: flex; align-items: center; gap: 8px; padding: 10px 18px; border-radius: 12px; border: none; background: transparent; color: var(--muted); font-weight: 600; font-size: 0.9rem; cursor: pointer; white-space: nowrap; transition: all 0.2s; }
+.nav-tab-btn { display: flex; align-items: center; gap: 8px; padding: 9px 16px; border-radius: 12px; border: none; background: transparent; color: var(--muted); font-weight: 600; font-size: 0.88rem; cursor: pointer; white-space: nowrap; transition: all 0.2s; }
 .nav-tab-btn:hover { color: var(--text); background: rgba(255, 255, 255, 0.4); }
 .nav-tab-btn.active { background: var(--primary); color: white; box-shadow: 0 4px 14px var(--primary-glow); }
 .view-section { display: none; animation: fadeIn 0.25s ease; }
 .view-section.active { display: block; }
 @keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
-.dashboard-grid { display: grid; grid-template-columns: 1fr 340px; gap: 24px; }
-@media (max-width: 900px) { .dashboard-grid { grid-template-columns: 1fr; } }
-.hero-card { padding: 30px; position: relative; overflow: hidden; margin-bottom: 24px; }
-.hero-pretitle { font-size: 0.78rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: var(--primary); margin-bottom: 6px; }
-.hero-title { font-size: clamp(1.6rem, 3vw, 2.1rem); font-weight: 800; letter-spacing: -0.03em; margin-bottom: 10px; }
-.hero-desc { font-size: 0.95rem; color: var(--muted); max-width: 600px; margin-bottom: 20px; }
-.quick-action-row { display: flex; flex-wrap: wrap; gap: 10px; }
-.btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; padding: 10px 20px; border-radius: 12px; font-weight: 600; font-size: 0.9rem; cursor: pointer; border: 1px solid transparent; transition: all 0.2s; text-decoration: none; }
+.btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; padding: 9px 18px; border-radius: 12px; font-weight: 600; font-size: 0.88rem; cursor: pointer; border: 1px solid transparent; transition: all 0.2s; text-decoration: none; }
 .btn-primary { background: linear-gradient(135deg, var(--primary), var(--accent)); color: white; box-shadow: 0 4px 16px var(--primary-glow); }
 .btn-primary:hover { transform: translateY(-1px); box-shadow: 0 6px 20px var(--primary-glow); }
 .btn-secondary { background: var(--pill-bg); color: var(--text); border-color: var(--border-subtle); }
 .btn-secondary:hover { border-color: var(--primary); transform: translateY(-1px); }
 .btn-outline-danger { background: transparent; color: var(--rose); border-color: rgba(225, 29, 72, 0.3); }
-.section-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; }
-.section-title { font-size: 1.2rem; font-weight: 700; display: flex; align-items: center; gap: 10px; }
-.section-badge { font-size: 0.75rem; padding: 3px 8px; border-radius: 99px; background: rgba(2, 132, 199, 0.1); color: var(--primary); font-weight: 700; }
+.btn-outline-danger:hover { background: rgba(225, 29, 72, 0.08); }
+.dashboard-grid { display: grid; grid-template-columns: 1fr 340px; gap: 24px; }
+@media (max-width: 900px) { .dashboard-grid { grid-template-columns: 1fr; } }
+.hero-card { padding: 28px; position: relative; overflow: hidden; margin-bottom: 24px; }
+.hero-pretitle { font-size: 0.76rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: var(--primary); margin-bottom: 4px; }
+.hero-title { font-size: clamp(1.5rem, 3vw, 2.1rem); font-weight: 800; letter-spacing: -0.03em; margin-bottom: 8px; }
+.hero-desc { font-size: 0.92rem; color: var(--muted); max-width: 600px; margin-bottom: 18px; }
+.quick-action-row { display: flex; flex-wrap: wrap; gap: 10px; }
+.section-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; }
+.section-title { font-size: 1.15rem; font-weight: 700; display: flex; align-items: center; gap: 10px; }
+.section-badge { font-size: 0.72rem; padding: 3px 8px; border-radius: 99px; background: rgba(2, 132, 199, 0.1); color: var(--primary); font-weight: 700; }
 .dose-timeline { display: flex; flex-direction: column; gap: 12px; }
-.dose-card { padding: 16px 18px; display: flex; align-items: center; justify-content: space-between; gap: 16px; border-left: 5px solid var(--primary); }
+.dose-card { padding: 15px 18px; display: flex; align-items: center; justify-content: space-between; gap: 14px; border-left: 5px solid var(--primary); }
 .dose-card.taken { border-left-color: var(--emerald); opacity: 0.85; }
-.dose-card.skipped { border-left-color: var(--rose); opacity: 0.7; }
 .dose-card-main { display: flex; align-items: center; gap: 14px; }
-.dose-time-pill { background: rgba(2, 132, 199, 0.1); color: var(--primary); font-family: 'JetBrains Mono', monospace; font-weight: 700; font-size: 0.92rem; padding: 6px 12px; border-radius: 10px; min-width: 75px; text-align: center; }
-.dose-details h4 { font-size: 1.02rem; font-weight: 700; margin-bottom: 2px; }
-.dose-details p { font-size: 0.84rem; color: var(--muted); }
-.dose-actions { display: flex; align-items: center; gap: 6px; }
-.action-pill-btn { padding: 6px 12px; border-radius: 8px; font-size: 0.8rem; font-weight: 600; border: 1px solid transparent; cursor: pointer; display: inline-flex; align-items: center; gap: 4px; transition: all 0.15s; }
+.dose-time-pill { background: rgba(2, 132, 199, 0.1); color: var(--primary); font-family: 'JetBrains Mono', monospace; font-weight: 700; font-size: 0.9rem; padding: 6px 12px; border-radius: 10px; min-width: 75px; text-align: center; }
+.dose-details h4 { font-size: 1rem; font-weight: 700; margin-bottom: 2px; }
+.dose-details p { font-size: 0.82rem; color: var(--muted); }
+.action-pill-btn { padding: 5px 12px; border-radius: 8px; font-size: 0.78rem; font-weight: 600; border: 1px solid transparent; cursor: pointer; display: inline-flex; align-items: center; gap: 4px; }
 .action-pill-btn.take { background: rgba(5, 150, 105, 0.12); color: var(--emerald); border-color: rgba(5, 150, 105, 0.3); }
 .action-pill-btn.take:hover { background: var(--emerald); color: white; }
 .action-pill-btn.skip { background: rgba(225, 29, 72, 0.08); color: var(--rose); border-color: rgba(225, 29, 72, 0.2); }
-.action-pill-btn.skip:hover { background: var(--rose); color: white; }
 .action-pill-btn.snooze { background: rgba(217, 119, 6, 0.08); color: var(--amber); border-color: rgba(217, 119, 6, 0.2); }
 .sidebar-column { display: flex; flex-direction: column; gap: 18px; }
-.widget-card { padding: 20px; }
-.widget-title { font-size: 0.95rem; font-weight: 700; margin-bottom: 12px; display: flex; align-items: center; justify-content: space-between; }
-.adherence-ring-container { display: flex; align-items: center; gap: 18px; }
-.ring-visual { position: relative; width: 85px; height: 85px; display: grid; place-items: center; }
+.widget-card { padding: 18px; }
+.widget-title { font-size: 0.92rem; font-weight: 700; margin-bottom: 12px; display: flex; align-items: center; justify-content: space-between; }
+.adherence-ring-container { display: flex; align-items: center; gap: 16px; }
+.ring-visual { position: relative; width: 80px; height: 80px; display: grid; place-items: center; }
 .ring-visual svg { transform: rotate(-90deg); width: 100%; height: 100%; }
 .ring-bg { stroke: var(--border-subtle); stroke-width: 8; fill: none; }
 .ring-fill { stroke: var(--emerald); stroke-width: 8; stroke-linecap: round; fill: none; transition: stroke-dashoffset 0.6s ease; }
-.ring-text { position: absolute; font-weight: 800; font-size: 1.1rem; }
+.ring-text { position: absolute; font-weight: 800; font-size: 1.05rem; }
 .search-container { max-width: 800px; margin: 0 auto; }
-.search-input-box { display: flex; align-items: center; gap: 12px; padding: 8px 16px; border-radius: 16px; background: var(--input-bg); border: 1px solid var(--border); box-shadow: var(--card-shadow); margin-bottom: 20px; }
-.search-input-box input { flex: 1; border: none; background: transparent; font-size: 1rem; color: var(--text); padding: 8px 0; outline: none; font-family: inherit; }
+.search-input-box { display: flex; align-items: center; gap: 12px; padding: 8px 16px; border-radius: 16px; background: var(--input-bg); border: 1px solid var(--border); box-shadow: var(--card-shadow); margin-bottom: 18px; }
+.search-input-box input { flex: 1; border: none; background: transparent; font-size: 0.98rem; color: var(--text); padding: 8px 0; outline: none; font-family: inherit; }
 .search-chips { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 20px; }
-.chip { padding: 5px 12px; border-radius: 99px; background: var(--pill-bg); border: 1px solid var(--border-subtle); font-size: 0.8rem; font-weight: 600; color: var(--muted); cursor: pointer; transition: all 0.15s; }
+.chip { padding: 5px 12px; border-radius: 99px; background: var(--pill-bg); border: 1px solid var(--border-subtle); font-size: 0.78rem; font-weight: 600; color: var(--muted); cursor: pointer; transition: all 0.15s; }
 .chip:hover { background: var(--primary); color: white; border-color: var(--primary); }
 .med-card-list { display: flex; flex-direction: column; gap: 14px; }
-.med-card { padding: 20px; border: 1px solid var(--border-subtle); }
-.med-card:hover { border-color: var(--primary); }
-.med-card-header { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 10px; }
-.med-card-title { font-size: 1.2rem; font-weight: 800; letter-spacing: -0.02em; }
-.med-card-generic { font-size: 0.85rem; color: var(--primary); font-weight: 600; }
-.med-source-tag { font-size: 0.72rem; padding: 3px 8px; border-radius: 6px; background: rgba(14, 165, 233, 0.1); color: var(--primary); font-weight: 600; }
-.med-warning-preview { background: rgba(225, 29, 72, 0.08); border-left: 3px solid var(--rose); padding: 8px 12px; border-radius: 0 8px 8px 0; font-size: 0.82rem; margin-bottom: 12px; }
-.scanner-container { max-width: 650px; margin: 0 auto; text-align: center; }
+.med-card { padding: 18px; border: 1px solid var(--border-subtle); }
+.med-card-header { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 8px; }
+.med-card-title { font-size: 1.15rem; font-weight: 800; letter-spacing: -0.02em; }
+.med-card-generic { font-size: 0.84rem; color: var(--primary); font-weight: 600; }
+.med-source-tag { font-size: 0.7rem; padding: 2px 7px; border-radius: 6px; background: rgba(14, 165, 233, 0.1); color: var(--primary); font-weight: 600; }
+.med-warning-preview { background: rgba(225, 29, 72, 0.08); border-left: 3px solid var(--rose); padding: 8px 12px; border-radius: 0 8px 8px 0; font-size: 0.8rem; margin-bottom: 10px; }
+.scanner-container { max-width: 640px; margin: 0 auto; text-align: center; }
 .camera-viewport-card { padding: 18px; margin-bottom: 18px; }
 .video-wrapper { position: relative; width: 100%; aspect-ratio: 4/3; border-radius: 14px; overflow: hidden; background: #000; display: flex; align-items: center; justify-content: center; }
 #scannerVideo { width: 100%; height: 100%; object-fit: cover; }
 .camera-guide-overlay { position: absolute; inset: 16px; border: 2px dashed rgba(255, 255, 255, 0.65); border-radius: 12px; pointer-events: none; display: flex; flex-direction: column; justify-content: space-between; padding: 10px; }
-.camera-guide-text { background: rgba(0, 0, 0, 0.65); color: white; font-size: 0.78rem; font-weight: 600; padding: 4px 12px; border-radius: 99px; align-self: center; }
+.camera-guide-text { background: rgba(0, 0, 0, 0.65); color: white; font-size: 0.76rem; font-weight: 600; padding: 4px 12px; border-radius: 99px; align-self: center; }
 .scan-laser-line { height: 2px; background: linear-gradient(90deg, transparent, #38bdf8, transparent); box-shadow: 0 0 10px #38bdf8; animation: scanLoop 2.4s infinite ease-in-out; }
 @keyframes scanLoop { 0% { transform: translateY(0); opacity: 0; } 20% { opacity: 1; } 80% { opacity: 1; } 100% { transform: translateY(200px); opacity: 0; } }
-.reminders-container { max-width: 850px; margin: 0 auto; }
-.reminder-form-card { padding: 24px; margin-bottom: 24px; }
-.form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 14px; margin-bottom: 16px; }
-.form-group { display: flex; flex-direction: column; gap: 5px; }
-.form-group label { font-size: 0.82rem; font-weight: 700; color: var(--muted); }
-.form-control { padding: 9px 12px; border-radius: 10px; border: 1px solid var(--border-subtle); background: var(--input-bg); color: var(--text); font-family: inherit; font-size: 0.92rem; outline: none; }
+.reminders-container { max-width: 820px; margin: 0 auto; }
+.reminder-form-card { padding: 22px; margin-bottom: 22px; }
+.form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; margin-bottom: 14px; }
+.form-group { display: flex; flex-direction: column; gap: 4px; }
+.form-group label { font-size: 0.8rem; font-weight: 700; color: var(--muted); }
+.form-control { padding: 9px 12px; border-radius: 10px; border: 1px solid var(--border-subtle); background: var(--input-bg); color: var(--text); font-family: inherit; font-size: 0.9rem; outline: none; }
 .form-control:focus { border-color: var(--primary); }
 .modal-backdrop { position: fixed; inset: 0; background: rgba(15, 23, 42, 0.6); backdrop-filter: blur(8px); z-index: 100; display: grid; place-items: center; padding: 20px; opacity: 0; pointer-events: none; transition: opacity 0.2s ease; }
 .modal-backdrop.open { opacity: 1; pointer-events: auto; }
-.modal-dialog { max-width: 580px; width: 100%; max-height: 85vh; overflow-y: auto; padding: 24px; position: relative; }
-.modal-close-btn { position: absolute; top: 16px; right: 16px; width: 30px; height: 30px; border-radius: 50%; background: var(--pill-bg); border: 1px solid var(--border-subtle); color: var(--muted); cursor: pointer; display: grid; place-items: center; }
-.toast-notice { position: fixed; bottom: 85px; right: 20px; z-index: 110; padding: 10px 18px; border-radius: 12px; background: var(--glass); backdrop-filter: blur(20px); border: 1px solid var(--border); box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2); display: flex; align-items: center; gap: 8px; font-size: 0.88rem; font-weight: 600; transform: translateY(100px); opacity: 0; transition: all 0.3s ease; }
+.modal-dialog { max-width: 560px; width: 100%; max-height: 85vh; overflow-y: auto; padding: 22px; position: relative; }
+.modal-close-btn { position: absolute; top: 14px; right: 14px; width: 28px; height: 28px; border-radius: 50%; background: var(--pill-bg); border: 1px solid var(--border-subtle); color: var(--muted); cursor: pointer; display: grid; place-items: center; }
+.toast-notice { position: fixed; bottom: 80px; right: 20px; z-index: 110; padding: 10px 18px; border-radius: 12px; background: var(--glass); backdrop-filter: blur(20px); border: 1px solid var(--border); box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2); display: flex; align-items: center; gap: 8px; font-size: 0.85rem; font-weight: 600; transform: translateY(100px); opacity: 0; transition: all 0.3s ease; }
 .toast-notice.show { transform: translateY(0); opacity: 1; }
-.mobile-nav-bar { display: none; position: fixed; bottom: 0; left: 0; right: 0; height: 64px; background: var(--header-bg); backdrop-filter: blur(24px); border-top: 1px solid var(--border-subtle); z-index: 45; align-items: center; justify-content: space-around; }
-.mobile-nav-btn { display: flex; flex-direction: column; align-items: center; gap: 3px; font-size: 0.72rem; font-weight: 600; color: var(--muted); background: transparent; border: none; cursor: pointer; }
+/* Auth Gate Screen */
+#authGateScreen { display: grid; place-items: center; min-height: calc(100vh - 120px); padding: 20px; }
+.auth-box { width: 100%; max-width: 440px; padding: 32px; }
+.auth-tabs { display: flex; border-bottom: 1px solid var(--border-subtle); margin-bottom: 20px; }
+.auth-tab { flex: 1; padding: 10px; text-align: center; font-weight: 700; font-size: 0.9rem; background: transparent; border: none; border-bottom: 2px solid transparent; color: var(--muted); cursor: pointer; }
+.auth-tab.active { color: var(--primary); border-bottom-color: var(--primary); }
+.mobile-nav-bar { display: none; position: fixed; bottom: 0; left: 0; right: 0; height: 60px; background: var(--header-bg); backdrop-filter: blur(24px); border-top: 1px solid var(--border-subtle); z-index: 45; align-items: center; justify-content: space-around; }
+.mobile-nav-btn { display: flex; flex-direction: column; align-items: center; gap: 3px; font-size: 0.7rem; font-weight: 600; color: var(--muted); background: transparent; border: none; cursor: pointer; }
 .mobile-nav-btn.active { color: var(--primary); }
-.mobile-nav-btn svg { width: 20px; height: 20px; }
-@media (max-width: 768px) { .mobile-nav-bar { display: flex; } .nav-tabs, .brand-tagline { display: none; } .main-wrapper { padding: 14px 10px; } }
+@media (max-width: 768px) { .mobile-nav-bar { display: flex; } .nav-tabs, .brand-tagline { display: none; } body { padding-bottom: 70px; } .main-wrapper { padding: 14px 10px; } }
 </style>
 </head>
 <body>
 
+<!-- Header -->
 <header class="app-header">
   <div class="header-container">
-    <a href="#" class="brand-wrapper" onclick="switchTab('dashboard')">
+    <div class="brand-wrapper" onclick="switchTab('dashboard')">
       <div class="logo-icon">
         <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M12 4v16M4 12h16"></path></svg>
       </div>
@@ -157,27 +161,76 @@ header.app-header { position: sticky; top: 0; z-index: 50; background: var(--hea
         </div>
         <span class="brand-tagline">Understand Your Medicine. Manage Your Health.</span>
       </div>
-    </a>
+    </div>
     <div class="header-actions">
-      <button class="icon-btn" id="themeToggle" title="Toggle Dark/Light Mode" onclick="toggleTheme()">
+      <button class="icon-btn" title="Toggle Dark/Light Mode" onclick="toggleTheme()">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"></circle><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"></path></svg>
       </button>
-      <button class="icon-btn" title="Notifications" onclick="openNotifModal()">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg>
-      </button>
-      <div class="user-status-pill" onclick="openAuthModal()">
-        <span class="user-dot"></span>
-        <span id="userStatusText">Guest</span>
+      <div id="authenticatedHeaderArea" style="display:none; align-items:center; gap:8px;">
+        <button class="icon-btn" title="Notifications" onclick="enableNotifications()">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg>
+        </button>
+        <div class="user-status-pill">
+          <span class="user-dot"></span>
+          <span id="userEmailBadge">Account</span>
+        </div>
+        <button class="btn btn-outline-danger" style="font-size:0.75rem; padding:5px 10px;" onclick="signOut()">Sign Out</button>
       </div>
     </div>
   </div>
 </header>
 
 <div class="safety-bar">
-  <span><strong>Educational & Reminder Platform:</strong> MEDIN never prescribes or recommends dosages. Enter schedules only from your licensed doctor's prescription.</span>
+  <span><strong>Prescription-Only Platform:</strong> MEDIN never prescribes or computes dosages. Schedules must come from your licensed doctor.</span>
 </div>
 
-<main class="main-wrapper">
+<!-- 1. MANDATORY AUTHENTICATION GATE (NO GUEST MODE) -->
+<div id="authGateScreen">
+  <div class="glass auth-box">
+    <div style="text-align: center; margin-bottom: 20px;">
+      <div class="logo-icon" style="margin: 0 auto 12px; width: 48px; height: 48px;">
+        <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M12 4v16M4 12h16"></path></svg>
+      </div>
+      <h2 style="font-size: 1.6rem; font-weight: 800; letter-spacing: -0.03em;">MEDIN Personal Account</h2>
+      <p style="font-size: 0.85rem; color: var(--muted); margin-top: 4px;">Sign in with your verified credentials to access your private prescription manager.</p>
+    </div>
+
+    <div class="auth-tabs">
+      <button class="auth-tab active" id="tabSignIn" onclick="setAuthTab('signin')">Sign In</button>
+      <button class="auth-tab" id="tabSignUp" onclick="setAuthTab('signup')">Create Account</button>
+    </div>
+
+    <form id="authForm" onsubmit="handleAuthSubmit(event)">
+      <div class="form-group" style="margin-bottom: 12px;">
+        <label>Email Address</label>
+        <input type="email" id="authEmail" class="form-control" placeholder="you@example.com" required>
+      </div>
+      <div class="form-group" style="margin-bottom: 16px;">
+        <label>Password</label>
+        <input type="password" id="authPassword" class="form-control" placeholder="Min. 6 characters" minlength="6" required>
+      </div>
+
+      <!-- Under-18 Guardian Option for Registration -->
+      <div id="under18Group" style="display:none; margin-bottom: 16px;">
+        <label style="display:flex; align-items:center; gap:8px; font-size:0.82rem; cursor:pointer; font-weight:600;">
+          <input type="checkbox" id="authUnder18" onchange="toggleGuardianInputs(this.checked)">
+          Patient is under 18 years of age (Requires Guardian)
+        </label>
+        <div id="guardianFieldBox" style="display:none; flex-direction:column; gap:8px; margin-top:8px;">
+          <input type="text" id="authGuardianName" class="form-control" placeholder="Parent / Guardian Name">
+          <input type="email" id="authGuardianContact" class="form-control" placeholder="Guardian Email / Contact">
+        </div>
+      </div>
+
+      <div id="authStatusMsg" style="display:none; padding:10px; border-radius:8px; font-size:0.82rem; margin-bottom:12px;"></div>
+
+      <button type="submit" class="btn btn-primary" id="authSubmitBtn" style="width: 100%;">Sign In</button>
+    </form>
+  </div>
+</div>
+
+<!-- 2. PROTECTED APPLICATION CONTENT (UNLOCKED ONLY AFTER LOGIN) -->
+<main class="main-wrapper" id="appMainContainer" style="display:none;">
   <nav class="nav-tabs">
     <button class="nav-tab-btn active" data-tab="dashboard" onclick="switchTab('dashboard')">Dashboard</button>
     <button class="nav-tab-btn" data-tab="search" onclick="switchTab('search')">Medicine Search</button>
@@ -187,11 +240,11 @@ header.app-header { position: sticky; top: 0; z-index: 50; background: var(--hea
     <button class="nav-tab-btn" data-tab="settings" onclick="switchTab('settings')">Settings & Safety</button>
   </nav>
 
-  <!-- 1. DASHBOARD -->
+  <!-- Dashboard -->
   <section id="view-dashboard" class="view-section active">
     <div class="glass hero-card">
       <span class="hero-pretitle">ARNAW STUDIOS HEALTHCARE</span>
-      <h1 class="hero-title">Welcome to MEDIN</h1>
+      <h1 class="hero-title" id="welcomeUserTitle">Welcome to MEDIN</h1>
       <p class="hero-desc">Your private medicine companion. Look up FDA active ingredients, scan medicine boxes with live camera OCR, and stay compliant with your doctor's prescriptions.</p>
       <div class="quick-action-row">
         <button class="btn btn-primary" onclick="switchTab('search')">Search Medicine</button>
@@ -227,7 +280,7 @@ header.app-header { position: sticky; top: 0; z-index: 50; background: var(--hea
               <span class="ring-text" id="ringPct">100%</span>
             </div>
             <div>
-              <h5 id="adherenceTitle" style="font-size:0.95rem; font-weight:700;">On Schedule</h5>
+              <h5 style="font-size:0.95rem; font-weight:700;">On Schedule</h5>
               <p style="font-size:0.8rem; color:var(--muted);">Doses marked taken as prescribed.</p>
             </div>
           </div>
@@ -238,7 +291,7 @@ header.app-header { position: sticky; top: 0; z-index: 50; background: var(--hea
             <span>Under-18 Safety</span>
             <span class="section-badge" id="guardianBadge">Adult Mode</span>
           </div>
-          <p style="font-size:0.82rem; color:var(--muted); margin-bottom:10px;">Medication for minors requires parent or legal guardian guidance.</p>
+          <p style="font-size:0.82rem; color:var(--muted); margin-bottom:10px;">Medication adherence for minors requires active parent or guardian guidance.</p>
           <button class="btn btn-secondary" style="width:100%; font-size:0.82rem;" onclick="switchTab('settings')">Manage Guardian Setup</button>
         </div>
 
@@ -253,12 +306,12 @@ header.app-header { position: sticky; top: 0; z-index: 50; background: var(--hea
     </div>
   </section>
 
-  <!-- 2. SEARCH -->
+  <!-- Medicine Search -->
   <section id="view-search" class="view-section">
     <div class="search-container">
       <div style="text-align: center; margin-bottom: 20px;">
         <h2 style="font-size: 1.7rem; font-weight: 800;">Verified Medicine Search</h2>
-        <p style="color: var(--muted); font-size: 0.9rem;">Connected to U.S. FDA Drug Labeling registry and clinical databases.</p>
+        <p style="color: var(--muted); font-size: 0.9rem;">Connected to U.S. FDA Drug Labeling registry and verified pharmaceutical archives.</p>
       </div>
       <div class="search-input-box">
         <input type="text" id="searchInput" placeholder="Search by brand name or active ingredient (e.g. Paracetamol, Amoxicillin)...">
@@ -270,3 +323,688 @@ header.app-header { position: sticky; top: 0; z-index: 50; background: var(--hea
         <button class="chip" onclick="quickSearch('Ibuprofen')">Ibuprofen</button>
         <button class="chip" onclick="quickSearch('Amoxicillin')">Amoxicillin</button>
         <button class="chip" onclick="quickSearch('Metformin')">Metformin</button>
+        <button class="chip" onclick="quickSearch('Atorvastatin')">Atorvastatin</button>
+        <button class="chip" onclick="quickSearch('Omeprazole')">Omeprazole</button>
+      </div>
+      <div id="searchLoader" style="display:none; text-align:center; padding:20px; color:var(--primary); font-weight:600;">Searching FDA registry...</div>
+      <div class="med-card-list" id="searchResultsContainer"></div>
+    </div>
+  </section>
+
+  <!-- Camera Packaging Scanner -->
+  <section id="view-scanner" class="view-section">
+    <div class="scanner-container">
+      <div style="margin-bottom: 18px;">
+        <h2 style="font-size: 1.7rem; font-weight: 800;">Medicine Packaging Scanner</h2>
+        <p style="color: var(--muted); font-size: 0.9rem;">Point camera at medicine strip or box label to extract names with neural OCR.</p>
+      </div>
+      <div class="glass camera-viewport-card">
+        <div class="video-wrapper">
+          <video id="scannerVideo" autoplay playsinline muted></video>
+          <canvas id="scannerCanvas" style="display:none;"></canvas>
+          <div class="camera-guide-overlay">
+            <span class="camera-guide-text">ALIGN MEDICINE NAME HERE</span>
+            <div class="scan-laser-line"></div>
+          </div>
+        </div>
+        <div style="margin-top: 16px; display: flex; justify-content: center; gap: 10px; flex-wrap: wrap;">
+          <button class="btn btn-secondary" onclick="startCamera()">Start Camera</button>
+          <button class="btn btn-primary" id="captureBtn" onclick="captureAndOCR()" disabled>Capture & Extract</button>
+          <button class="btn btn-secondary" onclick="stopCamera()">Stop Camera</button>
+          <label class="btn btn-secondary" style="cursor: pointer;">
+            Upload Photo
+            <input type="file" accept="image/*" onchange="uploadImageOCR(event)" style="display:none;">
+          </label>
+        </div>
+        <div id="ocrProgress" style="display:none; margin-top:14px; font-size:0.85rem; font-weight:700; color:var(--primary);">Processing image with neural OCR engine...</div>
+        <div class="glass-subtle" id="ocrResultBox" style="display:none; margin-top:16px; padding:14px; text-align:left;">
+          <h4 style="font-size:0.9rem; font-weight:700; margin-bottom:6px;">Detected Packaging Text:</h4>
+          <p id="ocrRawText" style="font-family:'JetBrains Mono', monospace; font-size:0.8rem; color:var(--muted); background:var(--pill-bg); padding:8px; border-radius:8px; max-height:80px; overflow-y:auto; margin-bottom:10px;"></p>
+          <div id="ocrChips" style="display:flex; flex-wrap:wrap; gap:8px;"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Reminders -->
+  <section id="view-reminders" class="view-section">
+    <div class="reminders-container">
+      <div style="margin-bottom: 20px;">
+        <h2 style="font-size: 1.7rem; font-weight: 800;">Prescription Medication Reminders</h2>
+        <p style="color: var(--muted); font-size: 0.9rem;">Record only schedules given by your doctor or pharmacist.</p>
+      </div>
+      <div class="glass reminder-form-card">
+        <form onsubmit="saveSchedule(event)">
+          <div class="form-grid">
+            <div class="form-group">
+              <label>Medicine Name *</label>
+              <input type="text" id="schedMed" class="form-control" placeholder="e.g. Amoxicillin 500mg" required>
+            </div>
+            <div class="form-group">
+              <label>Prescribed Dose *</label>
+              <input type="text" id="schedDose" class="form-control" placeholder="e.g. 1 Capsule" required>
+            </div>
+            <div class="form-group">
+              <label>Doctor's Instructions</label>
+              <input type="text" id="schedNote" class="form-control" placeholder="e.g. Take after meal">
+            </div>
+            <div class="form-group">
+              <label>Reminder Time (24h) *</label>
+              <input type="time" id="schedTime" class="form-control" value="08:00" required>
+            </div>
+          </div>
+          <div style="display:flex; justify-content:flex-end;">
+            <button type="submit" class="btn btn-primary">Save Reminder</button>
+          </div>
+        </form>
+      </div>
+      <div class="section-header">
+        <h3 class="section-title">Active Prescription Reminders</h3>
+      </div>
+      <div class="med-card-list" id="scheduleList"></div>
+    </div>
+  </section>
+
+  <!-- Medicine Cabinet -->
+  <section id="view-cabinet" class="view-section">
+    <div style="max-width: 850px; margin: 0 auto;">
+      <div class="section-header" style="margin-bottom: 20px;">
+        <div>
+          <h2 style="font-size: 1.7rem; font-weight: 800;">My Medicine Cabinet</h2>
+          <p style="color: var(--muted); font-size: 0.9rem;">Saved medicines for quick lookup and precautions.</p>
+        </div>
+        <button class="btn btn-primary" onclick="switchTab('search')">Add Medicine</button>
+      </div>
+      <div class="med-card-list" id="cabinetList"></div>
+    </div>
+  </section>
+
+  <!-- Settings -->
+  <section id="view-settings" class="view-section">
+    <div style="max-width: 750px; margin: 0 auto; display:flex; flex-direction:column; gap:20px;">
+      <h2 style="font-size: 1.7rem; font-weight: 800;">Settings & Governance</h2>
+      <div class="glass widget-card">
+        <h3 style="font-size:1.1rem; font-weight:700; margin-bottom:8px;">Browser Medication Alerts</h3>
+        <p style="font-size:0.86rem; color:var(--muted); margin-bottom:14px;">Receive notifications at exact scheduled dose times.</p>
+        <div style="display:flex; gap:10px;">
+          <button class="btn btn-primary" onclick="enableNotifications()">Enable Notifications</button>
+          <button class="btn btn-secondary" onclick="testNotification()">Send Test Alert</button>
+        </div>
+      </div>
+      <div class="glass widget-card">
+        <h3 style="font-size:1.1rem; font-weight:700; margin-bottom:8px;">Under-18 Guardian Protocol</h3>
+        <p style="font-size:0.86rem; color:var(--muted); margin-bottom:12px;">Patients under 18 must be guided by a parent or legal guardian.</p>
+        <label style="display:flex; align-items:center; gap:8px; font-weight:600; font-size:0.88rem; cursor:pointer;">
+          <input type="checkbox" id="under18Toggle" onchange="setUnder18(this.checked)">
+          Patient is under 18 years of age
+        </label>
+        <div id="guardianInputs" style="display:none; margin-top:10px; gap:8px; flex-direction:column;">
+          <input type="text" id="guardianName" class="form-control" placeholder="Guardian Full Name">
+          <input type="email" id="guardianEmail" class="form-control" placeholder="Guardian Contact Email">
+          <button class="btn btn-primary" style="align-self:flex-start;" onclick="saveGuardian()">Save Guardian</button>
+        </div>
+      </div>
+      <div class="glass widget-card" style="border-left: 4px solid var(--amber);">
+        <h3 style="font-size:1.1rem; font-weight:700; margin-bottom:8px; color:var(--amber);">Medical Disclaimer</h3>
+        <p style="font-size:0.82rem; color:var(--muted); line-height:1.6;">
+          MEDIN is an educational information and dose reminder tool built by Arnaw Studios. It does not provide diagnosis, prescribe treatment, or recommend dosages. Always adhere to your licensed physician's instructions.
+        </p>
+      </div>
+    </div>
+  </section>
+</main>
+
+<nav class="mobile-nav-bar" id="mobileNav" style="display:none;">
+  <button class="mobile-nav-btn active" data-tab="dashboard" onclick="switchTab('dashboard')"><span>Home</span></button>
+  <button class="mobile-nav-btn" data-tab="search" onclick="switchTab('search')"><span>Search</span></button>
+  <button class="mobile-nav-btn" data-tab="scanner" onclick="switchTab('scanner')"><span>Scan</span></button>
+  <button class="mobile-nav-btn" data-tab="reminders" onclick="switchTab('reminders')"><span>Remind</span></button>
+  <button class="mobile-nav-btn" data-tab="cabinet" onclick="switchTab('cabinet')"><span>Cabinet</span></button>
+</nav>
+
+<!-- Modals -->
+<div class="modal-backdrop" id="detailModal">
+  <div class="glass modal-dialog">
+    <button class="modal-close-btn" onclick="closeModal('detailModal')">✕</button>
+    <div id="detailContent"></div>
+  </div>
+</div>
+
+<div class="toast-notice" id="toast"><span id="toastMsg"></span></div>
+
+<script>
+// SUPABASE CLIENT (Configured from Arnaw Studios backend)
+const SUPABASE_URL = 'https://cpdzzjvntkquwpibeosd.supabase.co';
+const SUPABASE_ANON_KEY = 'sb_publishable_wTrIDAFqTNDivXWGcagoWg_fYNb5Zio';
+const db = window.supabase ? window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY) : null;
+
+let currentUser = null;
+let currentAuthMode = 'signin';
+
+// CURATED ESSENTIAL MEDICINES DATABASE
+const ESSENTIAL_MEDS = [
+  { brand: 'Paracetamol', active: 'Acetaminophen', cat: 'Analgesic & Antipyretic', uses: 'Relief of mild pain and fever reduction.', sideEffects: 'Rare when used as directed.', warnings: 'Never exceed 4000mg/day. Overdose causes severe liver damage.', source: 'FDA / WHO' },
+  { brand: 'Ibuprofen', active: 'Ibuprofen', cat: 'NSAID', uses: 'Pain, inflammation, and fever.', sideEffects: 'Stomach irritation, heartburn.', warnings: 'Take with food. Risk of gastrointestinal bleeding with misuse.', source: 'FDA' },
+  { brand: 'Amoxicillin', active: 'Amoxicillin Trihydrate', cat: 'Antibiotic (Penicillin)', uses: 'Bacterial infections of throat, chest, and ear.', sideEffects: 'Mild diarrhea, nausea.', warnings: 'Do not use if penicillin-allergic. Complete entire course.', source: 'FDA' },
+  { brand: 'Metformin', active: 'Metformin HCl', cat: 'Antidiabetic', uses: 'Type 2 diabetes blood glucose management.', sideEffects: 'Mild bloating, stomach upset.', warnings: 'Lactic acidosis risk. Take with meals.', source: 'FDA' },
+  { brand: 'Atorvastatin', active: 'Atorvastatin Calcium', cat: 'Statin', uses: 'Lowers cholesterol and reduces cardiovascular risk.', sideEffects: 'Mild muscle aches, joint pain.', warnings: 'Report unexplained muscle pain immediately.', source: 'FDA' },
+  { brand: 'Omeprazole', active: 'Omeprazole', cat: 'Proton Pump Inhibitor', uses: 'Heartburn, GERD, and stomach ulcers.', sideEffects: 'Headache, stomach pain.', warnings: 'Best taken 30 mins before first meal.', source: 'FDA' },
+  { brand: 'Cetirizine', active: 'Cetirizine HCl', cat: 'Antihistamine', uses: 'Allergy relief, hay fever, and hives.', sideEffects: 'Mild drowsiness in sensitive individuals.', warnings: 'Avoid alcohol.', source: 'FDA' },
+  { brand: 'Azithromycin', active: 'Azithromycin', cat: 'Macrolide Antibiotic', uses: 'Respiratory and bacterial infections.', sideEffects: 'Mild abdominal cramps, diarrhea.', warnings: 'Take as directed by doctor.', source: 'FDA' }
+];
+
+// STATE MANAGEMENT (Strictly scoped to logged-in user account)
+let schedules = [];
+let cabinet = [];
+let doseHistory = [];
+let isUnder18 = false;
+
+function loadUserRecords() {
+  if (!currentUser) return;
+  const uid = currentUser.id;
+  schedules = JSON.parse(localStorage.getItem(`medin_sched_${uid}`) || '[]');
+  cabinet = JSON.parse(localStorage.getItem(`medin_cab_${uid}`) || '[]');
+  doseHistory = JSON.parse(localStorage.getItem(`medin_hist_${uid}`) || '[]');
+  isUnder18 = localStorage.getItem(`medin_u18_${uid}`) === 'true';
+
+  if (schedules.length === 0) {
+    schedules = [
+      { id: '1', med: 'Amoxicillin 500mg', dose: '1 Capsule', note: 'After food with water', time: '08:00', active: true },
+      { id: '2', med: 'Paracetamol 650mg', dose: '1 Tablet', note: 'If fever > 100°F', time: '20:00', active: true }
+    ];
+    localStorage.setItem(`medin_sched_${uid}`, JSON.stringify(schedules));
+  }
+
+  // Attempt cloud sync if tables exist
+  if (db) {
+    db.from('medication_schedules').select('*').eq('user_id', uid).then(({ data }) => {
+      if (data && data.length > 0) {
+        schedules = data.map(d => ({ id: d.id, med: d.medicine_name, dose: d.dosage, note: d.instructions, time: d.times?.[0] || '08:00', active: d.is_active }));
+        renderSchedules();
+        renderDashboard();
+      }
+    }).catch(()=>{});
+  }
+}
+
+function saveUserRecords() {
+  if (!currentUser) return;
+  const uid = currentUser.id;
+  localStorage.setItem(`medin_sched_${uid}`, JSON.stringify(schedules));
+  localStorage.setItem(`medin_cab_${uid}`, JSON.stringify(cabinet));
+  localStorage.setItem(`medin_hist_${uid}`, JSON.stringify(doseHistory));
+  localStorage.setItem(`medin_u18_${uid}`, isUnder18 ? 'true' : 'false');
+}
+
+// AUTH GATE LOGIC (NO GUEST MODE)
+function setAuthTab(tab) {
+  currentAuthMode = tab;
+  document.getElementById('tabSignIn').classList.toggle('active', tab === 'signin');
+  document.getElementById('tabSignUp').classList.toggle('active', tab === 'signup');
+  document.getElementById('under18Group').style.display = tab === 'signup' ? 'block' : 'none';
+  document.getElementById('authSubmitBtn').textContent = tab === 'signup' ? 'Create Account' : 'Sign In';
+  const msg = document.getElementById('authStatusMsg');
+  msg.style.display = 'none';
+}
+
+function toggleGuardianInputs(checked) {
+  document.getElementById('guardianFieldBox').style.display = checked ? 'flex' : 'none';
+}
+
+async function handleAuthSubmit(e) {
+  e.preventDefault();
+  const email = document.getElementById('authEmail').value.trim();
+  const password = document.getElementById('authPassword').value;
+  const msg = document.getElementById('authStatusMsg');
+  const btn = document.getElementById('authSubmitBtn');
+
+  if (!db) {
+    showMsg('Supabase client failed to load. Check internet connection.', true);
+    return;
+  }
+
+  btn.disabled = true;
+  btn.textContent = 'Authenticating...';
+  msg.style.display = 'none';
+
+  try {
+    if (currentAuthMode === 'signin') {
+      const { data, error } = await db.auth.signInWithPassword({ email, password });
+      if (error) throw error;
+      unlockApp(data.user);
+    } else {
+      const isU18 = document.getElementById('authUnder18').checked;
+      const guardianName = document.getElementById('authGuardianName')?.value || '';
+      const guardianContact = document.getElementById('authGuardianContact')?.value || '';
+
+      const { data, error } = await db.auth.signUp({
+        email,
+        password,
+        options: {
+          data: { is_under_18: isU18, guardian_name: guardianName, guardian_contact: guardianContact }
+        }
+      });
+      if (error) throw error;
+      if (data.user) {
+        showToast('Account created successfully!');
+        unlockApp(data.user);
+      }
+    }
+  } catch (err) {
+    showMsg(err.message || 'Authentication error', true);
+  } finally {
+    btn.disabled = false;
+    btn.textContent = currentAuthMode === 'signup' ? 'Create Account' : 'Sign In';
+  }
+}
+
+function showMsg(text, isErr) {
+  const msg = document.getElementById('authStatusMsg');
+  msg.textContent = text;
+  msg.style.display = 'block';
+  msg.style.background = isErr ? 'rgba(225,29,72,0.1)' : 'rgba(5,150,105,0.1)';
+  msg.style.color = isErr ? 'var(--rose)' : 'var(--emerald)';
+}
+
+function unlockApp(user) {
+  currentUser = user;
+  document.getElementById('authGateScreen').style.display = 'none';
+  document.getElementById('appMainContainer').style.display = 'block';
+  document.getElementById('authenticatedHeaderArea').style.display = 'flex';
+  document.getElementById('mobileNav').style.display = 'flex';
+  document.getElementById('userEmailBadge').textContent = user.email.split('@')[0];
+  document.getElementById('welcomeUserTitle').textContent = `Welcome, ${user.email.split('@')[0]}`;
+  
+  loadUserRecords();
+  renderDashboard();
+  renderSchedules();
+  renderCabinet();
+  showToast(`Signed in as ${user.email}`);
+}
+
+async function signOut() {
+  if (db) await db.auth.signOut();
+  currentUser = null;
+  document.getElementById('authGateScreen').style.display = 'grid';
+  document.getElementById('appMainContainer').style.display = 'none';
+  document.getElementById('authenticatedHeaderArea').style.display = 'none';
+  document.getElementById('mobileNav').style.display = 'none';
+  showToast('Signed out of MEDIN');
+}
+
+// NAVIGATION
+function switchTab(tab) {
+  if (!currentUser) return;
+  document.querySelectorAll('.view-section').forEach(el => el.classList.remove('active'));
+  document.querySelectorAll('.nav-tab-btn').forEach(btn => btn.classList.remove('active'));
+  document.querySelectorAll('.mobile-nav-btn').forEach(btn => btn.classList.remove('active'));
+
+  const view = document.getElementById(`view-${tab}`);
+  if (view) view.classList.add('active');
+  const dBtn = document.querySelector(`.nav-tab-btn[data-tab="${tab}"]`);
+  if (dBtn) dBtn.classList.add('active');
+  const mBtn = document.querySelector(`.mobile-nav-btn[data-tab="${tab}"]`);
+  if (mBtn) mBtn.classList.add('active');
+
+  if (tab === 'dashboard') renderDashboard();
+  if (tab === 'reminders') renderSchedules();
+  if (tab === 'cabinet') renderCabinet();
+}
+
+// DASHBOARD
+function renderDashboard() {
+  const now = new Date();
+  document.getElementById('dateStr').textContent = now.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
+  const timeline = document.getElementById('todayDoseTimeline');
+  timeline.innerHTML = '';
+
+  const todayStr = now.toISOString().split('T')[0];
+  const activeS = schedules.filter(s => s.active);
+  document.getElementById('doseBadge').textContent = `${activeS.length} scheduled`;
+
+  if (!activeS.length) {
+    timeline.innerHTML = '<div class="glass" style="padding:24px; text-align:center; color:var(--muted);">No doses scheduled today. Add your prescription schedule under Reminders.</div>';
+    document.getElementById('ringFill').setAttribute('stroke-dashoffset', 0);
+    document.getElementById('ringPct').textContent = '100%';
+    return;
+  }
+
+  let taken = 0;
+  activeS.forEach(s => {
+    const isTaken = doseHistory.some(h => h.id === s.id && h.date === todayStr && h.action === 'taken');
+    if (isTaken) taken++;
+    const card = document.createElement('div');
+    card.className = `glass dose-card ${isTaken ? 'taken' : ''}`;
+    card.innerHTML = `
+      <div class="dose-card-main">
+        <div class="dose-time-pill">${s.time}</div>
+        <div class="dose-details">
+          <h4>${escapeHtml(s.med)}</h4>
+          <p>${escapeHtml(s.dose)} &bull; ${escapeHtml(s.note || 'As prescribed')}</p>
+        </div>
+      </div>
+      <div class="dose-actions">
+        ${isTaken ? '<span style="color:var(--emerald); font-weight:700; font-size:0.85rem;">✓ Taken</span>' : `
+          <button class="action-pill-btn take" onclick="recordDose('${s.id}', 'taken')">Take</button>
+          <button class="action-pill-btn snooze" onclick="recordDose('${s.id}', 'snoozed')">+15m</button>
+          <button class="action-pill-btn skip" onclick="recordDose('${s.id}', 'skipped')">Skip</button>
+        `}
+      </div>
+    `;
+    timeline.appendChild(card);
+  });
+
+  const pct = Math.round((taken / activeS.length) * 100);
+  document.getElementById('ringFill').setAttribute('stroke-dashoffset', 100 - pct);
+  document.getElementById('ringPct').textContent = `${pct}%`;
+}
+
+function recordDose(id, action) {
+  const todayStr = new Date().toISOString().split('T')[0];
+  doseHistory = doseHistory.filter(h => !(h.id === id && h.date === todayStr));
+  doseHistory.push({ id, date: todayStr, action });
+  saveUserRecords();
+  showToast(`Dose marked ${action}`);
+  renderDashboard();
+}
+
+// SEARCH
+async function searchMedicine() {
+  const q = document.getElementById('searchInput').value.trim();
+  if (!q) return;
+  const box = document.getElementById('searchResultsContainer');
+  const loader = document.getElementById('searchLoader');
+  box.innerHTML = '';
+  loader.style.display = 'block';
+
+  let list = ESSENTIAL_MEDS.filter(m => m.brand.toLowerCase().includes(q.toLowerCase()) || m.active.toLowerCase().includes(q.toLowerCase()));
+  try {
+    const res = await fetch(`https://api.fda.gov/drug/label.json?search=(openfda.brand_name:"${encodeURIComponent(q)}"+OR+openfda.generic_name:"${encodeURIComponent(q)}")&limit=3`);
+    if (res.ok) {
+      const data = await res.json();
+      data.results?.forEach(r => {
+        list.push({
+          brand: r.openfda?.brand_name?.[0] || q,
+          active: r.openfda?.generic_name?.[0] || 'Active ingredient',
+          cat: r.openfda?.pharm_class_cs?.[0] || 'Pharmaceutical',
+          uses: r.indications_and_usage?.[0]?.slice(0, 240) || 'Refer to prescription instructions.',
+          sideEffects: r.adverse_reactions?.[0]?.slice(0, 180) || 'Refer to FDA label insert.',
+          warnings: r.warnings?.[0]?.slice(0, 180) || 'Strictly follow prescribed dose.',
+          source: 'U.S. FDA Drug Label API'
+        });
+      });
+    }
+  } catch(e){}
+  loader.style.display = 'none';
+
+  if (!list.length) {
+    box.innerHTML = `<div class="glass" style="padding:24px; text-align:center; color:var(--amber);">
+      <strong>Not confirmed in verified repository.</strong><br>
+      <span style="font-size:0.85rem; color:var(--muted);">MEDIN never hallucinates medicine facts. Please verify name with your pharmacist.</span>
+    </div>`;
+    return;
+  }
+
+  list.forEach(m => {
+    const el = document.createElement('div');
+    el.className = 'glass med-card';
+    el.innerHTML = `
+      <div class="med-card-header">
+        <div><h3 class="med-card-title">${escapeHtml(m.brand)}</h3><span class="med-card-generic">${escapeHtml(m.active)}</span></div>
+        <span class="med-source-tag">${escapeHtml(m.source)}</span>
+      </div>
+      <p style="font-size:0.88rem; color:var(--muted); margin-bottom:8px;">${escapeHtml(m.uses)}</p>
+      ${m.warnings ? `<div class="med-warning-preview"><strong>Warning:</strong> ${escapeHtml(m.warnings)}</div>` : ''}
+      <div style="display:flex; justify-content:flex-end; gap:8px;">
+        <button class="btn btn-secondary" style="font-size:0.8rem; padding:6px 12px;" onclick="addCabinet('${escapeHtml(m.brand)}', '${escapeHtml(m.active)}')">Save to Cabinet</button>
+        <button class="btn btn-primary" style="font-size:0.8rem; padding:6px 12px;" onclick='showDetail(${JSON.stringify(m).replace(/'/g, "&apos;")})'>Details</button>
+      </div>
+    `;
+    box.appendChild(el);
+  });
+}
+
+function quickSearch(name) { document.getElementById('searchInput').value = name; searchMedicine(); }
+
+function showDetail(m) {
+  document.getElementById('detailContent').innerHTML = `
+    <h2 style="font-size:1.5rem; font-weight:800; margin-bottom:4px;">${escapeHtml(m.brand)}</h2>
+    <p style="color:var(--primary); font-weight:600; margin-bottom:14px;">Active Ingredient: ${escapeHtml(m.active)}</p>
+    <div style="font-size:0.88rem; display:flex; flex-direction:column; gap:10px; line-height:1.6;">
+      <div><strong>Clinical Uses:</strong><br><span style="color:var(--muted);">${escapeHtml(m.uses)}</span></div>
+      <div><strong>Side Effects:</strong><br><span style="color:var(--muted);">${escapeHtml(m.sideEffects)}</span></div>
+      <div style="background:rgba(225,29,72,0.08); padding:10px; border-radius:8px; border-left:3px solid var(--rose);">
+        <strong style="color:var(--rose);">Warning:</strong><br>${escapeHtml(m.warnings)}
+      </div>
+    </div>
+    <div style="margin-top:16px; display:flex; justify-content:flex-end; gap:8px;">
+      <button class="btn btn-secondary" onclick="addCabinet('${escapeHtml(m.brand)}', '${escapeHtml(m.active)}')">Add to Cabinet</button>
+      <button class="btn btn-primary" onclick="scheduleFromSearch('${escapeHtml(m.brand)}')">Set Reminder</button>
+    </div>
+  `;
+  openModal('detailModal');
+}
+
+function scheduleFromSearch(name) {
+  closeModal('detailModal');
+  switchTab('reminders');
+  document.getElementById('schedMed').value = name;
+  document.getElementById('schedDose').focus();
+}
+
+// CAMERA & OCR SCANNER
+let camStream = null;
+async function startCamera() {
+  try {
+    if (camStream) stopCamera();
+    camStream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } });
+    document.getElementById('scannerVideo').srcObject = camStream;
+    document.getElementById('captureBtn').disabled = false;
+    showToast('Camera active');
+  } catch(e) { showToast('Camera access blocked. Upload photo instead.'); }
+}
+function stopCamera() {
+  if (camStream) { camStream.getTracks().forEach(t => t.stop()); camStream = null; }
+  document.getElementById('captureBtn').disabled = true;
+}
+function captureAndOCR() {
+  const v = document.getElementById('scannerVideo');
+  const c = document.getElementById('scannerCanvas');
+  c.width = v.videoWidth; c.height = v.videoHeight;
+  c.getContext('2d').drawImage(v, 0, 0);
+  runOCR(c.toDataURL('image/png'));
+}
+function uploadImageOCR(e) {
+  const f = e.target.files?.[0];
+  if (!f) return;
+  const r = new FileReader();
+  r.onload = ev => runOCR(ev.target.result);
+  r.readAsDataURL(f);
+}
+async function runOCR(src) {
+  const p = document.getElementById('ocrProgress');
+  const box = document.getElementById('ocrResultBox');
+  const chips = document.getElementById('ocrChips');
+  p.style.display = 'block'; box.style.display = 'none'; chips.innerHTML = '';
+  try {
+    const worker = await Tesseract.createWorker('eng');
+    const ret = await worker.recognize(src);
+    await worker.terminate();
+    p.style.display = 'none';
+    const txt = ret.data.text || '';
+    document.getElementById('ocrRawText').textContent = txt.trim() || 'No legible text found.';
+    box.style.display = 'block';
+
+    const matches = new Set();
+    ESSENTIAL_MEDS.forEach(m => {
+      if (txt.toLowerCase().includes(m.brand.toLowerCase())) matches.add(m.brand);
+      if (txt.toLowerCase().includes(m.active.toLowerCase())) matches.add(m.active);
+    });
+    txt.split(/[\s,.;:()/\-]+/).filter(t => /^[A-Z][a-z]{3,}$/.test(t)).slice(0, 4).forEach(t => matches.add(t));
+    matches.forEach(m => {
+      const btn = document.createElement('button');
+      btn.className = 'chip'; btn.style.background = 'var(--primary)'; btn.style.color = 'white';
+      btn.textContent = `Search "${m}"`;
+      btn.onclick = () => { switchTab('search'); quickSearch(m); };
+      chips.appendChild(btn);
+    });
+  } catch(e) { p.style.display = 'none'; showToast('OCR extraction error'); }
+}
+
+// REMINDERS
+function saveSchedule(e) {
+  e.preventDefault();
+  schedules.push({
+    id: String(Date.now()),
+    med: document.getElementById('schedMed').value.trim(),
+    dose: document.getElementById('schedDose').value.trim(),
+    note: document.getElementById('schedNote').value.trim(),
+    time: document.getElementById('schedTime').value,
+    active: true
+  });
+  saveUserRecords();
+  showToast('Reminder schedule saved');
+  e.target.reset();
+  renderSchedules();
+  renderDashboard();
+}
+
+function renderSchedules() {
+  const el = document.getElementById('scheduleList');
+  el.innerHTML = '';
+  if (!schedules.length) { el.innerHTML = '<div class="glass" style="padding:20px; text-align:center; color:var(--muted);">No reminders saved yet.</div>'; return; }
+  schedules.forEach(s => {
+    const card = document.createElement('div');
+    card.className = 'glass med-card';
+    card.innerHTML = `
+      <div class="med-card-header">
+        <div><h3 class="med-card-title">${escapeHtml(s.med)}</h3><span style="font-size:0.85rem; color:var(--muted);">${escapeHtml(s.dose)} at <strong>${s.time}</strong></span></div>
+        <span class="section-badge" style="color:${s.active?'var(--emerald)':'var(--muted)'};">${s.active?'Active':'Paused'}</span>
+      </div>
+      <p style="font-size:0.85rem; color:var(--muted); margin-bottom:10px;">${escapeHtml(s.note || 'As prescribed')}</p>
+      <div style="display:flex; justify-content:flex-end; gap:8px;">
+        <button class="btn btn-secondary" style="font-size:0.8rem; padding:5px 10px;" onclick="toggleSched('${s.id}')">${s.active?'Pause':'Resume'}</button>
+        <button class="btn btn-outline-danger" style="font-size:0.8rem; padding:5px 10px;" onclick="delSched('${s.id}')">Delete</button>
+      </div>
+    `;
+    el.appendChild(card);
+  });
+}
+function toggleSched(id) { const s = schedules.find(x => x.id === id); if(s){ s.active = !s.active; saveUserRecords(); renderSchedules(); renderDashboard(); } }
+function delSched(id) { schedules = schedules.filter(x => x.id !== id); saveUserRecords(); renderSchedules(); renderDashboard(); }
+
+// CABINET
+function addCabinet(name, active) {
+  if (!cabinet.some(c => c.name.toLowerCase() === name.toLowerCase())) {
+    cabinet.push({ id: String(Date.now()), name, active });
+    saveUserRecords();
+    showToast(`Added ${name} to cabinet`);
+  } else { showToast(`${name} already in cabinet`); }
+}
+function renderCabinet() {
+  const el = document.getElementById('cabinetList');
+  el.innerHTML = '';
+  if (!cabinet.length) { el.innerHTML = '<div class="glass" style="padding:24px; text-align:center; color:var(--muted);">Cabinet is empty. Search medicines to save them.</div>'; return; }
+  cabinet.forEach(c => {
+    const card = document.createElement('div');
+    card.className = 'glass med-card';
+    card.innerHTML = `
+      <div class="med-card-header">
+        <div><h3 class="med-card-title">${escapeHtml(c.name)}</h3><span class="med-card-generic">${escapeHtml(c.active)}</span></div>
+      </div>
+      <div style="display:flex; justify-content:flex-end; gap:8px;">
+        <button class="btn btn-secondary" style="font-size:0.8rem; padding:5px 10px;" onclick="quickSearch('${escapeHtml(c.name)}'); switchTab('search');">Info</button>
+        <button class="btn btn-primary" style="font-size:0.8rem; padding:5px 10px;" onclick="scheduleFromSearch('${escapeHtml(c.name)}')">Schedule</button>
+        <button class="btn btn-outline-danger" style="font-size:0.8rem; padding:5px 10px;" onclick="delCabinet('${c.id}')">Remove</button>
+      </div>
+    `;
+    el.appendChild(card);
+  });
+}
+function delCabinet(id) { cabinet = cabinet.filter(c => c.id !== id); saveUserRecords(); renderCabinet(); }
+
+// NOTIFICATIONS
+function enableNotifications() {
+  if (!('Notification' in window)) return showToast('Notifications unsupported');
+  Notification.requestPermission().then(p => {
+    if (p === 'granted') { playChime(); showToast('Notifications enabled!'); }
+    else showToast('Permission dismissed');
+  });
+}
+function testNotification() {
+  if (Notification.permission === 'granted') {
+    playChime();
+    new Notification('MEDIN Dose Reminder', { body: 'Time to take your scheduled dose: Amoxicillin 500mg' });
+    showToast('Test notification sent');
+  } else enableNotifications();
+}
+function playChime() {
+  try {
+    const ctx = new (window.AudioContext || window.webkitAudioContext)();
+    const osc = ctx.createOscillator(); const gain = ctx.createGain();
+    osc.frequency.setValueAtTime(587, ctx.currentTime);
+    osc.frequency.exponentialRampToValueAtTime(880, ctx.currentTime + 0.15);
+    gain.gain.setValueAtTime(0.1, ctx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.4);
+    osc.connect(gain); gain.connect(ctx.destination);
+    osc.start(); osc.stop(ctx.currentTime + 0.45);
+  } catch(e){}
+}
+setInterval(() => {
+  if (!currentUser) return;
+  const now = new Date();
+  const time = `${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;
+  const todayStr = now.toISOString().split('T')[0];
+  schedules.forEach(s => {
+    if (s.active && s.time === time) {
+      if (!doseHistory.some(h => h.id === s.id && h.date === todayStr)) {
+        if (Notification.permission === 'granted') {
+          playChime();
+          new Notification(`MEDIN: Take ${s.med}`, { body: `${s.dose}. ${s.note || ''}` });
+        }
+      }
+    }
+  });
+}, 30000);
+
+// GUARDIAN & THEME
+function setUnder18(val) {
+  isUnder18 = val;
+  saveUserRecords();
+  document.getElementById('guardianInputs').style.display = val ? 'flex' : 'none';
+  document.getElementById('guardianBadge').textContent = val ? 'Guardian Required' : 'Adult Mode';
+}
+function saveGuardian() { showToast('Guardian settings saved'); }
+function toggleTheme() {
+  const cur = document.documentElement.getAttribute('data-theme');
+  document.documentElement.setAttribute('data-theme', cur === 'dark' ? 'light' : 'dark');
+}
+
+// UTILS
+function openModal(id) { document.getElementById(id)?.classList.add('open'); }
+function closeModal(id) { document.getElementById(id)?.classList.remove('open'); }
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  document.getElementById('toastMsg').textContent = msg;
+  t.classList.add('show'); setTimeout(() => t.classList.remove('show'), 2800);
+}
+function escapeHtml(s) { return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+
+// SESSION CHECK ON LOAD
+window.addEventListener('DOMContentLoaded', async () => {
+  if (db) {
+    const { data: { session } } = await db.auth.getSession();
+    if (session?.user) {
+      unlockApp(session.user);
+    } else {
+      document.getElementById('authGateScreen').style.display = 'grid';
+      document.getElementById('appMainContainer').style.display = 'none';
+    }
+    db.auth.onAuthStateChange((_event, session) => {
+      if (session?.user && !currentUser) unlockApp(session.user);
+    });
+  }
+});
+</script>
+</body>
+</html>
