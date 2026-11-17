@@ -35,6 +35,7 @@ header {
   justify-content: space-between;
   max-width: 960px;
   margin: 0 auto;
+  gap: 12px;
 }
 
 .brand {
@@ -48,6 +49,39 @@ header {
 .brand span {
   color: #ff3366;
   text-shadow: 0 0 16px rgba(255, 51, 102, 0.6);
+}
+
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.btn-restart {
+  background: rgba(255, 51, 102, 0.18);
+  border: 1px solid rgba(255, 51, 102, 0.55);
+  color: #ff3366;
+  font-family: 'Orbitron', sans-serif;
+  font-size: 11px;
+  font-weight: 800;
+  padding: 7px 14px;
+  border-radius: 8px;
+  letter-spacing: 1px;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  box-shadow: 0 2px 10px rgba(255, 51, 102, 0.2);
+}
+.btn-restart:hover {
+  background: rgba(255, 51, 102, 0.35);
+  box-shadow: 0 0 16px rgba(255, 51, 102, 0.6);
+  transform: translateY(-1px);
+}
+.btn-restart:active {
+  transform: scale(0.95);
 }
 
 .badge {
@@ -128,6 +162,7 @@ main {
   overflow: hidden;
   background: #0d141e;
   box-shadow: 0 15px 50px rgba(0, 0, 0, 0.8), 0 0 25px rgba(0, 243, 255, 0.2);
+  touch-action: none;
 }
 
 canvas {
@@ -136,6 +171,10 @@ canvas {
   height: auto;
   aspect-ratio: 500 / 680;
   touch-action: none;
+  cursor: grab;
+}
+canvas:active {
+  cursor: grabbing;
 }
 
 /* Overlay Game Over / Start */
@@ -214,27 +253,28 @@ button {
 
 /* Mobile On-Screen Controls */
 #touchControls {
-  display: none;
+  display: flex;
   max-width: 520px;
   margin: 12px auto 0;
   justify-content: space-between;
   padding: 0 10px;
-  gap: 12px;
+  gap: 10px;
 }
 .touch-btn {
   flex: 1;
-  height: 54px;
+  height: 52px;
   background: rgba(18, 27, 46, 0.85);
   border: 1px solid rgba(0, 243, 255, 0.3);
   color: #00f3ff;
   font-family: 'Orbitron', sans-serif;
-  font-size: 18px;
+  font-size: 15px;
   font-weight: 900;
   border-radius: 12px;
   display: flex;
   align-items: center;
   justify-content: center;
   backdrop-filter: blur(8px);
+  padding: 0 8px;
 }
 .touch-btn:active {
   background: rgba(0, 243, 255, 0.3);
@@ -263,10 +303,6 @@ footer {
   padding: 16px;
   letter-spacing: 1px;
 }
-
-@media(max-width: 650px) {
-  #touchControls { display: flex; }
-}
 </style>
 </head>
 
@@ -274,7 +310,10 @@ footer {
 
 <header>
   <div class="brand">RACING <span>QUEST</span></div>
-  <div class="badge">ARNAW STUDIOS • TURBO V2</div>
+  <div class="header-actions">
+    <button class="btn-restart" id="topRestartBtn" onclick="restartGame()" title="Restart Race (or press R)">🔄 RESTART</button>
+    <div class="badge">ARNAW STUDIOS • TURBO V2</div>
+  </div>
 </header>
 
 <main>
@@ -312,7 +351,7 @@ footer {
         <div class="car-card" onclick="selectCar(2)">💎 CYBER GHOST</div>
       </div>
 
-      <button class="btn-race" onclick="startGame()">START RACE ▶</button>
+      <button class="btn-race" id="overlayBtn" onclick="startGame()">START RACE ▶</button>
     </div>
   </div>
 
@@ -320,10 +359,12 @@ footer {
     <button class="touch-btn" id="btnLeft">◀ STEER</button>
     <button class="touch-btn" id="btnBoost" style="color:#ff3366;border-color:rgba(255,51,102,0.4)">⚡ NITRO</button>
     <button class="touch-btn" id="btnRight">STEER ▶</button>
+    <button class="touch-btn" id="btnRestartTouch" style="color:#ffd700;border-color:rgba(255,215,0,0.4);font-size:12px;" onclick="restartGame()">🔄 RESTART</button>
   </div>
 
   <div class="help-text">
-    Use <kbd>A</kbd>/<kbd>D</kbd> or <kbd>ARROWS</kbd> to Steer &nbsp;•&nbsp; <kbd>SPACE</kbd> for Nitro Boost &nbsp;•&nbsp; Collect gold coins and weave through highway traffic!
+    <b>Computer:</b> Use <kbd>◀</kbd> <kbd>▶</kbd> Arrows (or <kbd>A</kbd>/<kbd>D</kbd>) to Steer &nbsp;•&nbsp; <kbd>▲</kbd> Up Arrow or <kbd>SPACE</kbd> for Nitro &nbsp;•&nbsp; <kbd>R</kbd> to Restart<br>
+    <b>Touch / Mobile:</b> Swipe or drag left/right on screen to steer &nbsp;•&nbsp; Swipe up for Nitro &nbsp;•&nbsp; Tap Restart anytime!
   </div>
 </main>
 
@@ -404,6 +445,13 @@ let roadOffset = 0;
 let spawnTimer = 0;
 let screenShake = 0;
 
+// Touch screen swipe & drag tracking
+let touchActive = false;
+let touchStartX = 0;
+let touchStartY = 0;
+let touchLastX = 0;
+let touchTargetX = null;
+
 function startGame() {
   playerCar = {
     x: 250,
@@ -426,6 +474,10 @@ function startGame() {
   roadOffset = 0;
   spawnTimer = 0;
   screenShake = 0;
+  touchActive = false;
+  touchTargetX = null;
+  keys.touchLeft = false;
+  keys.touchRight = false;
   playing = true;
 
   document.getElementById("overlay").style.display = "none";
@@ -433,12 +485,17 @@ function startGame() {
   updateHUD();
 }
 
+function restartGame() {
+  startGame();
+}
+
 function updateHUD() {
   document.getElementById("score").textContent = Math.floor(score) + "m";
   document.getElementById("coins").textContent = coins;
   document.getElementById("nitro").textContent = Math.round(nitro) + "%";
   document.getElementById("nitrobar").style.width = nitro + "%";
-  const kmh = Math.round((baseSpeed * 22) + (keys[" "] && nitro > 0 ? 90 : 0));
+  const boosting = (keys[" "] || keys.ArrowUp || keys.w || keys.W || keys.btnBoost) && nitro > 0;
+  const kmh = Math.round((baseSpeed * 22) + (boosting ? 90 : 0));
   document.getElementById("speed").textContent = kmh;
 }
 
@@ -477,8 +534,8 @@ function update() {
   score += 0.4;
   if (screenShake > 0) screenShake = Math.max(0, screenShake - 0.6);
 
-  // Speed and Nitro Boost
-  const boosting = keys[" "] && nitro > 0;
+  // Speed and Nitro Boost (Up Arrow, Space, W, or Touch Boost)
+  const boosting = (keys[" "] || keys.ArrowUp || keys.w || keys.W || keys.btnBoost) && nitro > 0;
   if (boosting) {
     nitro = Math.max(0, nitro - 0.55);
     AudioFX.nitro();
@@ -499,20 +556,35 @@ function update() {
     nitro = Math.min(100, nitro + 0.16);
   }
 
+  // Down arrow or S brakes/slows down
+  if (keys.ArrowDown || keys.s || keys.S) {
+    baseSpeed = Math.max(3.5, baseSpeed - 0.05);
+  } else {
+    baseSpeed = Math.min(11, 5.2 + (score / 1500));
+  }
+
   const currentSpeed = boosting ? baseSpeed * 1.85 : baseSpeed;
-  baseSpeed = Math.min(11, 5.2 + (score / 1500));
   roadOffset = (roadOffset + currentSpeed) % 80;
 
-  // Steering Controls
+  // Steering Controls: Computer Arrow Keys (ArrowLeft, ArrowRight) or Touch Swipe/Drag
   let steer = 0;
-  if (keys.ArrowLeft || keys.a || keys.A || keys.btnLeft) steer -= 1;
-  if (keys.ArrowRight || keys.d || keys.D || keys.btnRight) steer += 1;
+  if (keys.ArrowLeft || keys.a || keys.A || keys.btnLeft || keys.touchLeft) steer -= 1;
+  if (keys.ArrowRight || keys.d || keys.D || keys.btnRight || keys.touchRight) steer += 1;
+
+  // Smooth direct touch/swipe target following
+  if (touchActive && touchTargetX !== null) {
+    const diff = touchTargetX - playerCar.x;
+    if (Math.abs(diff) > 5) {
+      const touchSteer = Math.sign(diff) * Math.min(1.2, Math.abs(diff) / 25);
+      steer = touchSteer;
+    }
+  }
 
   playerCar.vx += (steer * 7.5 - playerCar.vx) * 0.25;
   playerCar.x += playerCar.vx;
   playerCar.angle = (playerCar.vx / 8) * 0.12;
 
-  // Road Boundaries (3 Lanes highway: 100 to 400)
+  // Road Boundaries (3 Lanes highway: 120 to 380)
   playerCar.x = Math.max(120, Math.min(380, playerCar.x));
 
   // Skid marks when cornering hard
@@ -617,6 +689,8 @@ function showGameOver() {
   document.getElementById("overlayTitle").textContent = "CRASHED!";
   document.getElementById("overlayDesc").textContent =
     "Final Distance: " + Math.floor(score) + "m • Coins Collected: " + coins;
+  const btn = document.getElementById("overlayBtn");
+  if (btn) btn.textContent = "RESTART RACE 🔄";
   document.getElementById("overlay").style.display = "flex";
 }
 
@@ -784,16 +858,99 @@ function loop() {
   requestAnimationFrame(loop);
 }
 
-// Controls Listeners
+// Computer Keyboard Listeners: Arrow Keys, A/D, W/S, Space, and R to Restart
 window.addEventListener("keydown", e => {
-  if (["ArrowLeft", "ArrowRight", "ArrowUp", "ArrowDown", " "].includes(e.key)) e.preventDefault();
+  if (["ArrowLeft", "ArrowRight", "ArrowUp", "ArrowDown", " "].includes(e.key)) {
+    e.preventDefault();
+  }
+  if (e.key === "r" || e.key === "R") {
+    restartGame();
+    return;
+  }
   keys[e.key] = true;
 });
+
 window.addEventListener("keyup", e => {
   keys[e.key] = false;
 });
 
-// Mobile button binds
+// Touch Screen: Swipe and Drag to Move
+function getCanvasX(clientX) {
+  const rect = canvas.getBoundingClientRect();
+  return ((clientX - rect.left) / rect.width) * W;
+}
+
+function onTouchStart(e) {
+  if (!playing) return;
+  if (e.touches.length > 0) {
+    touchActive = true;
+    const t = e.touches[0];
+    touchStartX = t.clientX;
+    touchStartY = t.clientY;
+    touchLastX = t.clientX;
+    touchTargetX = getCanvasX(t.clientX);
+  }
+}
+
+function onTouchMove(e) {
+  if (!playing || !touchActive) return;
+  if (e.touches.length > 0) {
+    e.preventDefault();
+    const t = e.touches[0];
+    const deltaX = t.clientX - touchLastX;
+    const deltaY = t.clientY - touchStartY;
+    touchLastX = t.clientX;
+    touchTargetX = getCanvasX(t.clientX);
+
+    // Swipe left / right detection
+    if (deltaX < -3) {
+      keys.touchLeft = true;
+      keys.touchRight = false;
+    } else if (deltaX > 3) {
+      keys.touchRight = true;
+      keys.touchLeft = false;
+    }
+
+    // Swipe Up to trigger Nitro Boost
+    if (deltaY < -40) {
+      keys[" "] = true;
+    }
+  }
+}
+
+function onTouchEnd(e) {
+  if (e.touches.length === 0) {
+    touchActive = false;
+    touchTargetX = null;
+    keys.touchLeft = false;
+    keys.touchRight = false;
+    keys[" "] = false;
+  }
+}
+
+// Attach Touch Listeners
+canvas.addEventListener("touchstart", onTouchStart, { passive: false });
+canvas.addEventListener("touchmove", onTouchMove, { passive: false });
+canvas.addEventListener("touchend", onTouchEnd, { passive: false });
+canvas.addEventListener("touchcancel", onTouchEnd, { passive: false });
+
+// Mouse Drag support for touch simulation / desktop dragging
+canvas.addEventListener("mousedown", e => {
+  if (!playing) return;
+  touchActive = true;
+  touchTargetX = getCanvasX(e.clientX);
+});
+window.addEventListener("mousemove", e => {
+  if (touchActive && playing) {
+    touchTargetX = getCanvasX(e.clientX);
+  }
+});
+window.addEventListener("mouseup", () => {
+  touchActive = false;
+  touchTargetX = null;
+});
+
+// Mobile On-Screen Buttons
 const bindBtn = (id, key) => {
   const el = document.getElementById(id);
   if (!el) return;
