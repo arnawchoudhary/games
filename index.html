@@ -25,7 +25,6 @@ body{font-family:var(--body);background:var(--bg);color:var(--text);line-height:
 a{color:inherit;text-decoration:none}
 :focus-visible{outline:3px solid var(--accent);outline-offset:3px;border-radius:6px}
 .wrap{max-width:1120px;margin:0 auto;padding:0 24px}
-/* Header */
 header{position:sticky;top:0;z-index:20;background:color-mix(in srgb,var(--bg) 88%,transparent);backdrop-filter:blur(12px);border-bottom:1px solid var(--line)}
 .bar{display:flex;align-items:center;justify-content:space-between;height:68px;gap:16px}
 .brand{display:flex;align-items:center;gap:12px}
@@ -42,7 +41,6 @@ nav a:hover{background:var(--surface2);color:var(--text)}
 .sun{display:none}
 :root[data-theme="dark"] .sun{display:block}
 :root[data-theme="dark"] .moon{display:none}
-/* Hero */
 .hero{padding:88px 0 72px;display:grid;grid-template-columns:1.15fr .85fr;gap:56px;align-items:center}
 .hero h1{font-family:var(--display);font-size:clamp(2.4rem,5.2vw,4rem);line-height:1.04;letter-spacing:-.035em;font-weight:800;max-width:14ch}
 .hero p{margin-top:22px;color:var(--muted);font-size:1.1rem;max-width:52ch}
@@ -58,11 +56,9 @@ nav a:hover{background:var(--surface2);color:var(--text)}
 .stats div{background:var(--surface);padding:22px 24px}
 .stats b{display:block;font-family:var(--display);font-size:1.6rem;letter-spacing:-.02em}
 .stats span{color:var(--muted);font-size:.9rem}
-/* Sections */
 section{padding-bottom:96px}
 h2{font-family:var(--display);font-size:clamp(1.7rem,3.4vw,2.4rem);letter-spacing:-.03em;line-height:1.15}
 .lead{color:var(--muted);margin-top:12px;max-width:60ch}
-/* Project cards */
 .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:22px;margin-top:36px}
 .card{background:var(--surface);border:1px solid var(--line);border-radius:20px;overflow:hidden;display:flex;flex-direction:column;transition:transform .2s,box-shadow .2s,border-color .2s}
 .card:hover{transform:translateY(-4px);box-shadow:var(--shadow);border-color:var(--c)}
@@ -76,7 +72,6 @@ h2{font-family:var(--display);font-size:clamp(1.7rem,3.4vw,2.4rem);letter-spacin
 .tags span{font-size:.8rem;padding:4px 10px;border-radius:8px;background:var(--surface2);color:var(--muted)}
 .play{align-self:flex-start;margin-top:6px;padding:10px 20px;border-radius:10px;background:var(--text);color:var(--bg);font-weight:600;font-size:.95rem}
 .card:hover .play{background:var(--c);color:#fff}
-/* About */
 .about{display:grid;grid-template-columns:.8fr 1.2fr;gap:48px;align-items:start}
 .id{background:var(--surface);border:1px solid var(--line);border-radius:20px;padding:28px}
 .avatar{width:104px;height:104px;border-radius:24px;background:var(--surface2);display:block;object-fit:cover;object-position:center center;border:3px solid var(--surface);box-shadow:0 4px 14px rgba(14,26,46,.12)}
@@ -218,6 +213,18 @@ footer .brand b{font-size:1rem;color:var(--text)}
             <a class="play" href="autodraw.html">Open AutoDraw</a>
           </div>
         </article>
+
+        <!-- NEW PROJECT: MEDIN -->
+        <article class="card" style="--c:#159B91">
+          <div class="art"><b>M</b><span>Healthcare</span></div>
+          <div class="body">
+            <h3>MEDIN</h3>
+            <p>A medicine information and reminder platform. Search or scan medicines, understand their uses and manage personal medication reminders.</p>
+            <div class="tags"><span>Medicine Search</span><span>Health Information</span><span>Reminders</span></div>
+            <a class="play" href="medin.html">Open MEDIN</a>
+          </div>
+        </article>
+
       </div>
     </section>
     <section id="about" class="about">
