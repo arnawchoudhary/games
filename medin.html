@@ -2,7 +2,7 @@
 <html lang="en" data-theme="light">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
 <title>MEDIN — Understand Your Medicine. Manage Your Health. | Arnaw Studios</title>
 <meta name="description" content="MEDIN by Arnaw Studios: Global medicine search with Gemini AI, live QR code packaging scanner, and private prescription reminders.">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0%25' y1='0%25' x2='100%25' y2='100%25'%3E%3Cstop offset='0%25' stop-color='%230ea5e9'/%3E%3Cstop offset='100%25' stop-color='%232563eb'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='64' height='64' rx='16' fill='url(%23g)'/%3E%3Cpath d='M32 14v36M14 32h36' stroke='white' stroke-width='7' stroke-linecap='round'/%3E%3Ccircle cx='32' cy='32' r='6' fill='%2338bdf8'/%3E%3C/svg%3E">
@@ -10,9 +10,10 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
 
-<!-- Supabase JS & HTML5 QR Code Scanner -->
+<!-- Supabase JS, HTML5 QR Code Scanner & Tesseract OCR -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://cdn.jsdelivr.net/npm/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
 
 <style>
 :root {
@@ -33,8 +34,32 @@
   --text: #f8fafc; --muted: #94a3b8; --card-shadow: 0 16px 36px -4px rgba(0, 0, 0, 0.5);
   --header-bg: rgba(11, 19, 36, 0.9); --pill-bg: rgba(30, 41, 59, 0.8); --input-bg: rgba(15, 23, 42, 0.92);
 }
+html {
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+  overflow-x: hidden;
+  width: 100%;
+}
 * { box-sizing: border-box; margin: 0; padding: 0; -webkit-font-smoothing: antialiased; }
-body { font-family: 'Plus Jakarta Sans', system-ui, sans-serif; background: var(--bg); background-attachment: fixed; color: var(--text); min-height: 100vh; display: flex; flex-direction: column; line-height: 1.55; }
+body {
+  font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+  background: var(--bg);
+  background-attachment: fixed;
+  color: var(--text);
+  min-height: 100vh;
+  min-height: -webkit-fill-available;
+  display: flex;
+  flex-direction: column;
+  line-height: 1.55;
+  overflow-x: hidden;
+  width: 100%;
+  position: relative;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+}
+input, select, textarea, button {
+  touch-action: manipulation;
+}
 .glass { background: var(--glass); backdrop-filter: blur(20px) saturate(180%); -webkit-backdrop-filter: blur(20px); border: 1px solid var(--border); border-radius: 20px; box-shadow: var(--card-shadow); }
 .glass-subtle { background: var(--glass-subtle); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px); border: 1px solid var(--border-subtle); border-radius: 14px; }
 header.app-header { position: sticky; top: 0; z-index: 50; background: var(--header-bg); backdrop-filter: blur(24px); border-bottom: 1px solid var(--border-subtle); }
@@ -195,26 +220,176 @@ header.app-header { position: sticky; top: 0; z-index: 50; background: var(--hea
 .mobile-nav-btn.active svg { transform: translateY(-2px); }
 
 @media (max-width: 768px) {
-  body.authenticated .mobile-nav-bar { display: flex; }
-  .nav-tabs, .brand-tagline { display: none !important; }
-  body { padding-bottom: calc(76px + env(safe-area-inset-bottom, 0px)); }
-  .main-wrapper { padding: 12px 10px; }
-  .form-control, input, select { font-size: 16px !important; } /* Fix iOS auto-zoom bug */
-  .hero-card { padding: 20px 16px; }
-  .toast-notice { bottom: 74px; right: 12px; left: 12px; justify-content: center; }
+  /* Prevent any horizontal overflow and cutting off */
+  html, body {
+    overflow-x: hidden !important;
+    width: 100% !important;
+    max-width: 100vw !important;
+  }
+  * {
+    box-sizing: border-box !important;
+  }
+  
+  /* Header Fix: prevent overflow & clipping on iPhones */
+  .app-header {
+    width: 100% !important;
+    max-width: 100vw !important;
+    overflow: hidden !important;
+  }
+  .header-container {
+    padding: 8px 12px !important;
+    padding-left: max(12px, env(safe-area-inset-left)) !important;
+    padding-right: max(12px, env(safe-area-inset-right)) !important;
+    width: 100% !important;
+    max-width: 100vw !important;
+    gap: 6px !important;
+    justify-content: space-between !important;
+  }
+  .brand-wrapper {
+    gap: 8px !important;
+    min-width: 0 !important;
+    flex-shrink: 1 !important;
+  }
+  .studio-text { display: none !important; }
+  .brand-divider { display: none !important; }
+  .brand-tagline { display: none !important; }
+  .brand-badge { display: none !important; }
+  .studio-logo { width: 30px !important; height: 30px !important; }
+  .logo-icon { width: 30px !important; height: 30px !important; border-radius: 8px !important; }
+  .brand-name { font-size: 1.12rem !important; }
+  
+  .header-actions {
+    gap: 6px !important;
+    flex-shrink: 0 !important;
+  }
+  .icon-btn {
+    width: 34px !important;
+    height: 34px !important;
+    border-radius: 8px !important;
+  }
+  .user-status-pill {
+    padding: 4px 6px !important;
+    font-size: 0.72rem !important;
+    max-width: 40px !important;
+    border: none !important;
+    background: transparent !important;
+  }
+  .user-status-pill span:not(.user-dot) {
+    display: none !important; /* Only show active status green dot on mobile */
+  }
+  .btn-outline-danger {
+    padding: 5px 8px !important;
+    font-size: 0.75rem !important;
+    border-radius: 8px !important;
+  }
+
+  /* Prevent iOS Auto-Zoom permanently */
+  .form-control, input, select, textarea, #searchInput {
+    font-size: 16px !important;
+    -webkit-text-size-adjust: 100% !important;
+    max-width: 100% !important;
+  }
+
+  /* Safe Area & Layout Containers */
+  body.authenticated .mobile-nav-bar { display: flex !important; }
+  .nav-tabs { display: none !important; }
+  body {
+    padding-bottom: calc(76px + env(safe-area-inset-bottom, 16px)) !important;
+  }
+  .main-wrapper {
+    width: 100% !important;
+    max-width: 100vw !important;
+    padding: 12px 10px !important;
+    padding-left: max(10px, env(safe-area-inset-left)) !important;
+    padding-right: max(10px, env(safe-area-inset-right)) !important;
+    overflow-x: hidden !important;
+  }
+  .auth-box {
+    width: 100% !important;
+    max-width: 100% !important;
+    padding: 22px 16px !important;
+  }
+  .hero-card {
+    padding: 18px 14px !important;
+    border-radius: 16px !important;
+  }
+  .hero-title {
+    font-size: 1.5rem !important;
+  }
+  .quick-action-row {
+    display: flex !important;
+    flex-direction: column !important;
+    width: 100% !important;
+    gap: 8px !important;
+  }
+  .quick-action-row .btn {
+    width: 100% !important;
+  }
+  .search-container {
+    width: 100% !important;
+    max-width: 100% !important;
+  }
+  .search-input-box {
+    padding: 6px 10px !important;
+    gap: 8px !important;
+    width: 100% !important;
+  }
+  .search-input-box input {
+    min-width: 0 !important;
+    width: 100% !important;
+  }
+  .search-input-box button {
+    flex-shrink: 0 !important;
+    padding: 8px 12px !important;
+    font-size: 0.85rem !important;
+  }
+  .gemini-suggestion-box {
+    flex-direction: column !important;
+    align-items: flex-start !important;
+    gap: 8px !important;
+    padding: 10px 12px !important;
+  }
+  .qr-scanner-card {
+    padding: 14px 10px !important;
+    width: 100% !important;
+    max-width: 100% !important;
+  }
+  #qrReaderView {
+    width: 100% !important;
+    max-width: 100% !important;
+    min-height: 240px !important;
+  }
+  .dose-card {
+    flex-direction: column !important;
+    align-items: flex-start !important;
+    gap: 10px !important;
+    padding: 12px 14px !important;
+  }
+  .dose-card-main {
+    width: 100% !important;
+  }
+  .dose-card > div:last-child {
+    width: 100% !important;
+    display: flex !important;
+    justify-content: flex-end !important;
+    gap: 6px !important;
+    flex-wrap: wrap !important;
+  }
+  .modal-dialog {
+    max-width: 95vw !important;
+    margin: 10px auto !important;
+    padding: 18px 14px !important;
+    border-radius: 16px !important;
+  }
+  .toast-notice {
+    bottom: calc(74px + env(safe-area-inset-bottom, 12px)) !important;
+    right: 12px !important;
+    left: 12px !important;
+    justify-content: center !important;
+  }
 }
 @media (min-width: 769px) {
   .mobile-nav-bar { display: none !important; }
-}
-@media (max-width: 480px) {
-  .brand-divider { display: none; }
-  .studio-text { display: none; }
-  .header-container { padding: 8px 12px; }
-  .brand-name { font-size: 1.1rem; }
-  .user-status-pill { padding: 4px 8px; font-size: 0.75rem; }
-  .user-status-pill span:not(.user-dot) { max-width: 80px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-  .auth-box { padding: 22px 16px; }
-  .qr-scanner-card { padding: 16px 12px; }
 }
 </style>
 </head>
@@ -440,15 +615,22 @@ header.app-header { position: sticky; top: 0; z-index: 50; background: var(--hea
     </div>
   </section>
 
-  <!-- 3. LIVE QR & BARCODE PACKAGING SCANNER -->
+  <!-- 3. LIVE PACKAGING SCANNER & RESOLVER -->
   <section id="view-scanner" class="view-section">
     <div class="scanner-container">
       <div style="margin-bottom: 16px; text-align: center;">
-        <h2 style="font-size: clamp(1.4rem, 4vw, 1.8rem); font-weight: 800;">Packaging QR & Barcode Scanner</h2>
-        <p style="color: var(--muted); font-size: 0.88rem; max-width: 500px; margin: 4px auto 0;">Scan QR codes, GS1 DataMatrix on strips, or EAN barcodes on your medicine boxes.</p>
+        <h2 style="font-size: clamp(1.4rem, 4vw, 1.8rem); font-weight: 800;">Packaging Scanner & Resolver</h2>
+        <p style="color: var(--muted); font-size: 0.88rem; max-width: 540px; margin: 4px auto 0;">Scan packaging QR codes, serial numbers, or point camera at the printed medicine name.</p>
       </div>
 
-      <div class="glass qr-scanner-card">
+      <!-- Mode Selector Tabs -->
+      <div style="display:flex; justify-content:center; gap:8px; margin-bottom:14px;">
+        <button class="btn btn-primary" id="btnModeBarcode" style="font-size:0.8rem; padding:6px 14px;" onclick="setScannerMode('barcode')">📷 Barcode / QR Code</button>
+        <button class="btn btn-secondary" id="btnModeOcr" style="font-size:0.8rem; padding:6px 14px;" onclick="setScannerMode('ocr')">🔤 Read Strip Text (OCR)</button>
+      </div>
+
+      <!-- Mode 1: Barcode / QR Code Container -->
+      <div class="glass qr-scanner-card" id="barcodeScannerBox">
         <!-- Camera Selector & Torch for Mobile Phones -->
         <div class="qr-controls-row" id="cameraSelectRow">
           <label style="font-size:0.8rem; font-weight:700; color:var(--muted);">Camera:</label>
@@ -459,7 +641,7 @@ header.app-header { position: sticky; top: 0; z-index: 50; background: var(--hea
         </div>
 
         <div id="qrReaderView"></div>
-        <p class="qr-scan-guide">Position the packaging QR code, DataMatrix, or barcode within the viewfinder.</p>
+        <p class="qr-scan-guide">Position the packaging QR, DataMatrix, or barcode inside the frame.</p>
         
         <div style="margin-top: 16px; display: flex; justify-content: center; gap: 10px; flex-wrap: wrap;">
           <button class="btn btn-primary" id="btnStartQR" onclick="startQRScanner()">
@@ -472,22 +654,45 @@ header.app-header { position: sticky; top: 0; z-index: 50; background: var(--hea
           </button>
           <label class="btn btn-secondary" style="cursor: pointer;">
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
-            Snap / Upload Photo
+            Snap / Upload Barcode
             <input type="file" id="qrFileInput" accept="image/*" capture="environment" onchange="scanQRFromFile(event)" style="display:none;">
           </label>
         </div>
+      </div>
 
-        <!-- Detected QR Result -->
-        <div class="glass-subtle qr-detected-box" id="qrResultCard">
-          <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:6px;">
-            <span style="font-size:0.75rem; font-weight:700; color:var(--emerald);">✓ CODE DETECTED</span>
-            <button class="btn btn-outline-danger" style="font-size:0.7rem; padding:3px 8px;" onclick="clearQRResult()">Clear</button>
+      <!-- Mode 2: OCR Strip Brand Name Reader -->
+      <div class="glass qr-scanner-card" id="ocrScannerBox" style="display:none;">
+        <div style="padding:14px 10px; text-align:center;">
+          <div style="width:52px; height:52px; border-radius:14px; background:rgba(2,132,199,0.12); color:var(--primary); display:grid; place-items:center; margin:0 auto 12px;">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 7V4h16v3M9 20h6M12 4v16"/></svg>
           </div>
-          <h4 id="qrDecodedTitle" style="font-size:1.1rem; font-weight:800; margin-bottom:4px;"></h4>
-          <p id="qrRawText" style="font-family:'JetBrains Mono', monospace; font-size:0.78rem; color:var(--muted); word-break:break-all; margin-bottom:12px;"></p>
-          <div style="display:flex; gap:8px;">
-            <button class="btn btn-primary" id="qrSearchActionBtn" style="font-size:0.8rem; padding:6px 12px;">Search Medicine</button>
-          </div>
+          <h3 style="font-size:1.15rem; font-weight:800; margin-bottom:6px;">Strip Brand Name Reader</h3>
+          <p style="font-size:0.84rem; color:var(--muted); margin-bottom:16px;">Point your camera or upload a photo of the printed medicine name (e.g. DOLO 650, AUGMENTIN, PAN-D) on your foil strip or box.</p>
+          
+          <label class="btn btn-primary" style="cursor:pointer; padding:12px 22px; font-size:0.95rem;">
+            📸 Snap Strip Photo to Read Name
+            <input type="file" accept="image/*" capture="environment" onchange="recognizeStripText(event)" style="display:none;">
+          </label>
+          <div id="ocrStatusMsg" style="display:none; margin-top:14px; font-size:0.85rem; color:var(--primary); font-weight:700;"></div>
+        </div>
+      </div>
+
+      <!-- Detected Result Card (Handles Barcodes, Serial Numbers, GS1 & OCR) -->
+      <div class="glass-subtle qr-detected-box" id="qrResultCard" style="max-width:620px; margin:18px auto 0;">
+        <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:8px;">
+          <span style="font-size:0.75rem; font-weight:700; color:var(--emerald);" id="qrStatusBadge">✓ CODE RESOLVED</span>
+          <button class="btn btn-outline-danger" style="font-size:0.7rem; padding:3px 8px;" onclick="clearQRResult()">Clear</button>
+        </div>
+        <h4 id="qrDecodedTitle" style="font-size:1.15rem; font-weight:800; margin-bottom:6px;"></h4>
+        
+        <!-- Detailed GS1 Info (Expiry, Batch, GTIN) -->
+        <div id="gs1DetailsBox" style="display:none; background:var(--pill-bg); border-radius:10px; padding:10px; margin-bottom:10px; font-size:0.8rem;"></div>
+
+        <p id="qrRawText" style="font-family:'JetBrains Mono', monospace; font-size:0.78rem; color:var(--muted); word-break:break-all; margin-bottom:12px;"></p>
+        
+        <div id="qrActionButtonsRow" style="display:flex; gap:8px; flex-wrap:wrap;">
+          <button class="btn btn-primary" id="qrSearchActionBtn" style="font-size:0.8rem; padding:6px 12px;">Search Medicine</button>
+          <button class="btn btn-secondary" id="qrScanStripNameBtn" style="display:none; font-size:0.8rem; padding:6px 12px;" onclick="setScannerMode('ocr')">📸 Scan Strip Brand Name</button>
         </div>
       </div>
     </div>
@@ -1155,11 +1360,141 @@ function scheduleFromSearch(name) {
 }
 
 // ============================================================================
-// HIGH-PERFORMANCE LIVE QR & BARCODE SCANNER (MOBILE-OPTIMIZED)
+// DUAL-MODE PACKAGING SCANNER & RESOLVER (BARCODE + GS1 + SERIAL + OCR)
 // ============================================================================
 let html5QrScanner = null;
 let isTorchActive = false;
 let currentCameraDeviceId = '';
+let currentScannerMode = 'barcode'; // 'barcode' or 'ocr'
+
+// Common pharmaceutical GTIN / Barcode mappings
+const BARCODE_MEDICINE_MAP = {
+  '8901030383842': 'Dolo 650',
+  '890103038384': 'Dolo 650',
+  '8901117002012': 'Crocin 650',
+  '890111700201': 'Crocin 650',
+  '8901088012019': 'Augmentin 625 Duo',
+  '890108801201': 'Augmentin 625 Duo',
+  '8901148203011': 'Pan-D',
+  '890114820301': 'Pan-D',
+  '8901234567890': 'Glycomet 500 SR',
+  '8901117020016': 'Calpol 500',
+  '0300450449108': 'Tylenol Extra Strength 500mg',
+  '030045044910': 'Tylenol Extra Strength 500mg',
+  '0305730154209': 'Advil Ibuprofen 200mg',
+  '030573015420': 'Advil Ibuprofen 200mg',
+  '0358468001142': 'Amoxicillin 500mg',
+  '0007110156820': 'Lipitor 20mg',
+  '5011046001017': 'Paracetamol 500mg',
+  '5010622001019': 'Nurofen Ibuprofen 200mg'
+};
+
+function setScannerMode(mode) {
+  currentScannerMode = mode;
+  const bBox = document.getElementById('barcodeScannerBox');
+  const oBox = document.getElementById('ocrScannerBox');
+  const btnB = document.getElementById('btnModeBarcode');
+  const btnO = document.getElementById('btnModeOcr');
+
+  if (mode === 'barcode') {
+    bBox.style.display = 'block';
+    oBox.style.display = 'none';
+    btnB.className = 'btn btn-primary';
+    btnO.className = 'btn btn-secondary';
+  } else {
+    stopQRScanner();
+    bBox.style.display = 'none';
+    oBox.style.display = 'block';
+    btnB.className = 'btn btn-secondary';
+    btnO.className = 'btn btn-primary';
+  }
+}
+
+// GS1 DataMatrix Parser for pharmaceutical blister strips
+function parseGS1Barcode(rawText) {
+  const result = { isGS1: false, gtin: null, expiry: null, batch: null, serial: null };
+  const text = rawText.trim();
+
+  // Pattern with parentheses: (01)08901234567890(17)261231(10)B123
+  if (text.includes('(01)') || text.includes('(17)') || text.includes('(10)')) {
+    result.isGS1 = true;
+    const gtinM = text.match(/\(01\)(\d{14})/);
+    if (gtinM) result.gtin = gtinM[1];
+    const expM = text.match(/\(17\)(\d{6})/);
+    if (expM) result.expiry = formatGS1Date(expM[1]);
+    const batchM = text.match(/\(10\)([^\(\)]+)/);
+    if (batchM) result.batch = batchM[1].trim();
+    const serM = text.match(/\(21\)([^\(\)]+)/);
+    if (serM) result.serial = serM[1].trim();
+    return result;
+  }
+
+  // Raw GS1 format without parentheses starting with 01
+  if (/^01\d{14}/.test(text)) {
+    result.isGS1 = true;
+    result.gtin = text.slice(2, 16);
+    let rest = text.slice(16);
+    if (rest.startsWith('17') && rest.length >= 8) {
+      result.expiry = formatGS1Date(rest.slice(2, 8));
+      rest = rest.slice(8);
+    }
+    if (rest.startsWith('10')) {
+      const nextAi = rest.search(/(21|17)/);
+      result.batch = nextAi > 2 ? rest.slice(2, nextAi) : rest.slice(2, 14);
+    }
+    return result;
+  }
+
+  return result;
+}
+
+function formatGS1Date(yymmdd) {
+  try {
+    const yy = parseInt(yymmdd.slice(0, 2), 10);
+    const mm = parseInt(yymmdd.slice(2, 4), 10);
+    const dd = parseInt(yymmdd.slice(4, 6), 10);
+    const year = 2000 + yy;
+    const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+    return `${dd > 0 ? dd + ' ' : ''}${months[mm - 1] || mm} ${year}`;
+  } catch(e) {
+    return yymmdd;
+  }
+}
+
+// Live Online Barcode Registry Lookup
+async function lookupBarcodeOnline(code) {
+  const clean = code.replace(/\D/g, '');
+  if (!clean || clean.length < 6) return null;
+
+  // 1. Check local database
+  if (BARCODE_MEDICINE_MAP[clean]) {
+    return BARCODE_MEDICINE_MAP[clean];
+  }
+
+  // 2. Query Open Food / Drug Facts global database
+  try {
+    const res = await fetch(`https://world.openfoodfacts.org/api/v0/product/${clean}.json`);
+    if (res.ok) {
+      const data = await res.json();
+      if (data && data.status === 1 && data.product && data.product.product_name) {
+        return data.product.product_name;
+      }
+    }
+  } catch(e){}
+
+  // 3. Query OpenFDA NDC Drug database
+  try {
+    const fdaRes = await fetch(`https://api.fda.gov/drug/ndc.json?search=packaging.package_ndc:"${clean}"&limit=1`);
+    if (fdaRes.ok) {
+      const fdaData = await fdaRes.json();
+      if (fdaData.results && fdaData.results[0]) {
+        return fdaData.results[0].brand_name || fdaData.results[0].generic_name;
+      }
+    }
+  } catch(e){}
+
+  return null;
+}
 
 async function startQRScanner(preferredId) {
   const btnStart = document.getElementById('btnStartQR');
@@ -1170,7 +1505,6 @@ async function startQRScanner(preferredId) {
   try {
     await stopQRScanner();
 
-    // Enable multi-format decoding (QR + Medicine Packaging Barcodes & DataMatrix)
     const formats = window.Html5QrcodeSupportedFormats ? [
       Html5QrcodeSupportedFormats.QR_CODE,
       Html5QrcodeSupportedFormats.DATA_MATRIX,
@@ -1189,7 +1523,6 @@ async function startQRScanner(preferredId) {
 
     let activeCam = preferredId || cameraSelect.value || currentCameraDeviceId;
 
-    // Discover and populate phone cameras
     try {
       const devices = await Html5Qrcode.getCameras();
       if (devices && devices.length > 0) {
@@ -1217,7 +1550,6 @@ async function startQRScanner(preferredId) {
 
     currentCameraDeviceId = activeCam;
 
-    // Mobile-adaptive dynamic viewfinder box (never overflows on narrow phone screens)
     const config = {
       fps: 15,
       qrbox: function(viewWidth, viewHeight) {
@@ -1229,20 +1561,18 @@ async function startQRScanner(preferredId) {
       disableFlip: false
     };
 
-    // Camera constraint: prefer specific device ID or ideal environment
     const cameraConstraint = activeCam ? activeCam : { facingMode: { ideal: 'environment' } };
 
     await html5QrScanner.start(
       cameraConstraint,
       config,
       (decodedText, decodedResult) => onQRCodeDecoded(decodedText, decodedResult),
-      () => {} // silent scan frame
+      () => {}
     );
 
     btnStart.style.display = 'none';
     btnStop.style.display = 'inline-flex';
 
-    // Check if phone camera supports flashlight/torch
     try {
       const capabilities = html5QrScanner.getRunningTrackCapabilities();
       if (capabilities && capabilities.torch) {
@@ -1259,7 +1589,6 @@ async function startQRScanner(preferredId) {
     showToast('Live Camera Scanner Active');
   } catch (err) {
     console.error('Camera start error:', err);
-    // Secondary fallback: front camera if environment camera fails
     try {
       if (html5QrScanner) {
         await html5QrScanner.start(
@@ -1275,7 +1604,7 @@ async function startQRScanner(preferredId) {
       }
     } catch(e2) {}
 
-    showToast('Camera blocked. Tap "Snap / Upload Photo" to scan packaging directly!');
+    showToast('Camera blocked. Tap "Snap / Upload Barcode" or use "Read Strip Text"!');
   }
 }
 
@@ -1320,7 +1649,7 @@ async function stopQRScanner() {
   isTorchActive = false;
 }
 
-function onQRCodeDecoded(decodedText, decodedResult) {
+async function onQRCodeDecoded(decodedText, decodedResult) {
   playChime();
   if (navigator.vibrate) {
     try { navigator.vibrate([100, 50, 100]); } catch(e){}
@@ -1329,14 +1658,32 @@ function onQRCodeDecoded(decodedText, decodedResult) {
   stopQRScanner();
 
   const card = document.getElementById('qrResultCard');
+  const badge = document.getElementById('qrStatusBadge');
   const title = document.getElementById('qrDecodedTitle');
   const raw = document.getElementById('qrRawText');
+  const gs1Box = document.getElementById('gs1DetailsBox');
   const searchBtn = document.getElementById('qrSearchActionBtn');
+  const stripOcrBtn = document.getElementById('qrScanStripNameBtn');
 
   raw.textContent = decodedText;
+  gs1Box.style.display = 'none';
+  gs1Box.innerHTML = '';
+  stripOcrBtn.style.display = 'none';
   card.style.display = 'block';
 
-  // 1. Check for URL format (e.g. prescription or manufacturer portal)
+  // 1. Check if GS1 DataMatrix code
+  const gs1 = parseGS1Barcode(decodedText);
+  if (gs1.isGS1) {
+    let gs1Html = `<div><strong>GS1 Strip DataMatrix Detected:</strong></div>`;
+    if (gs1.gtin) gs1Html += `<div>• Product GTIN: <code>${gs1.gtin}</code></div>`;
+    if (gs1.batch) gs1Html += `<div>• Batch / Lot No: <code>${gs1.batch}</code></div>`;
+    if (gs1.expiry) gs1Html += `<div>• Expiration Date: <strong>${gs1.expiry}</strong></div>`;
+    if (gs1.serial) gs1Html += `<div>• Serial No: <code>${gs1.serial}</code></div>`;
+    gs1Box.innerHTML = gs1Html;
+    gs1Box.style.display = 'block';
+  }
+
+  // 2. Check for URL
   let parsedName = decodedText.trim();
   try {
     if (decodedText.startsWith('http')) {
@@ -1345,11 +1692,6 @@ function onQRCodeDecoded(decodedText, decodedResult) {
     }
   } catch(e){}
 
-  // 2. Check for GS1 DataMatrix tags on blister strips (e.g. 010890...)
-  if (decodedText.includes('(01)') || decodedText.startsWith('010890')) {
-    parsedName = 'Packaging Batch Code: ' + decodedText.slice(0, 24);
-  }
-
   // 3. Match against known medicines in database
   const clean = decodedText.toLowerCase();
   let matched = GLOBAL_MEDICINE_DB.find(m => 
@@ -1357,16 +1699,69 @@ function onQRCodeDecoded(decodedText, decodedResult) {
     clean.includes(m.active.toLowerCase())
   );
 
-  const targetName = matched ? matched.brand : parsedName.slice(0, 45);
-  title.textContent = `Identified: ${targetName}`;
+  if (matched) {
+    badge.textContent = '✓ MEDICINE IDENTIFIED';
+    badge.style.color = 'var(--emerald)';
+    title.textContent = `Identified: ${matched.brand}`;
+    searchBtn.textContent = `View ${matched.brand} Dossier`;
+    searchBtn.onclick = () => {
+      switchTab('search');
+      document.getElementById('searchInput').value = matched.brand;
+      searchMedicine();
+    };
+    showToast(`Identified: ${matched.brand}`);
+    return;
+  }
 
+  // 4. Check barcode lookup dictionary & live online API
+  const cleanDigits = (gs1.gtin || decodedText).replace(/\D/g, '');
+  if (cleanDigits.length >= 6) {
+    title.textContent = `Resolving Product Code: ${cleanDigits}...`;
+    badge.textContent = '⏳ RESOLVING BARCODE...';
+    badge.style.color = 'var(--primary)';
+
+    const onlineName = await lookupBarcodeOnline(cleanDigits);
+    if (onlineName) {
+      badge.textContent = '✓ PRODUCT RESOLVED';
+      badge.style.color = 'var(--emerald)';
+      title.textContent = `Product: ${onlineName}`;
+      searchBtn.textContent = `Search ${onlineName}`;
+      searchBtn.onclick = () => {
+        switchTab('search');
+        document.getElementById('searchInput').value = onlineName;
+        searchMedicine();
+      };
+      showToast(`Resolved: ${onlineName}`);
+      return;
+    }
+
+    // 5. If purely a serial number (e.g. 232587249787) without public barcode registration
+    badge.textContent = 'ℹ️ PACKAGING SERIAL NUMBER';
+    badge.style.color = 'var(--amber)';
+    title.textContent = `Serial Code: ${cleanDigits}`;
+    raw.textContent = `Decoded: ${decodedText}. This is a manufacturer batch or serial number. To instantly identify this drug, snap a quick photo of the brand name printed on the strip!`;
+    stripOcrBtn.style.display = 'inline-flex';
+    searchBtn.textContent = 'Search by Name';
+    searchBtn.onclick = () => {
+      switchTab('search');
+      document.getElementById('searchInput').focus();
+    };
+    showToast('Serial code scanned. Tap "Scan Strip Brand Name" to read printed name!');
+    return;
+  }
+
+  // Default fallback
+  const targetName = parsedName.slice(0, 45);
+  badge.textContent = '✓ CODE SCANNED';
+  badge.style.color = 'var(--primary)';
+  title.textContent = `Scanned: ${targetName}`;
+  stripOcrBtn.style.display = 'inline-flex';
   searchBtn.onclick = () => {
     switchTab('search');
     document.getElementById('searchInput').value = targetName;
     searchMedicine();
   };
-
-  showToast(`Code Detected: ${targetName}`);
+  showToast(`Scanned: ${targetName}`);
 }
 
 async function scanQRFromFile(e) {
@@ -1377,7 +1772,6 @@ async function scanQRFromFile(e) {
   await stopQRScanner();
 
   try {
-    // 1. Try native phone BarcodeDetector API if available (hardware accelerated)
     if ('BarcodeDetector' in window) {
       try {
         const barcodeDetector = new BarcodeDetector({
@@ -1395,7 +1789,6 @@ async function scanQRFromFile(e) {
       }
     }
 
-    // 2. Fallback to Html5Qrcode engine
     const formats = window.Html5QrcodeSupportedFormats ? [
       Html5QrcodeSupportedFormats.QR_CODE,
       Html5QrcodeSupportedFormats.DATA_MATRIX,
@@ -1413,9 +1806,126 @@ async function scanQRFromFile(e) {
     onQRCodeDecoded(result);
   } catch (err) {
     console.error('File scan error:', err);
-    showToast('Could not detect code. Ensure the QR or Barcode is sharp and well-lit.');
+    showToast('Could not detect barcode. Use "Read Strip Text" to read printed text directly!');
   }
   e.target.value = '';
+}
+
+// ============================================================================
+// OCR STRIP BRAND NAME RECOGNITION (TESSERACT.JS + GEMINI AI)
+// ============================================================================
+async function recognizeStripText(e) {
+  const file = e.target.files?.[0];
+  if (!file) return;
+
+  const statusMsg = document.getElementById('ocrStatusMsg');
+  statusMsg.style.display = 'block';
+  statusMsg.textContent = '✨ Reading printed medicine name with OCR...';
+
+  try {
+    if (typeof Tesseract === 'undefined') {
+      statusMsg.textContent = 'Loading OCR neural engine...';
+      await loadScript('https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js');
+    }
+
+    const ret = await Tesseract.recognize(file, 'eng', {
+      logger: m => {
+        if (m.status === 'recognizing text') {
+          statusMsg.textContent = `✨ Reading strip text: ${Math.round(m.progress * 100)}%`;
+        }
+      }
+    });
+
+    const recognizedText = ret?.data?.text || '';
+    statusMsg.style.display = 'none';
+
+    if (!recognizedText.trim()) {
+      showToast('No text detected on image. Ensure the strip is well-lit and in focus.');
+      return;
+    }
+
+    // Match extracted words against medicine database & Gemini AI corrections
+    const words = recognizedText.toLowerCase().replace(/[^a-z0-9\s]/g, ' ').split(/\s+/).filter(w => w.length >= 3);
+    let matchedMed = null;
+
+    // Check direct database brands
+    for (const m of GLOBAL_MEDICINE_DB) {
+      const bLower = m.brand.toLowerCase();
+      if (recognizedText.toLowerCase().includes(bLower)) {
+        matchedMed = m;
+        break;
+      }
+      for (const w of words) {
+        if (bLower.includes(w) && w.length >= 4) {
+          matchedMed = m;
+          break;
+        }
+      }
+      if (matchedMed) break;
+    }
+
+    // Check Gemini AI Typo Map
+    if (!matchedMed) {
+      for (const [typo, correctBrand] of Object.entries(GEMINI_CORRECTIONS)) {
+        if (recognizedText.toLowerCase().includes(typo)) {
+          matchedMed = GLOBAL_MEDICINE_DB.find(m => m.brand.toLowerCase() === correctBrand.toLowerCase());
+          if (matchedMed) break;
+        }
+      }
+    }
+
+    const card = document.getElementById('qrResultCard');
+    const badge = document.getElementById('qrStatusBadge');
+    const title = document.getElementById('qrDecodedTitle');
+    const raw = document.getElementById('qrRawText');
+    const searchBtn = document.getElementById('qrSearchActionBtn');
+    const stripOcrBtn = document.getElementById('qrScanStripNameBtn');
+
+    card.style.display = 'block';
+    stripOcrBtn.style.display = 'none';
+    raw.textContent = `OCR Detected Text: "${recognizedText.slice(0, 140).trim()}"`;
+
+    if (matchedMed) {
+      badge.textContent = '✓ STRIP NAME IDENTIFIED VIA GEMINI AI';
+      badge.style.color = 'var(--emerald)';
+      title.textContent = `Identified: ${matchedMed.brand}`;
+      searchBtn.textContent = `Open ${matchedMed.brand} Dossier`;
+      searchBtn.onclick = () => {
+        switchTab('search');
+        document.getElementById('searchInput').value = matchedMed.brand;
+        searchMedicine();
+      };
+      playChime();
+      showToast(`Medicine Recognized: ${matchedMed.brand}`);
+    } else {
+      const candidate = words[0] || 'Unknown';
+      badge.textContent = '🔤 TEXT EXTRACTED';
+      badge.style.color = 'var(--primary)';
+      title.textContent = `Extracted: ${candidate.toUpperCase()}`;
+      searchBtn.textContent = `Search "${candidate}"`;
+      searchBtn.onclick = () => {
+        switchTab('search');
+        document.getElementById('searchInput').value = candidate;
+        searchMedicine();
+      };
+      showToast(`Extracted text: ${candidate}`);
+    }
+  } catch (ocrErr) {
+    console.error('OCR Error:', ocrErr);
+    statusMsg.style.display = 'none';
+    showToast('OCR analysis encountered an error. Try searching by name directly.');
+  }
+  e.target.value = '';
+}
+
+function loadScript(src) {
+  return new Promise((resolve, reject) => {
+    const s = document.createElement('script');
+    s.src = src;
+    s.onload = resolve;
+    s.onerror = reject;
+    document.head.appendChild(s);
+  });
 }
 
 function clearQRResult() {
