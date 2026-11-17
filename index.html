@@ -1,71 +1,266 @@
 <!DOCTYPE html>
-<html lang="en" data-theme="dark">
+<html lang="en" data-theme="light">
 <head>
-<meta charset="utf-8">
+<meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Arnaw Studios &bull; Games and Creative Projects</title>
-<meta name="description" content="Explore original web games and creative tools made by Arnaw Choudhary. Play Mario Runner, Police Pursuit, Racing Quest, Meadow Drift, Treasure Quiz and AutoDraw online.">
+<title>Arnaw Studios | Projects by Arnaw Choudhary</title>
+<meta name="description" content="Arnaw Studios is the home of browser games, creative tools and projects built by Arnaw Choudhary.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Ccircle cx='32' cy='32' r='26' fill='none' stroke='%232F5BFF' stroke-width='5'/%3E%3Cpath d='M32 16 L44 41 L34 36.5 V43 H30 V36.5 L20 41 Z' fill='%232F5BFF'/%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Space+Grotesk:wght@600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Sora:wght@500;600;700;800&display=swap" rel="stylesheet">
 <style>
 :root{
-  --bg:#0c111c;
-  --surface:#131b2e;
-  --surface2:#1a243d;
-  --line:#223052;
-  --text:#e8edf7;
-  --muted:#8ea0c4;
-  --primary:#4f8cff;
-  --primary-glow:rgba(79,140,255,.35);
-  --accent:#38d9a9;
-  --card-shadow:0 12px 32px -8px rgba(3,8,20,.6);
-  --radius:16px;
-  --display:'Space Grotesk',sans-serif;
-  --sans:'Plus Jakarta Sans',sans-serif;
+  --bg:#F3F5F9; --surface:#FFFFFF; --surface2:#E9EDF5; --text:#0E1A2E; --muted:#51607A;
+  --line:#D6DCE8; --accent:#2F5BFF; --accent-ink:#FFFFFF; --spark:#FFB020; --shadow:0 10px 30px rgba(14,26,46,.08);
+  --display:'Sora','Segoe UI',system-ui,sans-serif; --body:'Inter','Segoe UI',system-ui,sans-serif;
 }
-[data-theme="light"]{
-  --bg:#f4f6fb;
-  --surface:#ffffff;
-  --surface2:#eef2fa;
-  --line:#dce3f1;
-  --text:#0e172a;
-  --muted:#5a6885;
-  --primary:#2d6cdf;
-  --primary-glow:rgba(45,108,223,.25);
-  --accent:#0ca678;
-  --card-shadow:0 14px 34px -10px rgba(20,35,70,.12);
+:root[data-theme="dark"]{
+  --bg:#0A1120; --surface:#111B31; --surface2:#17233E; --text:#E9EEFA; --muted:#9AA8C4;
+  --line:#243252; --accent:#6F8DFF; --accent-ink:#0A1120; --spark:#FFC24D; --shadow:0 10px 30px rgba(0,0,0,.45);
 }
-*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-html{scroll-behavior:smooth}
-body{
-  font-family:var(--sans);
-  background:var(--bg);
-  color:var(--text);
-  line-height:1.6;
-  -webkit-font-smoothing:antialiased;
-  transition:background .3s,color .3s;
+*{box-sizing:border-box;margin:0}
+html{scroll-behavior:smooth;scroll-padding-top:84px}
+body{font-family:var(--body);background:var(--bg);color:var(--text);line-height:1.65;transition:background .3s,color .3s}
+a{color:inherit;text-decoration:none}
+:focus-visible{outline:3px solid var(--accent);outline-offset:3px;border-radius:6px}
+.wrap{max-width:1120px;margin:0 auto;padding:0 24px}
+/* Header */
+header{position:sticky;top:0;z-index:20;background:color-mix(in srgb,var(--bg) 88%,transparent);backdrop-filter:blur(12px);border-bottom:1px solid var(--line)}
+.bar{display:flex;align-items:center;justify-content:space-between;height:68px;gap:16px}
+.brand{display:flex;align-items:center;gap:12px}
+.brand svg{width:40px;height:40px;flex:none;color:var(--accent)}
+.brand-text{display:flex;flex-direction:column;line-height:1.05}
+.brand-text b{font-family:var(--display);font-size:1.15rem;font-weight:800;letter-spacing:-.02em}
+.brand-text span{font-size:.72rem;color:var(--muted);letter-spacing:.14em}
+nav{display:flex;align-items:center;gap:4px}
+nav a{padding:8px 14px;border-radius:999px;font-weight:500;font-size:.95rem;color:var(--muted);transition:background .2s,color .2s}
+nav a:hover{background:var(--surface2);color:var(--text)}
+.toggle{width:42px;height:42px;border-radius:50%;border:1px solid var(--line);background:var(--surface);color:var(--text);cursor:pointer;display:grid;place-items:center;margin-left:8px}
+.toggle:hover{border-color:var(--accent)}
+.toggle svg{width:20px;height:20px}
+.sun{display:none}
+:root[data-theme="dark"] .sun{display:block}
+:root[data-theme="dark"] .moon{display:none}
+/* Hero */
+.hero{padding:88px 0 72px;display:grid;grid-template-columns:1.15fr .85fr;gap:56px;align-items:center}
+.hero h1{font-family:var(--display);font-size:clamp(2.4rem,5.2vw,4rem);line-height:1.04;letter-spacing:-.035em;font-weight:800;max-width:14ch}
+.hero p{margin-top:22px;color:var(--muted);font-size:1.1rem;max-width:52ch}
+.cta{display:flex;flex-wrap:wrap;gap:12px;margin-top:32px}
+.btn{display:inline-flex;align-items:center;justify-content:center;padding:13px 24px;border-radius:12px;font-weight:600;border:1px solid var(--line);background:var(--surface);transition:transform .15s,border-color .2s}
+.btn:hover{transform:translateY(-2px);border-color:var(--accent)}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.badge{justify-self:center;width:min(100%,360px);aspect-ratio:1;border-radius:36px;background:var(--surface);border:1px solid var(--line);box-shadow:var(--shadow);display:grid;place-items:center;position:relative;overflow:hidden}
+.badge::before{content:"";position:absolute;inset:0;background-image:linear-gradient(var(--line) 1px,transparent 1px),linear-gradient(90deg,var(--line) 1px,transparent 1px);background-size:32px 32px;opacity:.55}
+.badge svg{position:relative;width:58%;color:var(--accent);animation:rise .9s cubic-bezier(.2,.8,.2,1) both}
+@keyframes rise{from{opacity:0;transform:translateY(18px) scale(.94)}to{opacity:1;transform:none}}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--line);border:1px solid var(--line);border-radius:18px;overflow:hidden;margin-bottom:96px}
+.stats div{background:var(--surface);padding:22px 24px}
+.stats b{display:block;font-family:var(--display);font-size:1.6rem;letter-spacing:-.02em}
+.stats span{color:var(--muted);font-size:.9rem}
+/* Sections */
+section{padding-bottom:96px}
+h2{font-family:var(--display);font-size:clamp(1.7rem,3.4vw,2.4rem);letter-spacing:-.03em;line-height:1.15}
+.lead{color:var(--muted);margin-top:12px;max-width:60ch}
+/* Project cards */
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:22px;margin-top:36px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:20px;overflow:hidden;display:flex;flex-direction:column;transition:transform .2s,box-shadow .2s,border-color .2s}
+.card:hover{transform:translateY(-4px);box-shadow:var(--shadow);border-color:var(--c)}
+.art{height:120px;background:linear-gradient(135deg,var(--c),color-mix(in srgb,var(--c) 45%,#0E1A2E));display:flex;align-items:flex-end;justify-content:space-between;padding:16px 20px;color:#fff}
+.art b{font-family:var(--display);font-size:3.2rem;line-height:.8;opacity:.95}
+.art span{font-size:.85rem;font-weight:600;background:rgba(255,255,255,.18);padding:4px 12px;border-radius:999px}
+.body{padding:22px 22px 24px;display:flex;flex-direction:column;gap:12px;flex:1}
+.body h3{font-family:var(--display);font-size:1.3rem;letter-spacing:-.02em}
+.body p{color:var(--muted);font-size:.95rem;flex:1}
+.tags{display:flex;flex-wrap:wrap;gap:8px}
+.tags span{font-size:.8rem;padding:4px 10px;border-radius:8px;background:var(--surface2);color:var(--muted)}
+.play{align-self:flex-start;margin-top:6px;padding:10px 20px;border-radius:10px;background:var(--text);color:var(--bg);font-weight:600;font-size:.95rem}
+.card:hover .play{background:var(--c);color:#fff}
+/* About */
+.about{display:grid;grid-template-columns:.8fr 1.2fr;gap:48px;align-items:start}
+.id{background:var(--surface);border:1px solid var(--line);border-radius:20px;padding:28px}
+.avatar{width:104px;height:104px;border-radius:24px;background:var(--surface2);display:block;object-fit:cover;object-position:center center;border:3px solid var(--surface);box-shadow:0 4px 14px rgba(14,26,46,.12)}
+.id h3{font-family:var(--display);margin-top:16px}
+.id>p{color:var(--muted);font-size:.95rem}
+.facts{display:grid;gap:14px;margin-top:22px;padding-top:22px;border-top:1px solid var(--line)}
+.facts span{display:block;color:var(--muted);font-size:.85rem}
+.facts b{font-weight:600}
+.about-text p{color:var(--muted);margin-top:16px;max-width:62ch}
+.about-text h2+p{margin-top:20px}
+footer{border-top:1px solid var(--line);padding:36px 0;color:var(--muted);font-size:.9rem}
+footer .wrap{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:16px}
+footer .brand svg{width:30px;height:30px;color:var(--accent)}
+footer .brand b{font-size:1rem;color:var(--text)}
+@media (max-width:860px){
+  .hero{grid-template-columns:1fr;padding-top:56px}
+  .badge{width:min(70%,280px);order:-1;justify-self:start}
+  .stats{grid-template-columns:repeat(2,1fr)}
+  .about{grid-template-columns:1fr}
+  nav a{padding:8px 10px;font-size:.88rem}
 }
-.wrap{max-width:1160px;margin:0 auto;padding:0 24px}
-header{
-  position:sticky;top:0;z-index:50;
-  backdrop-filter:blur(16px);
-  -webkit-backdrop-filter:blur(16px);
-  background:rgba(12,17,28,.75);
-  border-bottom:1px solid var(--line);
-  transition:background .3s;
+@media (max-width:640px){
+  nav a:not(.keep){display:none}
+  .grid{grid-template-columns:1fr}
 }
-[data-theme="light"] header{background:rgba(244,246,251,.85)}
-.nav{display:flex;align-items:center;justify-content:space-between;height:72px}
-.brand{display:flex;align-items:center;gap:12px;text-decoration:none;color:var(--text)}
-.brand svg{width:34px;height:34px;fill:var(--primary)}
-.brand-text{display:flex;flex-direction:column;line-height:1.15}
-.brand-text b{font-family:var(--display);font-size:1.15rem;letter-spacing:-.02em}
-.brand-text span{font-size:.75rem;color:var(--muted);text-transform:uppercase;letter-spacing:.08em}
-.nav-links{display:flex;align-items:center;gap:20px}
-.nav-links a{color:var(--muted);text-decoration:none;font-weight:500;font-size:.95rem;transition:color .2s}
-.nav-links a:hover{color:var(--text)}
-.theme-btn{
-  background:var(--surface2);border:1px solid var(--line);color:var(--text);
-  width:40px;height:40px;border-radius:10px;cursor:pointer;
-  display:grid;place-items:center;transition:all
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important;scroll-behavior:auto}}
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="logo" viewBox="0 0 64 64">
+    <circle cx="32" cy="32" r="26" fill="none" stroke="currentColor" stroke-width="5"/>
+    <path d="M32 16 L44 41 L34 36.5 V43 H30 V36.5 L20 41 Z" fill="currentColor"/>
+  </symbol>
+</svg>
+<header>
+  <div class="wrap bar">
+    <a class="brand" href="#top" aria-label="Arnaw Studios home">
+      <svg role="img" aria-hidden="true"><use href="#logo"/></svg>
+      <span class="brand-text"><b>Arnaw Studios</b><span>INTERACTIVE LAB</span></span>
+    </a>
+    <nav aria-label="Main">
+      <a class="keep" href="#projects">Projects</a>
+      <a href="diary.html">Diary</a>
+      <a href="autodraw.html">AutoDraw</a>
+      <a href="#about">About</a>
+      <a class="keep" href="#contact">Contact</a>
+      <button class="toggle" id="theme" aria-label="Switch between light and dark mode" title="Switch theme" type="button">
+        <svg class="moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.800A9 9 0 1111.200 3a7 7 0 009.800 9.800z"/></svg>
+        <svg class="sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.900 4.900l1.400 1.400M17.700 17.700l1.400 1.400M2 12h2M20 12h2M4.900 19.100l1.400-1.400M17.700 6.300l1.400-1.400"/></svg>
+      </button>
+    </nav>
+  </div>
+</header>
+<main id="top">
+  <div class="wrap">
+    <div class="hero">
+      <div>
+        <h1>Projects built with real code and real care.</h1>
+        <p>Arnaw Studios is the creative studio of Arnaw Choudhary. Explore browser games, useful tools and creative projects, all made with curiosity and care.</p>
+        <div class="cta">
+          <a class="btn primary" href="#projects">Explore projects</a>
+          <a class="btn" href="#about">Meet the creator</a>
+        </div>
+      </div>
+      <div class="badge"><svg viewBox="0 0 64 64" role="img" aria-label="Arnaw Studios logo"><use href="#logo"/></svg></div>
+    </div>
+    <div class="stats">
+      <div><b>7+</b><span>Published projects</span></div>
+      <div><b>Browser</b><span>Play instantly</span></div>
+      <div><b>Creative</b><span>Core specialty</span></div>
+      <div><b>Jaipur</b><span>Where it's built</span></div>
+    </div>
+
+    <section id="projects">
+      <h2>Project collection</h2>
+      <p class="lead">Explore games, creative tools and things built at Arnaw Studios.</p>
+      <div class="grid">
+        <article class="card" style="--c:#2E9E5B">
+          <div class="art"><b>M</b><span>Nature racing</span></div>
+          <div class="body">
+            <h3>Meadow Drift</h3>
+            <p>Smooth drifting through scenic grassy meadows and winding country tracks. Master precision cornering and slide your way to the top leaderboard times.</p>
+            <div class="tags"><span>Drift physics</span><span>Scenic tracks</span><span>Time trials</span></div>
+            <a class="play" href="meadow-drift.html">Open Meadow Drift</a>
+          </div>
+        </article>
+        <article class="card" style="--c:#E04B3A">
+          <div class="art"><b>R</b><span>Arcade runner</span></div>
+          <div class="body">
+            <h3>Mario Runner</h3>
+            <p>A side-scrolling endless runner. Jump over obstacles, dodge enemies, collect power-ups and beat your high score.</p>
+            <div class="tags"><span>Endless running</span><span>Leaderboard</span><span>Physics engine</span></div>
+            <a class="play" href="mario-runner.html">Open Mario Runner</a>
+          </div>
+        </article>
+        <article class="card" style="--c:#2F5BFF">
+          <div class="art"><b>Q</b><span>High speed</span></div>
+          <div class="body">
+            <h3>Racing Quest</h3>
+            <p>High-speed racing with custom tracks and cars. Take sharp drift turns, hit the nitro boosters and outpace AI racers to win the championship.</p>
+            <div class="tags"><span>Custom tracks</span><span>Nitro boost</span><span>Speed physics</span></div>
+            <a class="play" href="racing-quest.HTML">Open Racing Quest</a>
+          </div>
+        </article>
+        <article class="card" style="--c:#6B4BDB">
+          <div class="art"><b>P</b><span>Action simulation</span></div>
+          <div class="body">
+            <h3>Police Pursuit</h3>
+            <p>A city driving and pursuit simulation with patrol units, changing traffic and tactical road challenges.</p>
+            <div class="tags"><span>City simulation</span><span>Dynamic traffic</span><span>Strategy</span></div>
+            <a class="play" href="police-pursuit.HTML">Open Police Pursuit</a>
+          </div>
+        </article>
+        <article class="card" style="--c:#C98A00">
+          <div class="art"><b>T</b><span>Puzzle and trivia</span></div>
+          <div class="body">
+            <h3>Treasure Quiz</h3>
+            <p>A trivia and puzzle game about uncovering hidden riches. Solve riddles, unlock chest combinations and test your knowledge across multiple levels.</p>
+            <div class="tags"><span>Brain teasers</span><span>Trivia</span><span>Treasure rewards</span></div>
+            <a class="play" href="treasure-quiz.HTML">Open Treasure Quiz</a>
+          </div>
+        </article>
+        <article class="card" id="diary" style="--c:#2F5D62">
+          <div class="art"><b>D</b><span>Personal writing</span></div>
+          <div class="body">
+            <h3>My Diary</h3>
+            <p>A private digital diary for writing, saving and revisiting your entries by date.</p>
+            <div class="tags"><span>Daily entries</span><span>Supabase</span><span>Private account</span></div>
+            <a class="play" href="diary.html">Open Diary</a>
+          </div>
+        </article>
+        <article class="card" id="autodraw" style="--c:#E07A38">
+          <div class="art"><b>A</b><span>Creative tool</span></div>
+          <div class="body">
+            <h3>AutoDraw</h3>
+            <p>A simple drawing studio for sketches, colours and quick shape-assisted doodles. Save your artwork as an image.</p>
+            <div class="tags"><span>Drawing canvas</span><span>Smart shapes</span><span>PNG export</span></div>
+            <a class="play" href="autodraw.html">Open AutoDraw</a>
+          </div>
+        </article>
+      </div>
+    </section>
+    <section id="about" class="about">
+      <div class="id">
+        <img class="avatar" src="arnaw.png" alt="Portrait of Arnaw Choudhary" width="104" height="104" loading="eager">
+        <h3>Arnaw Choudhary</h3>
+        <p>Creator, developer and coder</p>
+        <div class="facts">
+          <div><span>Studio</span><b>Arnaw Studios</b></div>
+          <div><span>Specialty</span><b>Logic, game design and creative coding</b></div>
+        </div>
+      </div>
+      <div class="about-text">
+        <h2>Coder, innovator and creator</h2>
+        <p>I turn creative ideas into interactive experiences. From browser games and driving simulations to useful tools like a digital diary and drawing studio, I enjoy working with game mechanics, artificial intelligence, clean code and thoughtful design.</p>
+        <p>My goal is to build projects that are fun to use, spark creativity and teach something along the way.</p>
+      </div>
+    </section>
+    <section id="contact">
+      <h2>Get in touch</h2>
+      <p class="lead">Found a bug or have an idea for the next project? Reach out through GitHub.</p>
+      <div class="cta"><a class="btn primary" href="https://github.com/arnawchoudhary">Visit GitHub profile</a></div>
+    </section>
+  </div>
+</main>
+<footer>
+  <div class="wrap">
+    <a class="brand" href="#top"><svg aria-hidden="true"><use href="#logo"/></svg><span class="brand-text"><b>Arnaw Studios</b></span></a>
+    <span>&copy; 2026 Arnaw Studios. All rights reserved.</span>
+  </div>
+</footer>
+<script>
+(function(){
+  var root=document.documentElement, key='arnaw-theme', saved=null;
+  try{saved=localStorage.getItem(key);}catch(e){}
+  var dark=window.matchMedia&&window.matchMedia('(prefers-color-scheme: dark)').matches;
+  root.setAttribute('data-theme', saved || (dark?'dark':'light'));
+  document.getElementById('theme').addEventListener('click',function(){
+    var next=root.getAttribute('data-theme')==='dark'?'light':'dark';
+    root.setAttribute('data-theme',next);
+    try{localStorage.setItem(key,next);}catch(e){}
+  });
+})();
+</script>
+</body>
+</html>
