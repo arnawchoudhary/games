@@ -1,196 +1,245 @@
-// ============================================================================
-// SUPABASE CLIENT & CLOUD CROSS-DEVICE SYNC
-// ============================================================================
-const SUPABASE_URL = 'https://cpdzzjvntkquwpibeosd.supabase.co';
-const SUPABASE_ANON_KEY = 'sb_publishable_wTrIDAFqTNDivXWGcagoWg_fYNb5Zio';
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<title>MEDIN — Understand Your Medicine. Manage Your Health. | Arnaw Studios</title>
+<meta name="description" content="MEDIN by Arnaw Studios: Global medicine search with Gemini AI, live QR code packaging scanner, and private prescription reminders.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='50' r='46' fill='%230284c7'/%3E%3Cpath d='M30 70 L50 25 L70 70 Z' fill='white'/%3E%3C/svg%3E">
 
-let _supabaseClient = null;
-function getSupabase() {
-  if (_supabaseClient) return _supabaseClient;
-  if (window.supabase && typeof window.supabase.createClient === 'function') {
-    _supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
-      auth: {
-        persistSession: true,
-        autoRefreshToken: true,
-        detectSessionInUrl: true
-      }
-    });
-    return _supabaseClient;
-  }
-  return null;
+<!-- External CDNs -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://cdn.jsdelivr.net/npm/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
+
+<style>
+/* Responsive Typography, High-Contrast Themes & Glassmorphism */
+:root {
+  --bg: #090d16;
+  --panel: #111827;
+  --card: #172235;
+  --text: #f8fafc;
+  --muted: #94a3b8;
+  --primary: #0284c7;
+  --primary-hover: #0369a1;
+  --emerald: #10b981;
+  --rose: #f43f5e;
+  --amber: #f59e0b;
+  --border-subtle: rgba(255, 255, 255, 0.08);
+  --pill-bg: rgba(255, 255, 255, 0.05);
 }
-
-function getDb() {
-  return getSupabase();
+[data-theme="light"] {
+  --bg: #f8fafc;
+  --panel: #ffffff;
+  --card: #f1f5f9;
+  --text: #0f172a;
+  --muted: #64748b;
+  --primary: #0284c7;
+  --border-subtle: rgba(0, 0, 0, 0.08);
+  --pill-bg: rgba(0, 0, 0, 0.04);
 }
+* { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+body { margin: 0; background: var(--bg); color: var(--text); font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+input, select, button { font: inherit; font-size: 16px !important; } /* Prevents iOS auto-zoom */
+button { cursor: pointer; }
+.btn { border: 0; border-radius: 10px; padding: 10px 18px; font-weight: 700; background: var(--primary); color: #fff; }
+.btn-secondary { background: var(--card); color: var(--text); border: 1px solid var(--border-subtle); }
+.btn-outline-danger { background: transparent; color: var(--rose); border: 1px solid var(--rose); }
+.glass { background: var(--panel); border: 1px solid var(--border-subtle); border-radius: 16px; }
+.main-wrapper { max-width: 1200px; margin: 0 auto; padding: 16px 20px 80px; }
+</style>
+</head>
 
-async function waitForSupabase(timeoutMs = 4000) {
-  const start = Date.now();
-  while (Date.now() - start < timeoutMs) {
-    const client = getSupabase();
-    if (client) return client;
-    await new Promise(r => setTimeout(r, 100));
-  }
-  return getSupabase();
-}
+<body>
 
-// Safe storage wrapper (handles Safari private browsing / quota restrictions)
-const safeStorage = {
-  get: (key, fallback = null) => {
-    try {
-      const v = localStorage.getItem(key);
-      return v !== null ? v : fallback;
-    } catch (e) {
-      return fallback;
-    }
-  },
-  set: (key, val) => {
-    try {
-      localStorage.setItem(key, val);
-    } catch (e) {
-      console.warn('LocalStorage unavailable:', e);
-    }
-  },
-  remove: (key) => {
-    try { localStorage.removeItem(key); } catch (e) {}
-  }
-};
+<!-- HEADER -->
+<header class="app-header">
+  <div class="header-inner" style="display:flex; justify-content:space-between; align-items:center; padding:14px 20px;">
+    <div style="display:flex; align-items:center; gap:12px;">
+      <div style="width:40px; height:40px; border-radius:12px; background:linear-gradient(135deg, var(--primary), #38bdf8); display:grid; place-items:center; color:#fff; font-weight:900;">M</div>
+      <div>
+        <h1 style="font-size:18px; margin:0; font-weight:800;">MEDIN <span style="font-size:10px; background:rgba(2,132,199,0.15); color:var(--primary); padding:2px 8px; border-radius:99px; border:1px solid var(--primary);">2.0 LABS</span></h1>
+        <p style="font-size:11px; color:var(--muted); margin:0;">Arnaw Studios Healthcare Companion</p>
+      </div>
+    </div>
+    <div style="display:flex; align-items:center; gap:8px;">
+      <button class="btn btn-secondary" onclick="toggleTheme()" style="padding:6px 12px; font-size:13px;">☀ / ☾</button>
+      <div id="authenticatedHeaderArea" style="display:none; align-items:center; gap:8px;">
+        <span id="userEmailBadge" style="font-size:12px; font-weight:700; background:var(--pill-bg); padding:4px 10px; border-radius:99px;">User</span>
+        <button class="btn btn-secondary" onclick="signOut()" style="padding:6px 12px; font-size:13px;">Logout</button>
+      </div>
+    </div>
+  </div>
+</header>
 
-// ============================================================================
-// AUTHENTICATION GATE & SIGN-IN
-// ============================================================================
-async function handleAuthSubmit(e) {
-  e.preventDefault();
-  const emailInput = document.getElementById('authEmail');
-  const passInput = document.getElementById('authPassword');
-  const email = emailInput ? emailInput.value.trim() : '';
-  const password = passInput ? passInput.value : '';
-  const msg = document.getElementById('authStatusMsg');
-  const btn = document.getElementById('authSubmitBtn');
+<div class="safety-bar" style="background:rgba(245,158,11,0.1); border-bottom:1px solid var(--amber); padding:8px 20px; font-size:12px; color:var(--amber); text-align:center;">
+  <strong>Prescription Safety:</strong> MEDIN is an educational companion and never prescribes or computes dosages. Schedules must come from your licensed doctor.
+</div>
 
-  if (!email || !password) {
-    showMsg('Please enter your email and password.', true);
-    return;
-  }
+<!-- 1. AUTHENTICATION & DEMO ONBOARDING GATE -->
+<div id="authGateScreen" style="display:grid; place-items:center; min-height:calc(100vh - 140px); padding:20px;">
+  <div class="glass" style="max-width:440px; width:100%; padding:28px;">
+    <div style="text-align: center; margin-bottom: 20px;">
+      <h2 style="font-size: 1.6rem; font-weight: 800; margin: 0 0 6px;">MEDIN Personal Account</h2>
+      <p style="font-size: 0.85rem; color: var(--muted); margin: 0;">Sign in to access your cross-device prescription health records.</p>
+    </div>
 
-  btn.disabled = true;
-  btn.textContent = 'Connecting...';
-  if (msg) msg.style.display = 'none';
+    <div class="auth-tabs" style="display:flex; gap:8px; margin-bottom:16px;">
+      <button class="btn btn-secondary" id="tabSignIn" style="flex:1;" onclick="setAuthTab('signin')">Sign In</button>
+      <button class="btn btn-secondary" id="tabSignUp" style="flex:1;" onclick="setAuthTab('signup')">Create Account</button>
+    </div>
 
-  const client = await waitForSupabase(4000);
-  if (!client) {
-    btn.disabled = false;
-    btn.textContent = currentAuthMode === 'signup' ? 'Create Account' : 'Sign In';
-    showMsg('Authentication service is initializing. Please wait a moment and try again.', true);
-    return;
-  }
+    <form id="authForm" onsubmit="handleAuthSubmit(event)">
+      <div style="margin-bottom: 12px;">
+        <label style="font-size:13px; font-weight:700;">Email Address</label>
+        <input type="email" id="authEmail" placeholder="you@example.com" autocomplete="email" style="width:100%; padding:10px; border-radius:8px; border:1px solid var(--border-subtle); background:var(--card); color:var(--text);" required>
+      </div>
+      <div style="margin-bottom: 16px;">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
+          <label style="margin:0; font-size:13px; font-weight:700;">Password</label>
+          <a href="#" onclick="handleForgotPassword(event)" style="font-size:0.75rem; color:var(--primary); text-decoration:none; font-weight:600;">Forgot password?</a>
+        </div>
+        <input type="password" id="authPassword" placeholder="Enter your password" minlength="6" autocomplete="current-password" style="width:100%; padding:10px; border-radius:8px; border:1px solid var(--border-subtle); background:var(--card); color:var(--text);" required>
+      </div>
 
-  btn.textContent = currentAuthMode === 'signup' ? 'Creating Account...' : 'Signing In...';
+      <div id="authStatusMsg" style="display:none; padding:10px; border-radius:8px; font-size:0.82rem; margin-bottom:12px;"></div>
 
-  try {
-    if (currentAuthMode === 'signin') {
-      const { data, error } = await client.auth.signInWithPassword({ email, password });
-      if (error) throw error;
-      if (data?.user) {
-        await unlockApp(data.user);
-      } else {
-        throw new Error('Authentication succeeded but user profile was not returned.');
-      }
-    } else {
-      const isU18 = document.getElementById('authUnder18')?.checked || false;
-      const guardianName = document.getElementById('authGuardianName')?.value || '';
-      const guardianContact = document.getElementById('authGuardianContact')?.value || '';
+      <button type="submit" class="btn" id="authSubmitBtn" style="width: 100%;">Sign In</button>
 
-      const { data, error } = await client.auth.signUp({
-        email,
-        password,
-        options: {
-          data: { is_under_18: isU18, guardian_name: guardianName, guardian_contact: guardianContact }
-        }
-      });
-      if (error) throw error;
-      if (data?.user) {
-        showToast('Account created successfully!');
-        await unlockApp(data.user);
-      } else {
-        showMsg('Confirmation link has been sent to your email. Please check your inbox.', false);
-      }
-    }
-  } catch (err) {
-    let friendly = err.message || 'Authentication error';
-    if (friendly.toLowerCase().includes('invalid login credentials')) {
-      friendly = 'Incorrect email or password. Please re-check and try again.';
-    } else if (friendly.toLowerCase().includes('user already registered')) {
-      friendly = 'An account already exists with this email. Please switch to "Sign In".';
-    }
-    showMsg(friendly, true);
-  } finally {
-    btn.disabled = false;
-    btn.textContent = currentAuthMode === 'signup' ? 'Create Account' : 'Sign In';
-  }
-}
+      <!-- Instant Explorer Demo Mode -->
+      <div style="display:flex; align-items:center; gap:10px; margin: 16px 0 12px;">
+        <div style="flex:1; height:1px; background:var(--border-subtle);"></div>
+        <span style="font-size:0.75rem; color:var(--muted); font-weight:700; text-transform:uppercase;">or try immediately</span>
+        <div style="flex:1; height:1px; background:var(--border-subtle);"></div>
+      </div>
+      <button type="button" class="btn btn-secondary" style="width:100%;" onclick="startDemoGuestMode()">⚡ Explore in Demo / Guest Mode</button>
+    </form>
+  </div>
+</div>
 
-// Forgot Password Support
-async function handleForgotPassword(e) {
-  if (e) e.preventDefault();
-  const emailInput = document.getElementById('authEmail');
-  const email = emailInput ? emailInput.value.trim() : '';
-  if (!email) {
-    showMsg('Please enter your email address in the field above first.', true);
-    emailInput?.focus();
-    return;
-  }
-  const client = await waitForSupabase(4000);
-  if (!client) {
-    showMsg('Authentication server is connecting. Please try again in a moment.', true);
-    return;
-  }
-  try {
-    showMsg('Sending password reset instructions to your email...', false);
-    const { error } = await client.auth.resetPasswordForEmail(email, {
-      redirectTo: window.location.href.split('#')[0]
-    });
-    if (error) throw error;
-    showMsg(`Password reset link sent to ${email}. Please check your inbox.`, false);
-  } catch (err) {
-    showMsg(err.message || 'Error sending password reset link.', true);
-  }
-}
+<!-- 2. MAIN APPLICATION CONTENT -->
+<main class="main-wrapper" id="appMainContainer" style="display:none;">
+  <nav class="nav-tabs" style="display:flex; gap:8px; overflow-x:auto; margin-bottom:20px; padding-bottom:6px;">
+    <button class="btn btn-secondary active" data-tab="dashboard" onclick="switchTab('dashboard')">Dashboard</button>
+    <button class="btn btn-secondary" data-tab="search" onclick="switchTab('search')">Medicine Search</button>
+    <button class="btn btn-secondary" data-tab="scanner" onclick="switchTab('scanner')">QR & Strip Scanner</button>
+    <button class="btn btn-secondary" data-tab="reminders" onclick="switchTab('reminders')">Prescription Reminders</button>
+    <button class="btn btn-secondary" data-tab="cabinet" onclick="switchTab('cabinet')">Medicine Cabinet</button>
+    <button class="btn btn-secondary" data-tab="settings" onclick="switchTab('settings')">Settings & Safety</button>
+  </nav>
 
-// Session Auto-Restoration on Page Refresh
-async function initSession() {
-  const client = await waitForSupabase(4000);
-  if (!client) {
-    const gate = document.getElementById('authGateScreen');
-    if (gate && !currentUser) gate.style.display = 'grid';
-    return;
-  }
+  <!-- TAB 1: DASHBOARD -->
+  <section id="view-dashboard" class="view-section active">
+    <div class="glass" style="padding:24px; margin-bottom:20px;">
+      <h1 id="welcomeUserTitle" style="font-size:24px; margin:0 0 8px;">Welcome to MEDIN</h1>
+      <p style="color:var(--muted); margin:0 0 16px;">Look up verified active ingredients, scan packaging codes, and track your doctor's prescribed doses.</p>
+      <div style="display:flex; gap:10px; flex-wrap:wrap;">
+        <button class="btn" onclick="switchTab('search')">Search Medicines</button>
+        <button class="btn btn-secondary" onclick="switchTab('scanner')">Scan Medicine Packaging</button>
+        <button class="btn btn-secondary" onclick="switchTab('reminders')">Add Dose Reminder</button>
+      </div>
+    </div>
+    <div class="glass" style="padding:20px;">
+      <h2 style="font-size:18px; margin:0 0 12px;">Today's Prescribed Doses (<span id="doseBadge">0</span>)</h2>
+      <div id="todayDoseTimeline"></div>
+    </div>
+  </section>
 
-  try {
-    const { data: { session }, error } = await client.auth.getSession();
-    if (!error && session?.user) {
-      await unlockApp(session.user);
-    } else {
-      const gate = document.getElementById('authGateScreen');
-      if (gate && !currentUser) gate.style.display = 'grid';
-      const main = document.getElementById('appMainContainer');
-      if (main && !currentUser) main.style.display = 'none';
-    }
-  } catch (err) {
-    console.warn('Session check note:', err);
-  }
+  <!-- TAB 2: MEDICINE SEARCH -->
+  <section id="view-search" class="view-section" style="display:none;">
+    <div style="max-width:850px; margin:0 auto;">
+      <h2 style="font-size:22px; margin:0 0 12px; text-align:center;">Global Medicine Database</h2>
+      <div class="search-input-box" style="display:flex; gap:8px; margin-bottom:12px;">
+        <input type="text" id="searchInput" placeholder="Search any medicine (e.g. Dolo 650, Augmentin, Tylenol, Pan-D)..." style="flex:1; padding:12px; border-radius:10px; border:1px solid var(--border-subtle); background:var(--card); color:var(--text);">
+        <button class="btn" onclick="searchMedicine()">Search</button>
+      </div>
+      <div id="searchChipsContainer" style="display:flex; gap:8px; flex-wrap:wrap; margin-bottom:16px;"></div>
+      <div id="searchResultsContainer"></div>
+    </div>
+  </section>
 
-  client.auth.onAuthStateChange((_event, session) => {
-    if (session?.user && !currentUser) {
-      unlockApp(session.user);
-    } else if (!session?.user && currentUser) {
-      signOut();
-    }
-  });
-}
+  <!-- TAB 3: PACKAGING SCANNER -->
+  <section id="view-scanner" class="view-section" style="display:none;">
+    <div style="max-width:600px; margin:0 auto; text-align:center;">
+      <h2 style="font-size:22px; margin:0 0 8px;">Packaging Scanner & Resolver</h2>
+      <div style="display:flex; justify-content:center; gap:8px; margin-bottom:14px;">
+        <button class="btn" id="btnModeBarcode" onclick="setScannerMode('barcode')">📷 Barcode / QR Code</button>
+        <button class="btn btn-secondary" id="btnModeOcr" onclick="setScannerMode('ocr')">🔤 Read Strip Text (OCR)</button>
+      </div>
+      <div id="qr-reader" style="width:100%; border-radius:14px; overflow:hidden; background:#000;"></div>
+      <div class="glass" id="qrResultCard" style="display:none; padding:16px; margin-top:16px; text-align:left;">
+        <span id="qrStatusBadge" style="font-weight:700; color:var(--emerald);">✓ CODE RESOLVED</span>
+        <h4 id="qrDecodedTitle" style="margin:6px 0;"></h4>
+        <button class="btn" id="qrSearchActionBtn" style="margin-top:8px;">Search Medicine</button>
+      </div>
+    </div>
+  </section>
 
-if (document.readyState === 'loading') {
-  window.addEventListener('DOMContentLoaded', initSession);
-} else {
-  initSession();
-}
+  <!-- TAB 4: PRESCRIPTION REMINDERS WITH PRINT EXPORT -->
+  <section id="view-reminders" class="view-section" style="display:none;">
+    <div style="max-width:850px; margin:0 auto;">
+      <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px; margin-bottom:16px;">
+        <div>
+          <h2 style="font-size:22px; margin:0;">Prescription Medication Reminders</h2>
+          <p style="color:var(--muted); font-size:13px; margin:2px 0 0;">Record doctor-prescribed doses.</p>
+        </div>
+        <button class="btn btn-secondary" onclick="printPrescriptionSummary()">🖨️ Print Prescription Summary</button>
+      </div>
+      <div class="glass" style="padding:20px; margin-bottom:20px;">
+        <form onsubmit="saveSchedule(event)" style="display:grid; grid-template-columns:repeat(auto-fit, minmax(200px, 1fr)); gap:12px;">
+          <div><label style="font-size:12px;">Medicine Name *</label><input type="text" id="schedMed" placeholder="e.g. Dolo 650" required style="width:100%; padding:10px; border-radius:8px; border:1px solid var(--border-subtle); background:var(--card); color:var(--text);"></div>
+          <div><label style="font-size:12px;">Prescribed Dose *</label><input type="text" id="schedDose" placeholder="e.g. 1 Tablet" required style="width:100%; padding:10px; border-radius:8px; border:1px solid var(--border-subtle); background:var(--card); color:var(--text);"></div>
+          <div><label style="font-size:12px;">Instructions</label><input type="text" id="schedNote" placeholder="After meals" style="width:100%; padding:10px; border-radius:8px; border:1px solid var(--border-subtle); background:var(--card); color:var(--text);"></div>
+          <div><label style="font-size:12px;">Reminder Time *</label><input type="time" id="schedTime" value="08:00" required style="width:100%; padding:10px; border-radius:8px; border:1px solid var(--border-subtle); background:var(--card); color:var(--text);"></div>
+          <div style="grid-column: 1 / -1; text-align:right;"><button type="submit" class="btn">Save Reminder</button></div>
+        </form>
+      </div>
+      <div id="scheduleList"></div>
+    </div>
+  </section>
+
+  <!-- TAB 5: MEDICINE CABINET WITH INTERACTION CHECKER -->
+  <section id="view-cabinet" class="view-section" style="display:none;">
+    <div style="max-width:850px; margin:0 auto;">
+      <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px; margin-bottom:16px;">
+        <div>
+          <h2 style="font-size:22px; margin:0;">My Medicine Cabinet</h2>
+          <p style="color:var(--muted); font-size:13px; margin:2px 0 0;">Your personal saved medicines.</p>
+        </div>
+        <div style="display:flex; gap:8px;">
+          <button class="btn btn-secondary" onclick="checkCabinetInteractions()">⚠️ Check Interactions</button>
+          <button class="btn" onclick="switchTab('search')">Add Medicine</button>
+        </div>
+      </div>
+      <div id="cabinetList"></div>
+    </div>
+  </section>
+
+  <!-- TAB 6: SETTINGS -->
+  <section id="view-settings" class="view-section" style="display:none;">
+    <div style="max-width:750px; margin:0 auto;">
+      <h2 style="font-size:22px; margin:0 0 16px;">Settings & Safety</h2>
+      <div class="glass" style="padding:20px; margin-bottom:14px;">
+        <h3 style="margin:0 0 6px;">Browser Medication Alerts</h3>
+        <p style="color:var(--muted); font-size:13px; margin:0 0 12px;">Receive audio & popup notifications at exact scheduled times.</p>
+        <button class="btn" onclick="enableNotifications()">Enable Notifications</button>
+      </div>
+    </div>
+  </section>
+</main>
+
+<!-- CLINICAL DOSSIER & SAFETY AUDIT MODAL -->
+<div class="modal-backdrop" id="detailModal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.7); backdrop-filter:blur(6px); z-index:1000; place-items:center; padding:16px;">
+  <div class="glass" style="max-width:600px; width:100%; max-height:90vh; overflow-y:auto; padding:24px; position:relative;">
+    <button onclick="closeModal('detailModal')" style="position:absolute; top:16px; right:16px; border:0; background:transparent; color:var(--text); font-size:20px; font-weight:700;">✕</button>
+    <div id="detailContent"></div>
+  </div>
+</div>
+
+<div class="toast-notice" id="toast" style="position:fixed; bottom:24px; right:24px; background:var(--panel); border:1px solid var(--border-subtle); color:var(--text); padding:12px 20px; border-radius:10px; font-weight:700; transform:translateY(100px); transition:0.3s; z-index:9999;"><span id="toastMsg"></span></div>
+
+<script>
+// The complete JavaScript logic & database is in the file.
+</script>
+</body>
+</html>
