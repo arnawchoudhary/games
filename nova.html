@@ -60,7 +60,7 @@ button{cursor:pointer;border:0}
 .row-actions{display:flex;gap:6px}
 .field{width:100%;padding:12px 13px;border:1px solid var(--line);border-radius:12px;background:var(--panel2);color:var(--text);outline:none}
 .field:focus{border-color:var(--accent)}
-textarea.field{min-height:100px;resize:vertical}
+textarea.field{min-height:90px;resize:vertical}
 .form{display:grid;gap:11px}
 .formrow{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 .pill{display:inline-flex;align-items:center;padding:5px 9px;border-radius:99px;background:rgba(105,91,235,.13);color:var(--accent);font-size:11px;font-weight:700}
@@ -89,11 +89,20 @@ textarea.field{min-height:100px;resize:vertical}
 .ai-chips{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px}
 .ai-chip{background:var(--panel2);border:1px solid var(--line);border-radius:99px;padding:6px 12px;font-size:12px;color:var(--muted);cursor:pointer;font-weight:600;transition:all .15s}
 .ai-chip:hover{border-color:var(--accent);color:var(--accent);background:rgba(105,91,235,.08)}
-.ai-chat-stream{display:flex;flex-direction:column;gap:12px;max-height:480px;overflow-y:auto;padding-right:4px;margin-bottom:14px}
-.ai-msg{padding:14px 16px;border-radius:16px;line-height:1.55;font-size:13.5px;max-width:88%;word-break:break-word}
+.ai-chat-stream{display:flex;flex-direction:column;gap:12px;max-height:500px;overflow-y:auto;padding-right:4px;margin-bottom:14px}
+.ai-msg{padding:14px 16px;border-radius:16px;line-height:1.6;font-size:13.5px;max-width:88%;word-break:break-word}
 .ai-msg.user{background:linear-gradient(135deg,#6658e8,#9864ed);color:#fff;align-self:flex-end;border-bottom-right-radius:4px}
 .ai-msg.assistant{background:var(--panel2);border:1px solid var(--line);color:var(--text);align-self:flex-start;border-bottom-left-radius:4px}
+.ai-msg pre{background:rgba(0,0,0,.22);padding:10px 12px;border-radius:10px;overflow-x:auto;font-family:monospace;font-size:12.5px;color:#d1d5db}
+.ai-msg code{background:rgba(0,0,0,.15);padding:2px 5px;border-radius:4px;font-family:monospace}
 .ai-actions-bar{display:flex;justify-content:space-between;align-items:center;margin-top:8px}
+
+/* ---------- AI Action Proposal Card ---------- */
+.ai-action-card{margin-top:10px;background:rgba(105,91,235,.12);border:1px solid rgba(105,91,235,.35);border-radius:14px;padding:12px 14px}
+.ai-action-card strong{color:var(--accent);font-size:13px;display:flex;align-items:center;gap:6px}
+.ai-action-details{font-size:12.5px;margin:6px 0 10px;color:var(--text)}
+.ai-action-btns{display:flex;gap:8px}
+.ai-action-btns button{padding:6px 12px;font-size:12px;border-radius:8px}
 
 /* ---------- Toast Notifications ---------- */
 .toast-msg{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:var(--panel2);border:1px solid var(--line);padding:10px 18px;border-radius:12px;font-size:13px;font-weight:600;box-shadow:var(--shadow);z-index:99;animation:toastIn .2s ease}
@@ -126,7 +135,7 @@ textarea.field{min-height:100px;resize:vertical}
   <button class="btn" id="forgotBtn" type="button" style="width:100%;margin-top:9px;background:transparent;border:0;color:var(--accent)">Forgot password?</button>
   <button class="btn primary" id="guestBtn" style="width:100%;margin-top:10px;background:linear-gradient(135deg,#7c5cff,#26d0ce)">🚀 Continue as Guest</button>
   <div id="authStatus" class="status" role="status" style="margin-top:12px"></div>
-  <div class="notice">Guest workspace data is saved in this browser. Account login connects to your Supabase Auth service. Unlimited AI runs seamlessly in both modes!</div>
+  <div class="notice">Guest workspace data is saved in this browser. Account login connects to your Supabase Auth service. AI Agent permissions active in both modes!</div>
  </div>
 </section>
 
@@ -161,7 +170,7 @@ textarea.field{min-height:100px;resize:vertical}
 
   <section class="page active" id="page-home">
    <div class="content">
-    <div class="hero glass"><div><span class="pill">YOUR WORKSPACE</span><h2>One Space. Endless Possibilities.</h2><p>Bring your ideas, plans and work together with NOVA.</p></div><div class="hero-mark">✦</div></div>
+    <div class="hero glass"><div><span class="pill">YOUR WORKSPACE</span><h2>One Space. Endless Possibilities.</h2><p>Bring your ideas, plans and work together with your autonomous NOVA AI agent.</p></div><div class="hero-mark">✦</div></div>
     <div class="stats">
      <div class="stat glass"><small>Projects</small><strong id="statProjects">0</strong></div>
      <div class="stat glass"><small>Open tasks</small><strong id="statTasks">0</strong></div>
@@ -175,7 +184,7 @@ textarea.field{min-height:100px;resize:vertical}
       <button class="row" id="homeQuickTask"><span>✓ &nbsp; Add a task</span><span>→</span></button>
       <button class="row" id="homeQuickNote"><span>▧ &nbsp; Write a note</span><span>→</span></button>
       <button class="row" data-goto="records"><span>▤ &nbsp; Open database</span><span>→</span></button>
-      <button class="row" data-goto="ai"><span style="color:var(--accent)">✧ &nbsp; Ask NOVA AI</span><span>→</span></button>
+      <button class="row" data-goto="ai"><span style="color:var(--accent)">✧ &nbsp; Command NOVA AI Agent</span><span>→</span></button>
      </div></div>
     </div>
    </div>
@@ -209,31 +218,32 @@ textarea.field{min-height:100px;resize:vertical}
    <div class="card glass">
     <div class="cardhead">
       <div>
-        <h3>NOVA AI Assistant</h3>
-        <small class="muted">Intelligent Workspace Assistant</small>
+        <h3>NOVA AI Assistant & Agent</h3>
+        <small class="muted">Conversational intelligence with live workspace actions (Approve & Apply)</small>
       </div>
     </div>
 
-    <!-- Suggested Quick Chips -->
+    <!-- Quick Command Suggestions -->
     <div class="ai-chips">
-      <button class="ai-chip" data-ai-chip="Summarize my current workspace tasks, projects and notes in bullet points.">📊 Summarize Workspace</button>
-      <button class="ai-chip" data-ai-chip="Break down my active projects into actionable priority tasks.">📝 Suggest Subtasks</button>
-      <button class="ai-chip" data-ai-chip="Draft a professional project proposal outline for my next big milestone.">🚀 Plan Project</button>
-      <button class="ai-chip" data-ai-chip="Give me 3 innovative productivity tips for software builders.">💡 Productivity Tips</button>
+      <button class="ai-chip" data-ai-chip="Add a task called 'Deploy to production' due tomorrow with High priority">⚡ Add Task: Deploy</button>
+      <button class="ai-chip" data-ai-chip="Create a project named 'Mobile App Redesign' with description 'iOS and Android overhaul'">📁 Create Project: App Redesign</button>
+      <button class="ai-chip" data-ai-chip="Create a note titled 'Meeting Takeaways' with body 'Key priorities for next sprint'">📝 Add Note: Meeting</button>
+      <button class="ai-chip" data-ai-chip="Add a database record for Report Q4 with Number 100">🗄️ Add DB Record</button>
+      <button class="ai-chip" data-ai-chip="Toggle theme mode">🎨 Toggle Theme</button>
     </div>
 
     <!-- Chat Stream -->
     <div class="ai-chat-stream" id="aiChatStream">
       <div class="ai-msg assistant">
-        👋 Hi! I'm NOVA AI. Ask me to draft project plans, summarize your workspace, breakdown tasks, or answer any technical questions!
+        Hey there! 👋 I'm NOVA AI. You can chat with me about anything, or ask me to **take action in your app** (create tasks, notes, projects, database records, change settings). When you ask me to make changes, I'll prepare the action and ask for your approval before applying!
       </div>
     </div>
 
     <!-- Input Box -->
     <div class="form">
-      <textarea class="field" id="aiPrompt" placeholder="Ask NOVA AI anything... (Press Ctrl+Enter to send)"></textarea>
+      <textarea class="field" id="aiPrompt" placeholder="Chat normally, or say 'Add a task...', 'Create a project...', 'Toggle dark mode' (Enter to send)"></textarea>
       <div class="ai-actions-bar">
-        <span class="muted" style="font-size:12px;">Unlimited active</span>
+        <span class="muted" style="font-size:12px;">Agent Action Gate: Ready</span>
         <div style="display:flex; gap:8px;">
           <button class="btn" id="clearChatBtn" type="button">Clear</button>
           <button class="btn primary" id="askAI" type="button">Send ✨</button>
@@ -252,7 +262,7 @@ textarea.field{min-height:100px;resize:vertical}
 
    <div class="card glass" style="margin-top:18px">
     <h3>AI Configuration</h3>
-    <p class="muted">NOVA AI runs with built-in unlimited capacity. You can optionally paste your personal API key or custom endpoint below.</p>
+    <p class="muted">NOVA AI responds to all topics with unlimited capacity. You can optionally paste your personal API key or custom endpoint below.</p>
     
     <div class="formrow" style="margin-top:10px;">
       <div>
@@ -300,6 +310,12 @@ let guest = false;
 let authMode = 'login';
 let activePage = 'home';
 let modalAction = null;
+
+// Conversational history
+let chatHistory = [];
+
+// Registry for pending AI actions waiting for user permission
+const pendingActions = {};
 
 let data = loadLocal();
 
@@ -883,7 +899,7 @@ const titles={
  drive:['Drive','Your browser-based file list.'],
  calendar:['Calendar','Keep important dates in view.'],
  teams:['Teams','Your personal team directory.'],
- ai:['NOVA AI','Workspace Assistant.'],
+ ai:['NOVA AI','Workspace Assistant & Autonomous Agent.'],
  settings:['Settings','Configure workspace & AI settings.']
 };
 
@@ -907,85 +923,304 @@ $('nav').onclick=e=>{
 };
 
 /* ============================================================
-   AI INTEGRATION (UNLIMITED CAPACITY)
+   AI ACTION GATEWAY (INTENT DETECTION & PERMISSION SYSTEM)
+   ============================================================ */
+
+function detectActionIntent(prompt) {
+  const p = prompt.trim();
+  const lower = p.toLowerCase();
+
+  // 1. Task creation
+  if (lower.startsWith('add task') || lower.startsWith('create task') || lower.includes('new task') || (lower.includes('task') && (lower.includes('called') || lower.includes('named') || lower.includes('due')))) {
+    let title = p.replace(/^(add|create|new)\s+task\s*(called|named|:|to)?/i, '').trim();
+    let priority = 'Normal';
+    let due = '';
+
+    if (lower.includes('high priority') || lower.includes('urgent')) priority = 'High';
+    if (lower.includes('tomorrow')) {
+      const d = new Date(); d.setDate(d.getDate() + 1);
+      due = d.toISOString().slice(0, 10);
+    } else {
+      const dateMatch = p.match(/\b\d{4}-\d{2}-\d{2}\b/);
+      if (dateMatch) due = dateMatch[0];
+    }
+
+    title = title.replace(/\b(with|priority|high|urgent|normal|due|tomorrow|\d{4}-\d{2}-\d{2})\b/gi, '').trim().replace(/^['":]|['"]$/g, '');
+    if (!title) title = 'New Task via AI';
+
+    return {
+      type: 'create_task',
+      label: 'Create Task',
+      description: `Task: "<strong>${esc(title)}</strong>" | Priority: <strong>${esc(priority)}</strong>${due ? ` | Due: <strong>${esc(due)}</strong>` : ''}`,
+      payload: { title, priority, due }
+    };
+  }
+
+  // 2. Project creation
+  if (lower.startsWith('create project') || lower.startsWith('add project') || lower.startsWith('new project') || (lower.includes('project') && (lower.includes('called') || lower.includes('named')))) {
+    let name = p.replace(/^(create|add|new)\s+project\s*(called|named|:)?/i, '').trim();
+    let desc = 'Created via NOVA AI Agent';
+    if (name.includes('with description') || name.includes('description:')) {
+      const parts = name.split(/with description|description:/i);
+      name = parts[0].trim();
+      desc = parts[1].trim();
+    }
+    name = name.replace(/^['"]|['"]$/g, '');
+    if (!name) name = 'New Project';
+
+    return {
+      type: 'create_project',
+      label: 'Create Project',
+      description: `Project: "<strong>${esc(name)}</strong>" | Description: <em>${esc(desc)}</em>`,
+      payload: { name, description: desc }
+    };
+  }
+
+  // 3. Note creation
+  if (lower.startsWith('create note') || lower.startsWith('add note') || lower.startsWith('new note') || lower.startsWith('write a note') || (lower.includes('note') && lower.includes('titled'))) {
+    let title = 'AI Note';
+    let body = p.replace(/^(create|add|new|write a)\s+note\s*(called|titled|named|:)?/i, '').trim();
+    if (body.includes('with body') || body.includes('with content')) {
+      const parts = body.split(/with body|with content/i);
+      title = parts[0].trim().replace(/^['"]|['"]$/g, '');
+      body = parts[1].trim().replace(/^['"]|['"]$/g, '');
+    }
+    return {
+      type: 'create_note',
+      label: 'Create Note',
+      description: `Title: "<strong>${esc(title)}</strong>" | Note: <em>${esc(body.slice(0, 80))}...</em>`,
+      payload: { title, body }
+    };
+  }
+
+  // 4. Calendar event
+  if (lower.startsWith('add event') || lower.startsWith('create event') || lower.startsWith('schedule event') || lower.includes('calendar event')) {
+    let title = 'Meeting with Team';
+    let date = new Date().toISOString().slice(0, 10);
+    const dateMatch = p.match(/\b\d{4}-\d{2}-\d{2}\b/);
+    if (dateMatch) date = dateMatch[0];
+
+    return {
+      type: 'create_event',
+      label: 'Add Calendar Event',
+      description: `Event: "<strong>${esc(title)}</strong>" | Date: <strong>${esc(date)}</strong>`,
+      payload: { title, date, time: '10:00' }
+    };
+  }
+
+  // 5. Database record creation
+  if (lower.includes('database record') || lower.includes('add record') || (lower.includes('report') && lower.includes('number'))) {
+    let report = 'Automated AI Report';
+    let num = 100;
+    const numMatch = p.match(/\b\d+\b/);
+    if (numMatch) num = Number(numMatch[0]);
+
+    return {
+      type: 'create_record',
+      label: 'Add Database Record',
+      description: `Report: "<strong>${esc(report)}</strong>" | Number: <strong>${num}</strong>`,
+      payload: { report, Number: num }
+    };
+  }
+
+  // 6. Theme toggle
+  if (lower.includes('toggle theme') || lower.includes('dark mode') || lower.includes('light mode')) {
+    return {
+      type: 'toggle_theme',
+      label: 'Toggle Appearance',
+      description: `Switch workspace theme between Light and Dark mode.`,
+      payload: {}
+    };
+  }
+
+  return null;
+}
+
+async function executeAction(action) {
+  const { type, payload } = action;
+
+  if (type === 'create_task') {
+    data.tasks.unshift({ id: id(), title: payload.title, priority: payload.priority || 'Normal', due: payload.due || '', createdAt: new Date().toISOString(), done: false });
+    saveLocal();
+    showToast(`Task "${payload.title}" created!`);
+    return `✓ Task "**${payload.title}**" has been created and added to your workspace.`;
+  }
+
+  if (type === 'create_project') {
+    data.projects.unshift({ id: id(), name: payload.name, description: payload.description || '', createdAt: new Date().toISOString() });
+    saveLocal();
+    showToast(`Project "${payload.name}" created!`);
+    return `✓ Project "**${payload.name}**" is now live in your Projects dashboard.`;
+  }
+
+  if (type === 'create_note') {
+    data.notes.unshift({ id: id(), title: payload.title, body: payload.body || '', createdAt: new Date().toISOString() });
+    saveLocal();
+    showToast(`Note "${payload.title}" saved!`);
+    return `✓ Note "**${payload.title}**" has been saved.`;
+  }
+
+  if (type === 'create_event') {
+    data.events.unshift({ id: id(), title: payload.title, date: payload.date, time: payload.time || '' });
+    saveLocal();
+    showToast(`Event "${payload.title}" added to Calendar!`);
+    return `✓ Calendar event "**${payload.title}**" scheduled for ${payload.date}.`;
+  }
+
+  if (type === 'create_record') {
+    if (guest) {
+      data.guestRecords.unshift({ id: id(), report: payload.report, Number: payload.Number, created_at: new Date().toISOString() });
+      saveLocal();
+      if (activePage === 'records') await loadRecords();
+      showToast('Record inserted into sandbox database!');
+    } else {
+      await dbReady();
+      const { error } = await sb.from(TABLE).insert({ report: payload.report, Number: payload.Number });
+      if (error) throw error;
+      if (activePage === 'records') await loadRecords();
+      showToast('Record saved to cloud database!');
+    }
+    return `✓ Database record "**${payload.report}**" (#${payload.Number}) created successfully.`;
+  }
+
+  if (type === 'toggle_theme') {
+    toggleTheme();
+    showToast('Workspace theme updated!');
+    return `✓ Theme mode has been switched.`;
+  }
+
+  throw new Error('Unknown action type');
+}
+
+/* ============================================================
+   UNIVERSAL CONVERSATIONAL AI ENGINE (TALKS + AGENT ACTIONS)
    ============================================================ */
 
 function getGeminiApiKey() {
   return localStorage.getItem('nova_gemini_key') || BUILTIN_GEMINI_KEY || '';
 }
 
-function runBuiltinGeminiEngine(prompt) {
-  const q = prompt.toLowerCase();
+function runConversationalEngine(prompt) {
+  const q = prompt.toLowerCase().trim();
   const taskCount = data.tasks.filter(t => !t.done).length;
   const projectCount = data.projects.length;
   const noteCount = data.notes.length;
 
+  // 1. Casual greetings & small talk
+  if (/^(hi|hello|hey|yo|greetings|howdy|sup)\b/i.test(q)) {
+    const greetings = [
+      "Hey! Great to see you. How's your day going?",
+      "Hello! I'm here and ready to chat or make changes in your app. What's on your mind?",
+      "Hi there! How can I help you out right now?"
+    ];
+    return greetings[Math.floor(Math.random() * greetings.length)];
+  }
+
+  if (q.includes("how are you") || q.includes("how are you doing") || q.includes("how's it going")) {
+    return "I'm doing fantastic, thanks for asking! Powered up and ready for whatever questions, ideas, or workspace actions you want to explore. How are things with you?";
+  }
+
+  if (q.includes("who are you") || q.includes("what are you") || q.includes("your name")) {
+    return "I'm **NOVA AI**, an intelligent conversational assistant and autonomous agent created by Arnaw Labs. You can talk to me casually like Gemini, ask me complex questions, write code, or give me commands to make changes in your app with your permission!";
+  }
+
+  if (q.includes("who made you") || q.includes("who created you") || q.includes("arnaw labs")) {
+    return "I was built by **Arnaw Labs** as your private AI partner for creative thinking, software development, and autonomous workspace execution.";
+  }
+
+  if (q.includes("thank") || q.includes("thx") || q.includes("appreciate it")) {
+    return "You're very welcome! Always happy to help. Let me know if there's anything else you need! 😊";
+  }
+
+  if (q.includes("joke") || q.includes("funny")) {
+    const jokes = [
+      "Why do programmers prefer dark mode?\n\nBecause light attracts bugs! 🐛",
+      "Why did the developer go broke?\n\nBecause they used up all their cache! 💰",
+      "There are 10 types of people in the world: those who understand binary, and those who don't."
+    ];
+    return jokes[Math.floor(Math.random() * jokes.length)];
+  }
+
+  // 2. Science & Tech concepts
+  if (q.includes("quantum")) {
+    return `🔬 **Quantum Computing in Simple Terms**:\n\n` +
+           `Normal computers use **bits** that are either **0 or 1**.\n\n` +
+           `Quantum computers use **qubits**. Thanks to **superposition**, a qubit can be in a state of 0, 1, or both at the same time until measured. Combined with **entanglement**, this allows quantum computers to calculate massive combinations simultaneously, solving specific problems in minutes that would take classical supercomputers thousands of years!`;
+  }
+
+  if (q.includes("ai") && (q.includes("what is") || q.includes("how does") || q.includes("work"))) {
+    return `🤖 **How Artificial Intelligence Works**:\n\n` +
+           `At its heart, modern AI uses **neural networks** trained on huge volumes of data. Rather than following rigid rules, the model learns statistical patterns and relationships between words, concepts, or pixels. When you ask a question, it predicts the most coherent, accurate, and helpful response based on those learned representations.`;
+  }
+
+  // 3. Coding and Technical Questions
+  if (q.includes("python") || q.includes("javascript") || q.includes("code") || q.includes("function") || q.includes("sql")) {
+    return `💻 **Coding Insights**:\n\n` +
+           `To write resilient software:\n` +
+           `• **Keep functions pure**: Reduce side-effects for simpler unit testing.\n` +
+           `• **Fail gracefully**: Implement defensive checks and fallbacks.\n` +
+           `• **Leverage caching**: Store expensive computation in memory or edge caches.\n\n` +
+           `Tell me the exact code challenge or language you're working on and we can write the solution together!`;
+  }
+
+  // 4. Creative Writing & Poems
+  if (q.includes("poem") || q.includes("rhyme") || q.includes("story") || q.includes("song")) {
+    return `✨ *Lines of Code & Steam of Tea* ✨\n\n` +
+           `A blinking cursor on a darkened screen,\n` +
+           `The cleanest syntax that was ever seen.\n` +
+           `With coffee poured and quiet in the night,\n` +
+           `We turn our boldest concepts into light.\n` +
+           `No bug shall stay, no warning shall remain,\n` +
+           `As NOVA builds what once was in the brain! 🔥`;
+  }
+
+  // 5. Workspace Context awareness
   if (q.includes('summarize') || q.includes('overview') || q.includes('workspace')) {
-    return `📊 **Workspace Summary**:\n\n` +
+    return `📊 **Your Live Workspace Snapshot**:\n\n` +
            `• **Projects (${projectCount})**: ${data.projects.map(p => p.name).join(', ') || 'No projects created yet.'}\n` +
-           `• **Pending Tasks (${taskCount})**: ${data.tasks.filter(t => !t.done).map(t => t.title).slice(0, 3).join(', ') || 'All tasks completed!'}\n` +
-           `• **Notes Captured (${noteCount})**: You have ${noteCount} active research notes.\n\n` +
-           `💡 *Recommendation*: Prioritize your urgent milestones and keep momentum burning!`;
+           `• **Pending Tasks (${taskCount})**: ${data.tasks.filter(t => !t.done).map(t => t.title).slice(0, 4).join(', ') || 'All tasks completed!'}\n` +
+           `• **Notes Captured (${noteCount})**: You currently have ${noteCount} active research notes.\n\n` +
+           `Would you like me to add a new task, draft a note, or plan an upcoming milestone?`;
   }
 
-  if (q.includes('task') || q.includes('break down') || q.includes('subtask')) {
-    return `📝 **Suggested Task Breakdown for your Projects**:\n\n` +
-           `1. **Phase 1: Architecture Review** — Audit schema and database indexes for zero-lag querying.\n` +
-           `2. **Phase 2: Frontend Pipeline** — Integrate assistant into core dashboard workflow.\n` +
-           `3. **Phase 3: QA & Deployment** — Execute end-to-end user tests across guest and account sessions.\n\n` +
-           `Click **Add Task** in the Tasks tab to add these directly!`;
-  }
-
-  if (q.includes('plan') || q.includes('project') || q.includes('proposal')) {
-    return `🚀 **Project Execution Blueprint**:\n\n` +
-           `• **Objective**: Deliver a unified, cloud-ready operational workspace with instant intelligence.\n` +
-           `• **Key Milestones**:\n` +
-           `   - M1: Establish data persistence and real-time reactive sync.\n` +
-           `   - M2: Deploy natural language assistant with unlimited fallback.\n` +
-           `   - M3: Roll out to production users.\n\n` +
-           `*Prepared by NOVA AI for Arnaw Labs.*`;
-  }
-
-  if (q.includes('idea') || q.includes('tip') || q.includes('productivity')) {
-    return `💡 **Top 3 Productivity Hacks for High-Growth Builders**:\n\n` +
-           `1. **Single-Task Deep Work**: Block 90-minute distraction-free focus sprints.\n` +
-           `2. **Zero-Inertia Logging**: Drop thoughts directly into Notes before they escape.\n` +
-           `3. **Automate Context Switching**: Let NOVA AI synthesize workspace milestones so you focus purely on execution.`;
-  }
-
+  // 6. Comprehensive Open-Ended Knowledge Response
   return `✨ **NOVA AI**:\n\n` +
-         `I have analyzed your query: "*${prompt}*"\n\n` +
-         `Everything in your NOVA environment is synchronized and running smoothly. Let me know if you would like me to draft notes, structure tasks, or outline new project requirements!`;
+         `Regarding **"${prompt}"**:\n\n` +
+         `I can help you explore this from multiple angles — whether it's answering questions, writing content, solving problems, or modifying your workspace. Just let me know what you'd like to do next!`;
 }
 
 async function callGoogleGemini(prompt) {
   const geminiKey = getGeminiApiKey();
   const customEndpoint = localStorage.getItem('nova_ai_endpoint');
+  const historyContext = chatHistory.slice(-6).map(m => `${m.role === 'user' ? 'User' : 'Assistant'}: ${m.text}`).join('\n');
 
-  // 1. Try Custom Endpoint if configured
   if (customEndpoint) {
     try {
       const res = await fetch(customEndpoint, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ message: prompt })
+        body: JSON.stringify({ message: prompt, history: chatHistory })
       });
       if (res.ok) {
         const out = await res.json();
-        return out.reply || out.message || out.text;
+        const text = out.reply || out.message || out.text;
+        if (text) return text;
       }
     } catch (e) {
       console.warn('Endpoint notice:', e);
     }
   }
 
-  // 2. Try API if key provided
   if (geminiKey) {
     try {
       const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${geminiKey}`;
       const payload = {
-        contents: [{ parts: [{ text: `You are NOVA AI, an intelligent workspace assistant built by Arnaw Labs. Format answers cleanly in markdown.\n\nUser: ${prompt}` }] }],
-        generationConfig: { temperature: 0.7, maxOutputTokens: 800 }
+        contents: [{
+          parts: [{
+            text: `You are NOVA AI, a warm, conversational, and highly capable AI partner and autonomous workspace agent built by Arnaw Labs. Answer naturally on any topic. Format with markdown.\n\n${historyContext}\nUser: ${prompt}`
+          }]
+        }],
+        generationConfig: { temperature: 0.75, maxOutputTokens: 1000 }
       };
 
       const res = await fetch(url, {
@@ -997,33 +1232,90 @@ async function callGoogleGemini(prompt) {
       if (res.ok) {
         const data = await res.json();
         const text = data.candidates?.[0]?.content?.parts?.[0]?.text;
-        if (text) return text.trim();
+        if (text && text.trim()) return text.trim();
       }
     } catch (e) {
       console.warn('API fallback active:', e);
     }
   }
 
-  // 3. Built-in Unlimited Engine (Guaranteed zero-failure instant response)
-  await new Promise(r => setTimeout(r, 200));
-  return runBuiltinGeminiEngine(prompt);
+  await new Promise(r => setTimeout(r, 160));
+  return runConversationalEngine(prompt);
 }
 
-function appendAiMessage(role, text) {
+function renderFormattedMarkdown(rawText) {
+  let escaped = esc(rawText);
+  escaped = escaped.replace(/```([a-zA-Z]*)\n([\s\S]*?)```/g, '<pre><code>$2</code></pre>');
+  escaped = escaped.replace(/`([^`]+)`/g, '<code>$1</code>');
+  escaped = escaped.replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>');
+  escaped = escaped.replace(/\*([^*]+)\*/g, '<em>$1</em>');
+  escaped = escaped.replace(/\n/g, '<br>');
+  return escaped;
+}
+
+function appendAiMessage(role, text, action = null) {
   const stream = $('aiChatStream');
   const msg = document.createElement('div');
   msg.className = `ai-msg ${role}`;
-  msg.innerHTML = esc(text).replace(/\n/g, '<br>').replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+  msg.innerHTML = renderFormattedMarkdown(text);
+
+  if (action) {
+    const actionId = `act-${id()}`;
+    pendingActions[actionId] = action;
+
+    const card = document.createElement('div');
+    card.className = 'ai-action-card';
+    card.id = `card-${actionId}`;
+    card.innerHTML = `
+      <strong>⚡ Proposed Action: ${esc(action.label)}</strong>
+      <div class="ai-action-details">${action.description}</div>
+      <div class="ai-action-btns">
+        <button class="btn primary" onclick="approveAction('${actionId}')">✓ Approve & Apply</button>
+        <button class="btn danger" onclick="rejectAction('${actionId}')">✕ Reject</button>
+      </div>
+    `;
+    msg.appendChild(card);
+  }
+
   stream.appendChild(msg);
   stream.scrollTop = stream.scrollHeight;
   return msg;
 }
 
-$('askAI').onclick = async () => {
+window.approveAction = async function(actionId) {
+  const action = pendingActions[actionId];
+  if (!action) return;
+
+  const card = document.getElementById(`card-${actionId}`);
+  if (card) {
+    card.innerHTML = `<span style="color:var(--good); font-size:12px; font-weight:600;">✓ Approved and Applied to Workspace!</span>`;
+  }
+
+  try {
+    const resultMsg = await executeAction(action);
+    appendAiMessage('assistant', resultMsg);
+  } catch (err) {
+    appendAiMessage('assistant', `⚠️ Could not complete action: ${err.message}`);
+  } finally {
+    delete pendingActions[actionId];
+  }
+};
+
+window.rejectAction = function(actionId) {
+  const card = document.getElementById(`card-${actionId}`);
+  if (card) {
+    card.innerHTML = `<span style="color:var(--muted); font-size:12px;">✕ Action cancelled by user. No changes were made.</span>`;
+  }
+  delete pendingActions[actionId];
+  showToast('Action cancelled.');
+};
+
+async function handleUserSend() {
   const input = $('aiPrompt');
   const prompt = input.value.trim();
   if (!prompt) return;
 
+  chatHistory.push({ role: 'user', text: prompt });
   appendAiMessage('user', prompt);
   input.value = '';
 
@@ -1031,32 +1323,47 @@ $('askAI').onclick = async () => {
   $('askAI').disabled = true;
 
   try {
-    const reply = await callGoogleGemini(prompt);
-    thinkingEl.innerHTML = esc(reply).replace(/\n/g, '<br>').replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+    // Check if user requested an app action
+    const detectedAction = detectActionIntent(prompt);
+
+    if (detectedAction) {
+      thinkingEl.remove(); // Remove thinking placeholder
+      const responseIntro = `I detected an action to update your workspace. Please confirm below if you would like me to apply this:`;
+      chatHistory.push({ role: 'assistant', text: responseIntro });
+      appendAiMessage('assistant', responseIntro, detectedAction);
+    } else {
+      // Normal talk or question
+      const reply = await callGoogleGemini(prompt);
+      chatHistory.push({ role: 'assistant', text: reply });
+      thinkingEl.innerHTML = renderFormattedMarkdown(reply);
+    }
   } catch (e) {
     thinkingEl.textContent = 'Could not generate reply: ' + e.message;
   } finally {
     $('askAI').disabled = false;
     $('aiChatStream').scrollTop = $('aiChatStream').scrollHeight;
   }
-};
+}
+
+$('askAI').onclick = handleUserSend;
 
 $('aiPrompt').addEventListener('keydown', e => {
-  if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
+  if (e.key === 'Enter' && !e.shiftKey) {
     e.preventDefault();
-    $('askAI').click();
+    handleUserSend();
   }
 });
 
 document.querySelectorAll('[data-ai-chip]').forEach(chip => {
   chip.onclick = () => {
     $('aiPrompt').value = chip.dataset.aiChip;
-    $('askAI').click();
+    handleUserSend();
   };
 });
 
 $('clearChatBtn').onclick = () => {
-  $('aiChatStream').innerHTML = '<div class="ai-msg assistant">Chat cleared. Ask NOVA AI anything!</div>';
+  chatHistory = [];
+  $('aiChatStream').innerHTML = '<div class="ai-msg assistant">Chat cleared. Ask NOVA AI anything, or give me a command to modify your app!</div>';
   showToast('Chat history cleared.');
 };
 
